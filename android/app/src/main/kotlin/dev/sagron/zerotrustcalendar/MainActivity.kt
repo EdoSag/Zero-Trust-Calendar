@@ -122,7 +122,7 @@ class MainActivity : FlutterFragmentActivity() {
     /** Queues an opened or shared .ics file, or a webcal:// link. */
     private fun handleIntent(intent: Intent?) {
         if (intent == null) return
-        val uri: Uri? = when (intent.action) {
+        val uri: Uri = when (intent.action) {
             Intent.ACTION_VIEW -> intent.data
             Intent.ACTION_SEND -> if (Build.VERSION.SDK_INT >= 33) {
                 intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
