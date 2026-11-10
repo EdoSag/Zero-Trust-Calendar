@@ -1,9 +1,9 @@
-import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:uuid/uuid.dart';
 
 import '../model/calendar_event.dart';
 import '../model/recurrence.dart';
+import '../util/time_zones.dart';
 
 /// One calendar read from an .ics file (Google Calendar's export, Apple,
 /// Outlook, Proton): its name and events. Changed occurrences of a series
@@ -24,14 +24,6 @@ class _Line {
 }
 
 abstract final class Ics {
-  static bool _tzReady = false;
-
-  static void _ensureTz() {
-    if (_tzReady) return;
-    tzdata.initializeTimeZones();
-    _tzReady = true;
-  }
-
   /// Unfolds lines (RFC 5545 3.1) and splits name, parameters and value.
   static List<_Line> _lines(String text) {
     final raw = text.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
@@ -109,13 +101,7 @@ abstract final class Ics {
     }
     final tzid = line.params['TZID'];
     if (tzid != null) {
-      _ensureTz();
-      tz.Location? loc;
-      try {
-        loc = tz.getLocation(_ianaFor(tzid));
-      } on Object {
-        loc = null;
-      }
+      final tz.Location? loc = zoneFor(_ianaFor(tzid));
       if (loc != null) {
         final t = tz.TZDateTime(loc, g(1), g(2), g(3), g(4), g(5), g(6));
         return (DateTime.fromMillisecondsSinceEpoch(t.millisecondsSinceEpoch), false);
@@ -165,6 +151,16 @@ abstract final class Ics {
     final minutes = g(2) * 7 * 24 * 60 + g(3) * 24 * 60 + g(4) * 60 + g(5);
     final before = m.group(1) == '-' || minutes == 0;
     return before ? minutes : null; // Reminders after the start: skipped.
+  }
+
+  /// An event `DURATION` (`PT1H`, `P2D`, `P1DT30M`) in minutes.
+  static int? _durationMinutes(String v) {
+    final m = RegExp(
+      r'^\+?P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$',
+    ).firstMatch(v.trim());
+    if (m == null) return null;
+    int g(int i) => int.tryParse(m.group(i) ?? '') ?? 0;
+    return g(1) * 7 * 24 * 60 + g(2) * 24 * 60 + g(3) * 60 + g(4);
   }
 
   /// Reads every VEVENT of [text]. Events without a start are skipped.
@@ -276,8 +272,10 @@ abstract final class Ics {
     if (et != null && et.$1.isAfter(start)) {
       end = et.$1;
     } else if (p['DURATION'] case final _Line d) {
-      final minutes = _triggerMinutes(d.value.replaceFirst('-', '')) ?? 0;
-      end = start.add(Duration(minutes: minutes));
+      final minutes = _durationMinutes(d.value) ?? 0;
+      end = allDay
+          ? DateTime(start.year, start.month, start.day + (minutes / (24 * 60)).ceil())
+          : start.add(Duration(minutes: minutes));
     } else {
       end = allDay
           ? DateTime(start.year, start.month, start.day + 1)
@@ -289,6 +287,11 @@ abstract final class Ics {
     final rrule = p['RRULE']?.value;
     final rule = RecurrenceRule.tryParse(rrule);
     final status = p['STATUS']?.value.toUpperCase();
+    // A repeating event keeps its zone's wall-clock time across DST.
+    final tzid = startLine.params['TZID'];
+    final zone = !allDay && rule != null && tzid != null && zoneFor(_ianaFor(tzid)) != null
+        ? _ianaFor(tzid)
+        : null;
     return CalendarEvent(
       id: const Uuid().v4(),
       title: _unescape(p['SUMMARY']?.value ?? '').trim(),
@@ -306,6 +309,7 @@ abstract final class Ics {
       },
       reminders: alarms.toSet().toList()..sort(),
       icalUid: p['UID']?.value.trim(),
+      timeZone: zone,
       createdAt: DateTime.now(),
       extra: status == 'CANCELLED' ? {'_status': 'CANCELLED'} : const {},
     );
@@ -346,6 +350,9 @@ abstract final class Ics {
       if (e.allDay) {
         out.write('DTSTART;VALUE=DATE:${_date(e.start)}\r\n');
         out.write('DTEND;VALUE=DATE:${_date(e.end)}\r\n');
+      } else if (zoneFor(e.timeZone) case final zone?) {
+        out.write('DTSTART;TZID=${e.timeZone}:${_wall(zone, e.start)}\r\n');
+        out.write('DTEND;TZID=${e.timeZone}:${_wall(zone, e.end)}\r\n');
       } else {
         out.write('DTSTART:${_utc(e.start)}\r\n');
         out.write('DTEND:${_utc(e.end)}\r\n');
@@ -357,9 +364,12 @@ abstract final class Ics {
       }
       if (e.rrule != null) _fold(out, 'RRULE:${e.rrule}');
       for (final x in (e.exceptions.toList()..sort())) {
+        final zone = zoneFor(e.timeZone);
         out.write(
           e.allDay
               ? 'EXDATE;VALUE=DATE:${_date(x)}\r\n'
+              : zone != null
+              ? 'EXDATE;TZID=${e.timeZone}:${_wall(zone, x)}\r\n'
               : 'EXDATE:${_utc(x)}\r\n',
         );
       }
@@ -381,6 +391,11 @@ abstract final class Ics {
 
   static String _date(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}${_two(d.month)}${_two(d.day)}';
+
+  static String _wall(tz.Location zone, DateTime t) {
+    final w = wallClockIn(zone, t);
+    return '${_date(w)}T${_two(w.hour)}${_two(w.minute)}${_two(w.second)}';
+  }
 
   static String _utc(DateTime t) {
     final u = t.toUtc();

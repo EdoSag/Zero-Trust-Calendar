@@ -121,4 +121,68 @@ void main() {
     expect(again.events, isEmpty);
     expect(again.skipped, 4);
   });
+
+  test('importing again adds newly moved occurrences to the stored series', () {
+    final first = IcsImportPlan.build(
+      files: [('work.ics', Uint8List.fromList(utf8.encode(googleIcs)))],
+      existing: const [],
+      calendars: const [ZtCalendarInfo.personal],
+    );
+    final stored = first.events.firstWhere((e) => e.title == 'Stand-up, team');
+    final newer = googleIcs.replaceFirst(
+      'EXDATE;TZID=Europe/Berlin:20261109T090000\r\n',
+      'EXDATE;TZID=Europe/Berlin:20261109T090000\r\n'
+          'EXDATE;TZID=Europe/Berlin:20261123T090000\r\n',
+    );
+    final again = IcsImportPlan.build(
+      files: [('work.ics', Uint8List.fromList(utf8.encode(newer)))],
+      existing: first.events,
+      calendars: [ZtCalendarInfo.personal, ...first.newCalendars],
+    );
+    expect(again.events, isEmpty);
+    final merged = again.updatedSeries.single;
+    expect(merged.id, stored.id);
+    expect(
+      merged.exceptions.map((e) => e.toUtc()),
+      containsAll([DateTime.utc(2026, 11, 9, 8), DateTime.utc(2026, 11, 23, 8)]),
+    );
+  });
+
+  test('repeating events keep their own time zone across DST', () {
+    const text = 'BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\n'
+        'DTSTART;TZID=America/New_York:20261026T090000\r\n'
+        'DURATION:PT45M\r\nRRULE:FREQ=WEEKLY;COUNT=3\r\n'
+        'UID:ny\r\nSUMMARY:NY call\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n';
+    final e = Ics.parse(text).events.single;
+    expect(e.timeZone, 'America/New_York');
+    expect(e.duration, const Duration(minutes: 45));
+    final starts = e
+        .occurrenceStarts(DateTime.utc(2026, 10, 1), DateTime.utc(2026, 12, 1))
+        .map((t) => t.toUtc())
+        .toList();
+    // 09:00 New York: EDT (UTC-4) until Nov 1, then EST (UTC-5).
+    expect(starts, [
+      DateTime.utc(2026, 10, 26, 13),
+      DateTime.utc(2026, 11, 2, 14),
+      DateTime.utc(2026, 11, 9, 14),
+    ]);
+    final back = Ics.parse(Ics.write([e], now: DateTime.utc(2026))).events.single;
+    expect(back.timeZone, 'America/New_York');
+    expect(back.occurrenceStarts(DateTime.utc(2026, 10, 1), DateTime.utc(2026, 12, 1)).length, 3);
+    final json = CalendarEvent.fromJson(e.id, e.toJson(), null)!;
+    expect(json.timeZone, 'America/New_York');
+  });
+
+  test('DURATION sets the end, also for all-day events', () {
+    const text = 'BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\n'
+        'DTSTART;VALUE=DATE:20261201\r\nDURATION:P2D\r\n'
+        'UID:trip\r\nSUMMARY:Trip\r\nEND:VEVENT\r\n'
+        'BEGIN:VEVENT\r\nDTSTART:20261201T100000Z\r\nDURATION:P1DT30M\r\n'
+        'UID:long\r\nSUMMARY:Long\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n';
+    final events = Ics.parse(text).events;
+    final trip = events.firstWhere((e) => e.title == 'Trip');
+    expect(trip.end, DateTime(2026, 12, 3));
+    final long = events.firstWhere((e) => e.title == 'Long');
+    expect(long.duration, const Duration(days: 1, minutes: 30));
+  });
 }

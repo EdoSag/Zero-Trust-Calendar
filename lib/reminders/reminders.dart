@@ -92,9 +92,7 @@ List<ScheduledReminder> remindersFor(
     // (All-day reminders fire up to 9 hours after their start.)
     final from = now.subtract(const Duration(days: 1));
     final to = until.add(Duration(minutes: longest + 24 * 60));
-    final starts = e.repeats
-        ? e.recurrence!.between(e.start, from, to, exclude: e.exceptions)
-        : (e.start.isBefore(to) && !e.start.isBefore(from) ? [e.start] : <DateTime>[]);
+    final starts = e.occurrenceStarts(from, to);
     for (final s in starts) {
       final base = e.allDay
           ? DateTime(s.year, s.month, s.day, allDayReminderHour)

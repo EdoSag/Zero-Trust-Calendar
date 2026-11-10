@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../util/time_zones.dart';
 import 'recurrence.dart';
 
 /// One event, or one repeating series of events.
@@ -34,6 +35,7 @@ class CalendarEvent {
     this.contactIds = const [],
     this.taskIds = const [],
     this.icalUid,
+    this.timeZone,
     this.createdAt,
     this.updatedAt,
     this.extra = const {},
@@ -75,6 +77,12 @@ class CalendarEvent {
 
   /// UID from an imported .ics file, so importing again doesn't duplicate.
   final String? icalUid;
+
+  /// IANA zone a repeating event was created in ("Europe/Berlin", from an
+  /// imported .ics). Its occurrences keep that zone's wall-clock time, so a
+  /// 9:00 Berlin meeting stays at 9:00 Berlin across daylight-saving changes
+  /// even on a phone in another zone. Null: the phone's own zone.
+  final String? timeZone;
   final DateTime? createdAt;
 
   /// Last edit time from sync (not stored in the JSON).
@@ -96,16 +104,32 @@ class CalendarEvent {
     if (rule == null) {
       return start.isBefore(to) && end.isAfter(from) ? [(start, end)] : [];
     }
-    // Occurrences starting up to one duration before `from` still overlap.
-    final starts = rule.between(
-      start,
-      from.subtract(d),
-      to,
-      exclude: exceptions,
-    );
     return [
-      for (final s in starts)
+      for (final s in occurrenceStarts(from.subtract(d), to))
         if (_endFor(s, d).isAfter(from) || s == from) (s, _endFor(s, d)),
+    ];
+  }
+
+  /// Starts of the series' occurrences in `[from, to)`, without
+  /// [exceptions], expanded in [timeZone] when it has one.
+  List<DateTime> occurrenceStarts(DateTime from, DateTime to) {
+    final rule = recurrence;
+    if (rule == null) {
+      return !start.isBefore(from) && start.isBefore(to) ? [start] : [];
+    }
+    final zone = allDay ? null : zoneFor(timeZone);
+    if (zone == null) return rule.between(start, from, to, exclude: exceptions);
+    // Expand on the zone's wall clock, then turn each back into an instant.
+    const slack = Duration(days: 2);
+    return [
+      for (final w in rule.between(
+        wallClockIn(zone, start),
+        wallClockIn(zone, from).subtract(slack),
+        wallClockIn(zone, to).add(slack),
+      ))
+        if (instantFromWall(zone, w) case final t
+            when !t.isBefore(from) && t.isBefore(to) && !exceptions.contains(t))
+          t,
     ];
   }
 
@@ -119,14 +143,8 @@ class CalendarEvent {
 
   /// The next start at or after [after], or null.
   DateTime? nextStart(DateTime after) {
-    final rule = recurrence;
-    if (rule == null) return start.isBefore(after) ? null : start;
-    var i = 0;
-    for (final s in rule.occurrences(start)) {
-      if (++i > 100000) return null;
-      if (!s.isBefore(after) && !exceptions.contains(s)) return s;
-    }
-    return null;
+    if (recurrence == null) return start.isBefore(after) ? null : start;
+    return occurrenceStarts(after, after.add(const Duration(days: 3660))).firstOrNull;
   }
 
   static String dateKey(DateTime d) =>
@@ -168,6 +186,7 @@ class CalendarEvent {
     'contactIds',
     'taskIds',
     'icalUid',
+    'tz',
     'createdAt',
     'kind',
     '_v',
@@ -192,6 +211,7 @@ class CalendarEvent {
     'contactIds': contactIds,
     'taskIds': taskIds,
     'icalUid': icalUid,
+    'tz': timeZone,
     'createdAt': createdAt?.toUtc().toIso8601String(),
   };
 
@@ -240,6 +260,7 @@ class CalendarEvent {
       contactIds: strings(json['contactIds']),
       taskIds: strings(json['taskIds']),
       icalUid: json['icalUid'] as String?,
+      timeZone: json['tz'] as String?,
       createdAt: _parseDate(json['createdAt']),
       updatedAt: updatedAt,
       extra: {
@@ -270,6 +291,7 @@ class CalendarEvent {
     List<String>? contactIds,
     List<String>? taskIds,
     Object? icalUid = _unset,
+    Object? timeZone = _unset,
     DateTime? createdAt,
   }) => CalendarEvent(
     id: id ?? this.id,
@@ -292,6 +314,7 @@ class CalendarEvent {
     contactIds: contactIds ?? this.contactIds,
     taskIds: taskIds ?? this.taskIds,
     icalUid: identical(icalUid, _unset) ? this.icalUid : icalUid as String?,
+    timeZone: identical(timeZone, _unset) ? this.timeZone : timeZone as String?,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt,
     extra: extra,

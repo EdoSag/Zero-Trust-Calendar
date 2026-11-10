@@ -100,6 +100,27 @@ void main() {
       expect(next.title, 'New');
     });
 
+    test('this and following keeps later changed occurrences', () {
+      final later = ev('x', DateTime(2026, 11, 23, 14), DateTime(2026, 11, 23, 15))
+          .copyWith(seriesId: 's', originalStart: DateTime(2026, 11, 23, 9));
+      final earlier = ev('y', DateTime(2026, 11, 9, 14), DateTime(2026, 11, 9, 15))
+          .copyWith(seriesId: 's', originalStart: DateTime(2026, 11, 9, 9));
+      final change = SeriesEdits.edit(
+        series: series.copyWith(exceptions: {DateTime(2026, 11, 9, 9), DateTime(2026, 11, 23, 9)}),
+        occurrence: occ,
+        edited: series.copyWith(title: 'New', start: occ, end: occ.add(const Duration(hours: 1))),
+        scope: SeriesScope.thisAndFollowing,
+        exceptions: [earlier, later],
+      );
+      expect(change.delete, isEmpty);
+      final next = change.save[1];
+      final moved = change.save.singleWhere((e) => e.id == 'x');
+      expect(moved.seriesId, next.id);
+      expect(moved.start, DateTime(2026, 11, 23, 14));
+      expect(next.exceptions, {DateTime(2026, 11, 23, 9)});
+      expect(change.save.any((e) => e.id == 'y'), isFalse);
+    });
+
     test('all events moves the series by the same amount', () {
       final change = SeriesEdits.edit(
         series: series,

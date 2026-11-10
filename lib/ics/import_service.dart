@@ -10,9 +10,17 @@ import 'ics.dart';
 /// Turns .ics files, or a Google Takeout .zip of them (Takeout > Calendar
 /// exports one .ics per calendar), into calendars and events to save.
 class IcsImportPlan {
-  IcsImportPlan({required this.newCalendars, required this.events, required this.skipped});
+  IcsImportPlan({
+    required this.newCalendars,
+    required this.events,
+    this.updatedSeries = const [],
+    required this.skipped,
+  });
   final List<ZtCalendarInfo> newCalendars;
   final List<CalendarEvent> events;
+
+  /// Series already here whose exclusions grew (new changed occurrences).
+  final List<CalendarEvent> updatedSeries;
   final int skipped;
 
   /// [files] are (file name, bytes). Events whose UID (and changed
@@ -55,6 +63,7 @@ class IcsImportPlan {
     final newCalendars = <ZtCalendarInfo>[];
     final events = <CalendarEvent>[];
     var skipped = 0;
+    final updated = <String, CalendarEvent>{};
     var paletteIndex = calendars.length;
 
     for (final (fileName, text) in texts) {
@@ -89,6 +98,16 @@ class IcsImportPlan {
       for (final e in cal.events) {
         if (seen.contains(key(e.icalUid, e.originalStart)) && e.icalUid != null) {
           skipped++;
+          // A series already here may have new changed or removed
+          // occurrences in this file: add them to its exclusions.
+          final stored = e.seriesId == null ? existingSeriesByUid[e.icalUid!] : null;
+          if (stored != null && !stored.exceptions.containsAll(e.exceptions)) {
+            final merged = stored.copyWith(
+              exceptions: {...stored.exceptions, ...e.exceptions},
+            );
+            existingSeriesByUid[e.icalUid!] = merged;
+            updated[stored.id] = merged;
+          }
           continue;
         }
         seen.add(key(e.icalUid, e.originalStart));
@@ -96,7 +115,12 @@ class IcsImportPlan {
         events.add(mappedSeries == e.seriesId ? e : e.copyWith(seriesId: mappedSeries));
       }
     }
-    return IcsImportPlan(newCalendars: newCalendars, events: events, skipped: skipped);
+    return IcsImportPlan(
+      newCalendars: newCalendars,
+      events: events,
+      updatedSeries: updated.values.toList(),
+      skipped: skipped,
+    );
   }
 
   /// `jane@gmail.com.ics` (Takeout's naming) becomes `jane@gmail.com`.

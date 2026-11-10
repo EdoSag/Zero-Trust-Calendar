@@ -98,11 +98,14 @@ abstract final class SeriesEdits {
             newRule.copyWith(clearEnd: true).toString(),
           )?.copyWith(count: left < 1 ? 1 : left);
         }
+        final nextId = const Uuid().v4();
+        bool following(CalendarEvent e) =>
+            e.originalStart != null && !e.originalStart!.isBefore(occurrence);
         return SeriesChange(
           save: [
             ended,
             edited.copyWith(
-              id: const Uuid().v4(),
+              id: nextId,
               rrule: nextRule?.toString(),
               exceptions: {
                 for (final x in series.exceptions)
@@ -112,10 +115,10 @@ abstract final class SeriesEdits {
               originalStart: null,
               icalUid: null,
             ),
-          ],
-          delete: [
+            // Occurrences changed on their own keep their changes, now as
+            // part of the new series.
             for (final e in exceptions)
-              if (e.originalStart != null && !e.originalStart!.isBefore(occurrence)) e.id,
+              if (following(e)) e.copyWith(seriesId: nextId),
           ],
         );
     }

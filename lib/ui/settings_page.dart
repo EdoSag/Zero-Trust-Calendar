@@ -291,7 +291,7 @@ Future<void> importCalendarFile(BuildContext context, WidgetRef ref) async {
     for (final c in plan.newCalendars) {
       await repo.saveCalendar(c);
     }
-    for (final e in plan.events) {
+    for (final e in [...plan.updatedSeries, ...plan.events]) {
       await repo.saveEvent(e);
     }
     messenger.showSnackBar(
