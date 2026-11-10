@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:zerotrust_calendar/app/calendar_settings.dart';
 import 'package:zerotrust_calendar/data/phone_calendar_sync.dart';
 import 'package:zerotrust_calendar/data/subscriptions.dart';
 import 'package:zerotrust_calendar/ics/ics.dart';
@@ -74,6 +75,36 @@ void main() {
       expect(back.guestEmails, containsAll(['dana@example.com', 'sam@example.com']));
     });
 
+    test('a cancellation keeps the cancelled UIDs', () {
+      const text =
+          'BEGIN:VCALENDAR\r\nMETHOD:CANCEL\r\n'
+          'BEGIN:VEVENT\r\nUID:u1\r\nDTSTART:20261112T100000Z\r\nDTEND:20261112T110000Z\r\n'
+          'STATUS:CANCELLED\r\nSUMMARY:Planning\r\nEND:VEVENT\r\n'
+          'BEGIN:VEVENT\r\nUID:u2\r\nRECURRENCE-ID:20261119T100000Z\r\nDTSTART:20261119T100000Z\r\n'
+          'DTEND:20261119T110000Z\r\nSTATUS:CANCELLED\r\nSUMMARY:Standup\r\nEND:VEVENT\r\n'
+          'END:VCALENDAR\r\n';
+      final parsed = Ics.parse(text);
+      expect(parsed.method, 'CANCEL');
+      expect(parsed.events, isEmpty);
+      expect(parsed.cancelled.map((c) => c.uid), ['u1', 'u2']);
+      expect(parsed.cancelled.first.occurrence, isNull);
+      expect(parsed.cancelled.last.occurrence!.isAtSameMomentAs(DateTime.utc(2026, 11, 19, 10)), isTrue);
+    });
+
+    test('an update to one occurrence says which one it replaces', () {
+      const text =
+          'BEGIN:VCALENDAR\r\nMETHOD:REQUEST\r\n'
+          'BEGIN:VEVENT\r\nUID:series\r\nRECURRENCE-ID:20261119T100000Z\r\n'
+          'DTSTART:20261119T140000Z\r\nDTEND:20261119T150000Z\r\nSUMMARY:Standup (moved)\r\nEND:VEVENT\r\n'
+          'END:VCALENDAR\r\n';
+      final parsed = Ics.parse(text);
+      final e = parsed.events.single;
+      expect(e.rrule, isNull);
+      final occ = parsed.changedOccurrences[e.id]!;
+      expect(occ.uid, 'series');
+      expect(occ.occurrence.isAtSameMomentAs(DateTime.utc(2026, 11, 19, 10)), isTrue);
+    });
+
     test('meeting links are found in plain text', () {
       expect(
         findMeetingLink('Dial in: https://us02web.zoom.us/j/123?pwd=x thanks'),
@@ -117,6 +148,16 @@ void main() {
   });
 
   group('show on this phone', () {
+    test('another account on the same phone starts with nothing copied', () {
+      const s = CalendarSettings(phoneCalendarIds: {'default'}, phoneCalendarOwner: 'user-a');
+      expect(s.phoneCalendarIdsFor('user-a'), {'default'});
+      expect(s.phoneCalendarIdsFor('user-b'), isEmpty);
+      expect(s.phoneCalendarIdsFor(null), isEmpty);
+      final back = CalendarSettings.fromPrefs(s.toPrefs());
+      expect(back.phoneCalendarIdsFor('user-a'), {'default'});
+      expect(const CalendarSettings().phoneCalendarIdsFor('user-a'), isEmpty);
+    });
+
     test('only switched-on calendars are copied, within the window', () {
       final now = DateTime(2026, 11, 10);
       final payload = phoneCalendarPayload(

@@ -76,10 +76,15 @@ QuickAdd parseQuickAdd(
   final today = DateTime(now.year, now.month, now.day);
 
   // Removes the first match of [pattern] and hands it to [onMatch].
+  // A callback sets this when the match isn't what it looked for, so the
+  // text stays for later rules ("2026-12-03" is a date, not "12-03" times).
+  var rejected = false;
   bool take(String pattern, void Function(RegExpMatch m) onMatch) {
     final m = RegExp(pattern, caseSensitive: false, unicode: true).firstMatch(rest);
     if (m == null) return false;
+    rejected = false;
     onMatch(m);
+    if (rejected) return false;
     rest = '${rest.substring(0, m.start)} ${rest.substring(m.end)}';
     return true;
   }
@@ -142,10 +147,16 @@ QuickAdd parseQuickAdd(
     (m) {
       final hasMarker = m.group(3) != null || m.group(6) != null ||
           m.group(2) != null || m.group(5) != null;
-      if (!hasMarker) return;
+      if (!hasMarker) {
+        rejected = true;
+        return;
+      }
       var end = minutesOf(m.group(4)!, m.group(5), m.group(6));
       var start = minutesOf(m.group(1)!, m.group(2), m.group(3));
-      if (start == null || end == null) return;
+      if (start == null || end == null) {
+        rejected = true;
+        return;
+      }
       // "1-2pm": the start takes the end's am/pm.
       if (m.group(3) == null && m.group(6) != null) {
         final pmStart = start + 12 * 60;
@@ -163,13 +174,18 @@ QuickAdd parseQuickAdd(
     // "1pm", "13:30", "9.15am".
     take('$_l(?:at\\s+|@\\s*|בשעה\\s+|ב-?)?(\\d{1,2})(?:[:.](\\d{2})\\s*(am|pm|a\\.m\\.|p\\.m\\.)?|\\s*(am|pm|a\\.m\\.|p\\.m\\.))$_r', (m) {
       startMin = minutesOf(m.group(1)!, m.group(2), m.group(3) ?? m.group(4));
+      if (startMin == null) rejected = true; // "25.12" is a date
     });
   }
   if (startMin == null) {
     // "at 5", "בשעה 17": a bare hour needs the word before it.
     take('$_l(?:at|@|בשעה)\\s*(\\d{1,2})$_r', (m) {
       final v = minutesOf(m.group(1)!, null, null);
-      if (v != null) startMin = m.group(0)!.contains('בשעה') ? v : guessBare(v);
+      if (v == null) {
+        rejected = true;
+      } else {
+        startMin = m.group(0)!.contains('בשעה') ? v : guessBare(v);
+      }
     });
   }
   if (startMin == null) {

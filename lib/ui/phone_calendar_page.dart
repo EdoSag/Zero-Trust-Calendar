@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../app/calendar_settings.dart';
 import '../data/calendar_store.dart';
@@ -18,11 +19,13 @@ class PhoneCalendarPage extends ConsumerWidget {
     final calendars = ref.watch(calendarsProvider).value ?? const [ZtCalendarInfo.personal];
     final theme = Theme.of(context);
     const bridge = PhoneCalendarBridge();
+    final userId = ref.read(accountServiceProvider).currentUserId;
+    final enabled = settings.phoneCalendarIdsFor(userId);
 
     Future<void> toggle(ZtCalendarInfo c, bool on) async {
       final messenger = ScaffoldMessenger.of(context);
       if (on) {
-        final first = settings.phoneCalendarIds.isEmpty;
+        final first = enabled.isEmpty;
         if (first) {
           final ok = await showDialog<bool>(
             context: context,
@@ -53,11 +56,13 @@ class PhoneCalendarPage extends ConsumerWidget {
         }
       }
       await ref.read(calendarSettingsProvider.notifier).update(
-        (s) => s.copyWith(
-          phoneCalendarIds: on
-              ? {...s.phoneCalendarIds, c.id}
-              : ({...s.phoneCalendarIds}..remove(c.id)),
-        ),
+        (s) {
+          final current = s.phoneCalendarIdsFor(userId);
+          return s.copyWith(
+            phoneCalendarOwner: userId,
+            phoneCalendarIds: on ? {...current, c.id} : ({...current}..remove(c.id)),
+          );
+        },
       );
     }
 
@@ -74,14 +79,16 @@ class PhoneCalendarPage extends ConsumerWidget {
               style: theme.textTheme.bodyMedium,
             ),
           ),
-          if (!bridge.supported)
+          if (userId == null)
+            const ListTile(title: Text('Sign in first.'))
+          else if (!bridge.supported)
             const ListTile(title: Text('Only available on Android.'))
           else
             for (final c in calendars)
               SwitchListTile(
                 secondary: Icon(Icons.circle, color: Color(c.color)),
                 title: Text(c.name),
-                value: settings.phoneCalendarIds.contains(c.id),
+                value: enabled.contains(c.id),
                 onChanged: (v) => toggle(c, v),
               ),
         ],

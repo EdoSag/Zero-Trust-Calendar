@@ -70,4 +70,14 @@ void main() {
     expect(p('Pick up kids at 5').start, DateTime(2026, 11, 10, 17));
     expect(p('Pick up kids at 5').title, 'Pick up kids');
   });
+
+  test('dates are not read as time ranges', () {
+    final q = p('Flight 2026-12-03');
+    expect(q.allDay, isTrue);
+    expect(q.start, DateTime(2026, 12, 3));
+    expect(q.title, 'Flight');
+    final d = p('Party 25.12');
+    expect(d.start, DateTime(2026, 12, 25));
+    expect(d.title, 'Party');
+  });
 }

@@ -10,9 +10,24 @@ import '../util/time_zones.dart';
 /// (`RECURRENCE-ID`) come back as exception events with [seriesId] set to
 /// their series' id.
 class IcsCalendar {
-  IcsCalendar({required this.name, required this.events, this.method});
+  IcsCalendar({
+    required this.name,
+    required this.events,
+    this.method,
+    this.cancelled = const [],
+    this.changedOccurrences = const {},
+  });
   final String? name;
   final List<CalendarEvent> events;
+
+  /// Events the file marks `STATUS:CANCELLED` (left out of [events]): the
+  /// UID, and for one cancelled occurrence its original start.
+  final List<({String uid, DateTime? occurrence})> cancelled;
+
+  /// Events in [events] that are one changed occurrence of a series the
+  /// file doesn't contain (an organizer's update to a single date), by
+  /// event id: the series UID and the occurrence's original start.
+  final Map<String, ({String uid, DateTime occurrence})> changedOccurrences;
 
   /// `REQUEST` for an invitation, `CANCEL` for a cancellation, `PUBLISH`
   /// or null for a plain calendar file.
@@ -252,22 +267,34 @@ abstract final class Ics {
       }
     }
 
+    final cancelled = <({String uid, DateTime? occurrence})>[
+      for (final e in events)
+        if (e.extra['_status'] == 'CANCELLED' && e.icalUid != null)
+          (uid: e.icalUid!, occurrence: null),
+    ];
+    final changed = <String, ({String uid, DateTime occurrence})>{};
     for (final (uid, original, ex) in pendingExceptions) {
+      final isCancelled = ex.extra['_status'] == 'CANCELLED';
+      if (isCancelled) cancelled.add((uid: uid, occurrence: original));
       final i = seriesByUid[uid];
       if (i == null) {
-        events.add(ex); // A lone changed occurrence: keep it as an event.
+        // A lone changed occurrence: keep it as an event, and say which
+        // occurrence it replaces so an invitation update can apply it.
+        if (!isCancelled) changed[ex.id] = (uid: uid, occurrence: original);
+        events.add(ex);
         continue;
       }
       final series = events[i];
       events[i] = series.copyWith(exceptions: {...series.exceptions, original});
-      final cancelled = ex.extra['_status'] == 'CANCELLED';
-      if (!cancelled) {
+      if (!isCancelled) {
         events.add(ex.copyWith(seriesId: series.id, originalStart: original));
       }
     }
     return IcsCalendar(
       name: name,
       method: method,
+      cancelled: cancelled,
+      changedOccurrences: changed,
       events: [
         for (final e in events)
           if (e.extra['_status'] != 'CANCELLED') _withoutStatus(e),

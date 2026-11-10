@@ -128,6 +128,16 @@ class _AppGateState extends ConsumerState<AppGate> with WidgetsBindingObserver {
       );
     }
 
+    // Signing out (from Settings, the unlock screen, or another device)
+    // takes this account's events out of Android's calendar.
+    ref.listen(currentUserProvider, (prev, next) {
+      if (prev != null && next == null) {
+        ref.read(calendarSettingsProvider.notifier).update(
+          (x) => x.copyWith(phoneCalendarIds: const {}),
+        );
+        const PhoneCalendarBridge().sync(const []).catchError((Object _) => false);
+      }
+    });
     final user = ref.watch(currentUserProvider);
     if (user == null || _signingIn) {
       return ZtSignInScreen(onUnlocked: _onUnlocked, onForgotPassword: _forgotPassword);
@@ -306,11 +316,16 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
   ) async {
     const bridge = PhoneCalendarBridge();
     if (!bridge.supported) return;
-    if (settings.phoneCalendarIds.isEmpty && _lastPhonePayload == '[]') return;
+    final enabled = settings.phoneCalendarIdsFor(
+      ref.read(accountServiceProvider).currentUserId,
+    );
+    // Nothing on and nothing copied: skip. Otherwise an empty payload
+    // removes what an earlier account or setting put there.
+    if (enabled.isEmpty && _lastPhonePayload == '[]') return;
     final payload = phoneCalendarPayload(
       events: [...events, ...ref.read(feedEventsProvider)],
       calendars: calendars,
-      enabledIds: settings.phoneCalendarIds,
+      enabledIds: enabled,
       now: dayOf(now),
     );
     final key = jsonEncode(payload);

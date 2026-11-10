@@ -61,9 +61,9 @@ class CalendarSettingsPage extends ConsumerWidget {
           leading: const Icon(Icons.phone_android),
           title: const Text('Show on this phone'),
           subtitle: Text(
-            s.phoneCalendarIds.isEmpty
+            s.phoneCalendarIdsFor(ref.read(accountServiceProvider).currentUserId).isEmpty
                 ? 'Off. For your watch, car and other calendar apps'
-                : '${s.phoneCalendarIds.length} ${s.phoneCalendarIds.length == 1 ? 'calendar' : 'calendars'} copied to Android\'s calendar',
+                : 'On for some calendars, copied to Android\'s calendar',
           ),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const PhoneCalendarPage()),

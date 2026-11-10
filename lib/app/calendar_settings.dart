@@ -19,6 +19,7 @@ class CalendarSettings {
     this.weekStart,
     this.defaultDuration = 60,
     this.phoneCalendarIds = const {},
+    this.phoneCalendarOwner,
     this.showCompletedTasks = true,
   });
 
@@ -52,6 +53,14 @@ class CalendarSettings {
   /// phone"). Per phone, never synced: it's this phone's privacy choice.
   final Set<String> phoneCalendarIds;
 
+  /// The account (Supabase user id) that turned [phoneCalendarIds] on.
+  /// Another account signing in on this phone starts with none.
+  final String? phoneCalendarOwner;
+
+  /// The calendars to copy to this phone for the signed-in [userId].
+  Set<String> phoneCalendarIdsFor(String? userId) =>
+      userId != null && userId == phoneCalendarOwner ? phoneCalendarIds : const {};
+
   /// Ticked-off ZT Tasks tasks stay on the calendar, crossed out.
   final bool showCompletedTasks;
 
@@ -68,6 +77,7 @@ class CalendarSettings {
     Object? weekStart = _unset,
     int? defaultDuration,
     Set<String>? phoneCalendarIds,
+    String? phoneCalendarOwner,
     bool? showCompletedTasks,
   }) => CalendarSettings(
     view: view ?? this.view,
@@ -84,6 +94,7 @@ class CalendarSettings {
     weekStart: identical(weekStart, _unset) ? this.weekStart : weekStart as int?,
     defaultDuration: defaultDuration ?? this.defaultDuration,
     phoneCalendarIds: phoneCalendarIds ?? this.phoneCalendarIds,
+    phoneCalendarOwner: phoneCalendarOwner ?? this.phoneCalendarOwner,
     showCompletedTasks: showCompletedTasks ?? this.showCompletedTasks,
   );
 
@@ -98,6 +109,7 @@ class CalendarSettings {
     'weekStart': '${weekStart ?? 'locale'}',
     'defaultDuration': '$defaultDuration',
     'phoneCalendars': (phoneCalendarIds.toList()..sort()).join(','),
+    'phoneCalendarsOwner': phoneCalendarOwner ?? '',
     'showCompletedTasks': '$showCompletedTasks',
   };
 
@@ -120,6 +132,7 @@ class CalendarSettings {
       weekStart: int.tryParse(p['weekStart'] ?? ''),
       defaultDuration:
           int.tryParse(p['defaultDuration'] ?? '') ?? d.defaultDuration,
+      phoneCalendarOwner: (p['phoneCalendarsOwner'] ?? '').isEmpty ? null : p['phoneCalendarsOwner'],
       phoneCalendarIds: {
         for (final id in (p['phoneCalendars'] ?? '').split(','))
           if (id.isNotEmpty) id,
