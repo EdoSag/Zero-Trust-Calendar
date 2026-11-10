@@ -20,6 +20,7 @@ import 'linked_pickers.dart';
 import 'navigation.dart';
 import 'recurrence_picker.dart';
 import 'time_zone_picker.dart';
+import 'inline_button_style.dart';
 
 /// Asks which occurrences a change to a repeating event applies to.
 Future<SeriesScope?> askSeriesScope(BuildContext context, {required String action}) =>
@@ -466,6 +467,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: FilledButton(
+                style: inlineButtonStyle,
                 onPressed: _saving ? null : _save,
                 child: const Text('Save'),
               ),

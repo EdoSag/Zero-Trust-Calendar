@@ -12,6 +12,7 @@ import '../model/calendar_event.dart';
 import '../platform/channels.dart';
 import '../util/format.dart';
 import 'subscribe_page.dart';
+import 'inline_button_style.dart';
 
 /// Handles a file or link another app opened Calendar with: an .ics file
 /// or invitation ("Add to ZT Calendar"), or a webcal:// subscribe link.
@@ -307,6 +308,7 @@ class _AddFileSheetState extends ConsumerState<_AddFileSheet> {
                 ),
                 const SizedBox(width: 8),
                 FilledButton(
+                  style: inlineButtonStyle,
                   onPressed: _busy || (_cancel && matched == 0) ? null : _apply,
                   child: Text(
                     _cancel
