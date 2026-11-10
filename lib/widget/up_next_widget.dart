@@ -66,6 +66,7 @@ const _provider = 'dev.sagron.zerotrustcalendar.widget.UpNextWidgetProvider';
 Future<void> publishUpNext(List<UpNextRow> rows) async {
   if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
   try {
+    await HomeWidget.saveWidgetData<bool>('upnext_locked', false);
     await HomeWidget.saveWidgetData<String>('upnext_header', 'Up next');
     await HomeWidget.saveWidgetData<int>('upnext_count', rows.length);
     await HomeWidget.saveWidgetData<String>('upnext_empty', 'Nothing coming up');
@@ -81,10 +82,11 @@ Future<void> publishUpNext(List<UpNextRow> rows) async {
   }
 }
 
-/// Signed out: the widget forgets everything it showed.
+/// Signed out: the widget forgets everything it showed and shows a lock.
 Future<void> clearUpNext() async {
   if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
   try {
+    await HomeWidget.saveWidgetData<bool>('upnext_locked', true);
     await HomeWidget.saveWidgetData<int>('upnext_count', 0);
     for (var i = 0; i < 5; i++) {
       await HomeWidget.saveWidgetData<String>('upnext_${i}_title', null);

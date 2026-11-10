@@ -165,10 +165,10 @@ class CalendarSettingsPage extends ConsumerWidget {
         ),
         SwitchListTile(
           secondary: const Icon(Icons.widgets_outlined),
-          title: const Text('Event titles on the home-screen widget'),
+          title: const Text('Show details on the home screen'),
           subtitle: const Text(
-            'Off: the "Up next" widget shows only times. Titles shown there '
-            'are stored unencrypted for the home screen.',
+            'Off: the "Up next" widget shows only times. On: event titles are '
+            'stored unencrypted on this phone for the home screen.',
           ),
           value: s.widgetTitles,
           onChanged: (v) => ctrl.update((x) => x.copyWith(widgetTitles: v)),

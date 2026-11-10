@@ -179,10 +179,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
   void initState() {
     super.initState();
     _taps = ref.read(reminderSchedulerProvider).taps.listen(_onReminder);
-    _widgetTaps = HomeWidget.widgetClicked.listen(
-      (_) => ref.read(focusedDayProvider.notifier).today(),
-      onError: (_) {},
-    );
+    _widgetTaps = HomeWidget.widgetClicked.listen(_onWidgetTap, onError: (_) {});
     _files = IncomingFiles.instance.arrived.listen((_) => _takeFiles());
     // Reminders more than 30 days ahead, and the widget's "next", move on
     // as time passes; subscribed calendars are fetched again.
@@ -194,7 +191,28 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
       _schedule();
       _takeFiles();
       _refreshFeeds();
+      _takeLaunchWidgetTap();
     });
+  }
+
+  /// The widget tap that started the app, acted on once per process.
+  static bool _launchTapTaken = false;
+
+  Future<void> _takeLaunchWidgetTap() async {
+    if (_launchTapTaken) return;
+    _launchTapTaken = true;
+    try {
+      final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
+      if (uri != null && mounted) _onWidgetTap(uri);
+    } on Object {
+      // No widget support here.
+    }
+  }
+
+  /// "Up next" opens today; its + opens a new event.
+  void _onWidgetTap(Uri? uri) {
+    ref.read(focusedDayProvider.notifier).today();
+    if (uri?.host == 'new-event' && mounted) createEvent(context);
   }
 
   @override
