@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../data/calendar_store.dart';
+import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
 import '../util/format.dart';
 
@@ -13,7 +14,7 @@ class CalendarsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final calendars = ref.watch(calendarsProvider).value ?? const [ZtCalendarInfo.personal];
-    final events = ref.watch(eventsProvider).value ?? const <CalendarEvent>[];
+    final events = ref.watch(allEventsProvider).value ?? const <CalendarEvent>[];
     return Scaffold(
       appBar: AppBar(title: const Text('Calendars')),
       floatingActionButton: FloatingActionButton.extended(
@@ -25,11 +26,13 @@ class CalendarsPage extends ConsumerWidget {
         children: [
           for (final c in calendars)
             ListTile(
-              leading: Icon(Icons.circle, color: Color(c.color)),
+              leading: Icon(c.isSubscription ? Icons.rss_feed : Icons.circle, color: Color(c.color)),
               title: Text(c.name),
               subtitle: Text(() {
                 final n = events.where((e) => e.calendarId == c.id && e.seriesId == null).length;
-                return '$n ${n == 1 ? 'event' : 'events'}${c.hidden ? ' · hidden' : ''}';
+                return '$n ${n == 1 ? 'event' : 'events'}'
+                    '${c.isSubscription ? ' · subscribed, read-only' : ''}'
+                    '${c.hidden ? ' · hidden' : ''}';
               }()),
               trailing: const Icon(Icons.edit_outlined),
               onTap: () => _edit(context, ref, c, calendars.length),
@@ -123,9 +126,13 @@ class CalendarsPage extends ConsumerWidget {
       final ok = await showDialog<bool>(
         context: context,
         builder: (d) => AlertDialog(
-          title: Text('Delete "${calendar.name}"?'),
-          content: const Text(
-            'Its events are deleted too, on all your devices. This can\'t be undone.',
+          title: Text(
+            calendar.isSubscription ? 'Unsubscribe from "${calendar.name}"?' : 'Delete "${calendar.name}"?',
+          ),
+          content: Text(
+            calendar.isSubscription
+                ? 'Its events disappear from all your devices. You can subscribe again any time.'
+                : 'Its events are deleted too, on all your devices. This can\'t be undone.',
           ),
           actions: [
             TextButton(onPressed: () => Navigator.of(d).pop(false), child: const Text('Cancel')),

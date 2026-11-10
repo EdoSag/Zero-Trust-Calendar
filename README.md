@@ -22,7 +22,9 @@ account, settings and look as the other Zero-Trust apps, built on
 - **Linked with the other apps:**
   - **ZT Notes:** link notes to an event (agenda, meeting notes, packing
     list), read them from the event, or create a new note for the event.
-  - **ZT Tasks:** tasks with a due date show on the calendar (read-only).
+  - **ZT Tasks:** tasks with a due date show on the calendar. Tick them off
+    from the calendar, or add a new task with its due date (quick add).
+    Repeating tasks are completed in ZT Tasks, which rolls them forward.
   - **ZT Contacts:** pick guests from your contacts (call or email them from
     the event), and see contacts' birthdays.
 - **Import from Google Calendar:** Google Takeout's Calendar .zip (every
@@ -31,6 +33,32 @@ account, settings and look as the other Zero-Trust apps, built on
   and reminders come across. Importing the same file again skips what's
   already there. **Export** everything as one .ics file.
 - **Home-screen widget** (Android): "Up next", the next five events.
+- **Drag and drop** (week, 3 days, day): long-press an event to move it,
+  drag its bottom edge to change its length, long-press an empty slot to
+  create one there. Snaps to 15 minutes; Undo; repeating events ask "this
+  event / following / all".
+- **Time zones:** each timed event can have its own zone (a flight that
+  lands in New York). The editor shows its local time and yours.
+- **Quick add:** type "Lunch with Dana Fri 1pm at Cafe Noir" or
+  "מחר ב-13:00 פגישה" (English and Hebrew: dates, times, ranges,
+  durations, "every Monday", places) and see what it means before adding.
+- **Open .ics files and invitations** from mail and other apps ("Open
+  with ZT Calendar"): add them to a calendar, update an invitation you
+  already added, or remove a cancelled one. `webcal://` links subscribe.
+- **Holidays and subscribed calendars:** public holidays by country and
+  any .ics link (school, team, sports). Downloaded without your account,
+  stored encrypted, refreshed twice a day, read-only.
+- **Email invitations:** add guests by email and send a standard .ics
+  invitation (or update) from your own mail app; Gmail, Outlook and Apple
+  Calendar can accept it. Replies are recorded by hand on the event.
+- **Reminder buttons:** Snooze 10 min, Open map, Open note, Running late
+  (SMS or email to guests).
+- **Video calls and attachments:** a meeting link with a Join button
+  (found automatically in imported invitations), and encrypted file
+  attachments (25 MB each).
+- **Show on this phone** (optional, per calendar, off by default): copies
+  events into Android's own calendar so Wear OS, Android Auto and other
+  apps can see them.
 
 ## Privacy
 
@@ -41,14 +69,23 @@ account, settings and look as the other Zero-Trust apps, built on
 - Notes, tasks and contacts are read with those apps' own keys, derived from
   the account key at unlock and zeroed at lock, into Calendar's own
   encrypted copies on the phone (`calendar_notes`, `calendar_tasks`,
-  `calendar_contacts`). Tasks and Contacts are strictly read-only (uploads
-  throw). Notes is only ever written to create a new note; Calendar never
-  edits an existing one.
+  `calendar_contacts`). Contacts is strictly read-only (uploads throw).
+  Notes is only ever written to create a new note. Tasks is written only to
+  create a task or tick one off or on.
 - What leaves the vault, and only when needed: reminder notifications carry
   the event title (turn off in Settings so they only say "Event"; on the lock
   screen Android hides the content anyway). The home widget shows only times
   unless you turn on titles in Settings. The .ics export is a plain file and
   the app says so before exporting.
+- Reminder buttons that need event details (map, note, guests) open the
+  app first, so places, notes and guests never reach the notification.
+- An emailed invitation is a plain .ics file handed to your mail app; the
+  app says so before sending.
+- Subscribed and holiday calendars are fetched straight from their address
+  with no account or cookie; the copy is stored encrypted like events.
+- "Show on this phone" copies title, time and place (not descriptions,
+  guests, notes or attachments) unencrypted into a local Android calendar
+  that isn't synced anywhere. Turning it off removes them.
 
 ## Google Play
 

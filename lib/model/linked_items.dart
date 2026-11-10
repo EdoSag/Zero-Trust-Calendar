@@ -63,6 +63,7 @@ class LinkedTask {
     required this.due,
     required this.completed,
     required this.hasTime,
+    this.repeats = false,
   });
 
   final String id;
@@ -72,6 +73,55 @@ class LinkedTask {
 
   /// False when the due date is just a day (stored at midnight).
   final bool hasTime;
+
+  /// A repeating task: ZT Tasks rolls it on to the next date when it's
+  /// ticked off, so Calendar leaves that to ZT Tasks.
+  final bool repeats;
+
+  /// JSON for a new ZT Tasks task (same shape as one made in ZT Tasks).
+  /// Dates are local times, as ZT Tasks writes them.
+  static Map<String, Object?> newTaskJson({
+    required String title,
+    required DateTime due,
+    required bool hasTime,
+    String? notes,
+    required DateTime now,
+  }) {
+    final dueAt = hasTime ? due : DateTime(due.year, due.month, due.day);
+    return {
+      'title': title,
+      'description': null,
+      'category': null,
+      'priority': 'medium',
+      'startDate': null,
+      'dueDate': dueAt.toIso8601String(),
+      'reminderAt': null,
+      'recurrence': null,
+      'tags': <String>[],
+      'notes': notes,
+      'links': <String>[],
+      'isCompleted': false,
+      'isArchived': false,
+      'deletedAt': null,
+      'completedAt': null,
+      'subTasks': <Object?>[],
+      'createdAt': now.toIso8601String(),
+      'updatedAt': now.toIso8601String(),
+      '_v': 1,
+    };
+  }
+
+  /// [json] (a stored task) ticked off or back on.
+  static Map<String, Object?> completedJson(
+    Map<String, Object?> json,
+    bool completed,
+    DateTime now,
+  ) => {
+    ...json,
+    'isCompleted': completed,
+    'completedAt': completed ? now.toIso8601String() : null,
+    'updatedAt': now.toIso8601String(),
+  };
 
   /// Tasks are ZT Tasks' default collection: items without a `kind`.
   static LinkedTask? fromItem(String id, Map<String, Object?>? json) {
@@ -90,6 +140,7 @@ class LinkedTask {
       completed: json['isCompleted'] == true,
       hasTime: !(due.hour == 0 && due.minute == 0) &&
           !(due.hour == 23 && due.minute == 59),
+      repeats: json['recurrence'] != null,
     );
   }
 }

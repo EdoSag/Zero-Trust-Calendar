@@ -7,6 +7,7 @@ import 'package:zerotrust_calendar/app/calendar_config.dart';
 import 'package:zerotrust_calendar/app/calendar_settings.dart';
 import 'package:zerotrust_calendar/data/calendar_store.dart';
 import 'package:zerotrust_calendar/data/linked_apps.dart';
+import 'package:zerotrust_calendar/data/subscriptions.dart';
 import 'package:zerotrust_calendar/model/calendar_event.dart';
 import 'package:zerotrust_calendar/model/linked_items.dart';
 import 'package:zerotrust_calendar/reminders/reminders.dart';
@@ -29,6 +30,7 @@ Widget app(Widget home, List<CalendarEvent> events, {PreferencesStore? prefs}) {
       linkedNotesProvider.overrideWith((ref) => Stream.value(const <LinkedNote>[])),
       linkedTasksProvider.overrideWith((ref) => Stream.value(const <LinkedTask>[])),
       linkedContactsProvider.overrideWith((ref) => Stream.value(const <LinkedContact>[])),
+      feedsProvider.overrideWith((ref) => Stream.value(const <CalendarFeed>[])),
     ],
     child: MaterialApp(
       theme: ThemeData(

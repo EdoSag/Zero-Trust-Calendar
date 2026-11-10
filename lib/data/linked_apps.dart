@@ -12,7 +12,7 @@ import '../model/linked_items.dart';
 /// with due dates, contacts as guests and their birthdays.
 enum LinkedApp {
   notes('notes', 'dev.sagron.zerotrustnotes', writable: true),
-  tasks('tasks', 'dev.sagron.zerotrusttasks'),
+  tasks('tasks', 'dev.sagron.zerotrusttasks', writable: true),
   contacts('contacts', 'dev.sagron.zerotrustcontacts');
 
   const LinkedApp(this.appId, this.androidPackage, {this.writable = false});
@@ -21,8 +21,9 @@ enum LinkedApp {
   final String appId;
   final String androidPackage;
 
-  /// Notes is the only app Calendar writes to, and only to create a new
-  /// note ("Meeting notes" for an event). It never edits existing items.
+  /// Calendar writes to Notes only to create a new note ("Meeting notes"
+  /// for an event), and to Tasks only to create a task or tick one off. It
+  /// never writes Contacts.
   final bool writable;
 }
 
@@ -179,6 +180,20 @@ class LinkedMirror {
     await engine.save(id, json);
     refresh().ignore();
     return id;
+  }
+
+  /// Ticks a ZT Tasks task off (or back on), changing only `isCompleted`,
+  /// `completedAt` and `updatedAt` and keeping every other field as stored.
+  Future<void> setTaskCompleted(String id, bool completed) async {
+    if (app != LinkedApp.tasks) throw StateError('Only tasks are ticked off');
+    final item = await store.get(id);
+    final json = item?.json;
+    if (item == null || item.deleted || json == null) {
+      throw StateError('That task is gone');
+    }
+    final now = DateTime.now();
+    await engine.save(id, LinkedTask.completedJson(json, completed, now));
+    refresh().ignore();
   }
 
   Future<void> close() async {

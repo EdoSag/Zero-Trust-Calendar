@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Only invitation files Calendar writes for the mail app; nothing else. -->
+<paths>
+    <cache-path name="invites" path="invites/"/>
+</paths>

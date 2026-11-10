@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -16,6 +17,9 @@ class ScheduledReminder {
     required this.at,
     required this.title,
     required this.body,
+    this.hasPlace = false,
+    this.hasNote = false,
+    this.hasGuests = false,
   });
 
   final String eventId;
@@ -29,6 +33,20 @@ class ScheduledReminder {
 
   /// "14:00 to 15:00", "Tomorrow, all day".
   final String body;
+
+  /// Which buttons the reminder gets besides Snooze: "Map", "Note",
+  /// "Running late". Only whether the event has a place, a linked note or
+  /// guests reaches the OS, never what they are.
+  final bool hasPlace;
+  final bool hasNote;
+  final bool hasGuests;
+
+  List<String> get actions => [
+    ReminderAction.snooze,
+    if (hasPlace) ReminderAction.map,
+    if (hasNote) ReminderAction.note,
+    if (hasGuests) ReminderAction.late,
+  ];
 
   int get notificationId =>
       idFor('$eventId|${occurrence.toUtc().toIso8601String()}|'
@@ -44,16 +62,20 @@ class ScheduledReminder {
     return hash & 0x7fffffff;
   }
 
-  /// Carried on the notification so a tap can open the event.
-  String get payload => '$eventId|${occurrence.toUtc().toIso8601String()}';
+  /// Carried on the notification so a tap can open the event, and Snooze
+  /// can show it again. The title and body are already in the
+  /// notification itself.
+  String get payload => jsonEncode({
+    'e': eventId,
+    'o': occurrence.toUtc().toIso8601String(),
+    't': title,
+    'b': body,
+    'a': actions.join(','),
+  });
 
   static (String, DateTime?)? parsePayload(String? payload) {
-    if (payload == null || payload.isEmpty) return null;
-    final parts = payload.split('|');
-    return (
-      parts.first,
-      parts.length > 1 ? DateTime.tryParse(parts[1])?.toLocal() : null,
-    );
+    final p = ReminderPayload.parse(payload);
+    return p == null ? null : (p.eventId, p.occurrence);
   }
 
   @override
@@ -61,11 +83,93 @@ class ScheduledReminder {
       other is ScheduledReminder &&
       other.notificationId == notificationId &&
       other.title == title &&
-      other.body == body;
+      other.body == body &&
+      other.payload == payload;
 
   @override
-  int get hashCode => Object.hash(notificationId, title, body);
+  int get hashCode => Object.hash(notificationId, title, body, payload);
 }
+
+/// Buttons on a reminder.
+abstract final class ReminderAction {
+  static const snooze = 'snooze';
+  static const map = 'map';
+  static const note = 'note';
+  static const late = 'late';
+
+  static const labels = {
+    snooze: 'Snooze 10 min',
+    map: 'Map',
+    note: 'Note',
+    late: 'Running late',
+  };
+
+  static const snoozeFor = Duration(minutes: 10);
+}
+
+/// A reminder's payload, read back from a tap or a button.
+@immutable
+class ReminderPayload {
+  const ReminderPayload({
+    required this.eventId,
+    this.occurrence,
+    this.title = 'Event',
+    this.body = '',
+    this.actions = const [],
+    this.snoozed = false,
+  });
+
+  final String eventId;
+  final DateTime? occurrence;
+  final String title;
+  final String body;
+  final List<String> actions;
+
+  /// A reminder snoozed from its notification; kept by [ReminderScheduler.sync].
+  final bool snoozed;
+
+  String encode() => jsonEncode({
+    'e': eventId,
+    if (occurrence != null) 'o': occurrence!.toUtc().toIso8601String(),
+    't': title,
+    'b': body,
+    'a': actions.join(','),
+    if (snoozed) 's': 1,
+  });
+
+  /// Also reads the older `eventId|occurrence` payloads.
+  static ReminderPayload? parse(String? payload) {
+    if (payload == null || payload.isEmpty) return null;
+    if (payload.startsWith('{')) {
+      try {
+        final m = jsonDecode(payload) as Map<String, Object?>;
+        final id = m['e'];
+        if (id is! String) return null;
+        return ReminderPayload(
+          eventId: id,
+          occurrence: DateTime.tryParse((m['o'] as String?) ?? '')?.toLocal(),
+          title: (m['t'] as String?) ?? 'Event',
+          body: (m['b'] as String?) ?? '',
+          actions: [
+            for (final a in ((m['a'] as String?) ?? '').split(','))
+              if (a.isNotEmpty) a,
+          ],
+          snoozed: m['s'] == 1,
+        );
+      } on Object {
+        return null;
+      }
+    }
+    final parts = payload.split('|');
+    return ReminderPayload(
+      eventId: parts.first,
+      occurrence: parts.length > 1 ? DateTime.tryParse(parts[1])?.toLocal() : null,
+    );
+  }
+}
+
+/// A tap on a reminder ([action] null) or on one of its buttons.
+typedef ReminderTap = ({String eventId, DateTime? occurrence, String? action});
 
 /// All-day events remind relative to this time on their first day.
 const allDayReminderHour = 9;
@@ -108,6 +212,9 @@ List<ScheduledReminder> remindersFor(
               at: at,
               title: showTitles && title.isNotEmpty ? title : 'Event',
               body: bodyFor(e, s),
+              hasPlace: e.location.trim().isNotEmpty,
+              hasNote: e.noteIds.isNotEmpty,
+              hasGuests: e.contactIds.isNotEmpty || e.guestEmails.isNotEmpty,
             ),
           );
         }
@@ -130,9 +237,9 @@ abstract interface class ReminderScheduler {
   /// Asks for notification (and exact alarm) permission. False when off.
   Future<bool> requestPermission();
 
-  /// (event id, occurrence start) from reminder taps, including the one
-  /// that launched the app.
-  Stream<(String, DateTime?)> get taps;
+  /// Reminder taps and button presses, including the one that launched
+  /// the app.
+  Stream<ReminderTap> get taps;
 }
 
 /// For tests and platforms without notifications.
@@ -150,7 +257,7 @@ class NoopReminderScheduler implements ReminderScheduler {
   Future<bool> requestPermission() async => true;
 
   @override
-  Stream<(String, DateTime?)> get taps => const Stream.empty();
+  Stream<ReminderTap> get taps => const Stream.empty();
 }
 
 class LocalNotificationsReminderScheduler implements ReminderScheduler {
@@ -158,8 +265,8 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
     : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
   final FlutterLocalNotificationsPlugin _plugin;
-  final _taps = StreamController<(String, DateTime?)>.broadcast();
-  (String, DateTime?)? _launch;
+  final _taps = StreamController<ReminderTap>.broadcast();
+  ReminderTap? _launch;
   Future<void>? _ready;
 
   static const _channel = AndroidNotificationDetails(
@@ -173,10 +280,40 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
     visibility: NotificationVisibility.private,
   );
 
-  static const _details = NotificationDetails(
-    android: _channel,
-    iOS: DarwinNotificationDetails(),
+  static NotificationDetails detailsFor(List<String> actions) => NotificationDetails(
+    android: AndroidNotificationDetails(
+      _channel.channelId,
+      _channel.channelName,
+      channelDescription: _channel.channelDescription,
+      importance: _channel.importance,
+      priority: _channel.priority,
+      category: _channel.category,
+      visibility: _channel.visibility,
+      actions: [
+        for (final a in actions)
+          AndroidNotificationAction(
+            a,
+            ReminderAction.labels[a] ?? a,
+            // Snooze happens without opening the app; the others need the
+            // unlocked app (the place, note and guests stay in the vault).
+            showsUserInterface: a != ReminderAction.snooze,
+            cancelNotification: true,
+          ),
+      ],
+    ),
+    iOS: const DarwinNotificationDetails(),
   );
+
+  static ReminderTap? _tapFrom(NotificationResponse response) {
+    final p = ReminderPayload.parse(response.payload);
+    if (p == null) return null;
+    final action = response.actionId;
+    return (
+      eventId: p.eventId,
+      occurrence: p.occurrence,
+      action: action == null || action.isEmpty ? null : action,
+    );
+  }
 
   Future<void> _init() => _ready ??= () async {
     await _plugin.initialize(
@@ -190,22 +327,26 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
         ),
       ),
       onDidReceiveNotificationResponse: (response) {
-        final tap = ScheduledReminder.parsePayload(response.payload);
+        if (response.actionId == ReminderAction.snooze) {
+          snoozeReminder(_plugin, response).ignore();
+          return;
+        }
+        final tap = _tapFrom(response);
         if (tap != null) _taps.add(tap);
       },
+      onDidReceiveBackgroundNotificationResponse: onReminderButtonInBackground,
     );
     final launch = await _plugin.getNotificationAppLaunchDetails();
-    if (launch?.didNotificationLaunchApp ?? false) {
-      _launch = ScheduledReminder.parsePayload(
-        launch!.notificationResponse?.payload,
-      );
+    final response = launch?.notificationResponse;
+    if ((launch?.didNotificationLaunchApp ?? false) && response != null) {
+      _launch = _tapFrom(response);
     }
   }();
 
   Future<void> initialize() => _init();
 
   @override
-  Stream<(String, DateTime?)> get taps async* {
+  Stream<ReminderTap> get taps async* {
     try {
       await _init();
     } on Object {
@@ -249,10 +390,14 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
     final wanted = {for (final r in reminders) r.notificationId: r};
     final pending = await _plugin.pendingNotificationRequests();
     for (final request in pending) {
+      // Snoozed from the notification: left to fire.
+      if (ReminderPayload.parse(request.payload)?.snoozed ?? false) continue;
       final want = wanted[request.id];
       if (want == null) {
         await _plugin.cancel(id: request.id);
-      } else if (request.title == want.title && request.body == want.body) {
+      } else if (request.title == want.title &&
+          request.body == want.body &&
+          request.payload == want.payload) {
         wanted.remove(request.id); // Already scheduled as it should be.
       }
     }
@@ -266,7 +411,7 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
         payload: r.payload,
         // An absolute instant, so the device's time zone doesn't matter.
         scheduledDate: tz.TZDateTime.from(r.at.toUtc(), tz.UTC),
-        notificationDetails: _details,
+        notificationDetails: detailsFor(r.actions),
         androidScheduleMode: exact
             ? AndroidScheduleMode.exactAllowWhileIdle
             : AndroidScheduleMode.inexactAllowWhileIdle,
@@ -279,6 +424,49 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
     await _init();
     await _plugin.cancelAll();
   }
+}
+
+/// Shows the reminder again in [ReminderAction.snoozeFor], as the same
+/// text, without opening the app (it may be locked).
+Future<void> snoozeReminder(
+  FlutterLocalNotificationsPlugin plugin,
+  NotificationResponse response,
+) async {
+  final p = ReminderPayload.parse(response.payload);
+  if (p == null) return;
+  final again = DateTime.now().toUtc().add(ReminderAction.snoozeFor);
+  final payload = ReminderPayload(
+    eventId: p.eventId,
+    occurrence: p.occurrence,
+    title: p.title,
+    body: p.body,
+    actions: p.actions,
+    snoozed: true,
+  );
+  await plugin.zonedSchedule(
+    id: ScheduledReminder.idFor('snooze|${p.eventId}|${p.occurrence?.toUtc().toIso8601String()}'),
+    title: p.title,
+    body: p.body,
+    payload: payload.encode(),
+    scheduledDate: tz.TZDateTime.from(again, tz.UTC),
+    notificationDetails: LocalNotificationsReminderScheduler.detailsFor(p.actions),
+    androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+  );
+}
+
+/// Snooze pressed while the app isn't running (a separate isolate).
+@pragma('vm:entry-point')
+void onReminderButtonInBackground(NotificationResponse response) {
+  if (response.actionId != ReminderAction.snooze) return;
+  final plugin = FlutterLocalNotificationsPlugin();
+  plugin
+      .initialize(
+        settings: const InitializationSettings(
+          android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        ),
+      )
+      .then((_) => snoozeReminder(plugin, response))
+      .ignore();
 }
 
 final reminderSchedulerProvider = Provider<ReminderScheduler>((ref) {

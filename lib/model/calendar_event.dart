@@ -36,6 +36,12 @@ class CalendarEvent {
     this.taskIds = const [],
     this.icalUid,
     this.timeZone,
+    this.conferenceUrl,
+    this.attachments = const [],
+    this.guestEmails = const [],
+    this.guestStatus = const {},
+    this.inviteSequence = 0,
+    this.readOnly = false,
     this.createdAt,
     this.updatedAt,
     this.extra = const {},
@@ -83,6 +89,28 @@ class CalendarEvent {
   /// 9:00 Berlin meeting stays at 9:00 Berlin across daylight-saving changes
   /// even on a phone in another zone. Null: the phone's own zone.
   final String? timeZone;
+
+  /// Video-call link (Meet, Zoom, Teams, Jitsi...), shown with a Join button.
+  final String? conferenceUrl;
+
+  /// Encrypted files attached to the event (core `ZtAttachmentRef` JSON:
+  /// id, key, size, mime, name). The file keys live only in here.
+  final List<Map<String, Object?>> attachments;
+
+  /// Guests invited by email address who aren't in ZT Contacts.
+  final List<String> guestEmails;
+
+  /// Replies recorded by hand, by contact id or email: `accepted`,
+  /// `declined`, `tentative` (missing means no reply yet).
+  final Map<String, String> guestStatus;
+
+  /// Bumped each time an invitation is emailed, so mail apps treat the new
+  /// one as an update of the old (iCalendar SEQUENCE).
+  final int inviteSequence;
+
+  /// From a subscribed calendar (holidays, an .ics link): shown, not edited.
+  /// Not stored.
+  final bool readOnly;
   final DateTime? createdAt;
 
   /// Last edit time from sync (not stored in the JSON).
@@ -187,6 +215,11 @@ class CalendarEvent {
     'taskIds',
     'icalUid',
     'tz',
+    'conference',
+    'attachments',
+    'guestEmails',
+    'rsvp',
+    'inviteSeq',
     'createdAt',
     'kind',
     '_v',
@@ -212,6 +245,11 @@ class CalendarEvent {
     'taskIds': taskIds,
     'icalUid': icalUid,
     'tz': timeZone,
+    'conference': conferenceUrl,
+    'attachments': attachments,
+    'guestEmails': guestEmails,
+    'rsvp': guestStatus,
+    'inviteSeq': inviteSequence,
     'createdAt': createdAt?.toUtc().toIso8601String(),
   };
 
@@ -261,6 +299,21 @@ class CalendarEvent {
       taskIds: strings(json['taskIds']),
       icalUid: json['icalUid'] as String?,
       timeZone: json['tz'] as String?,
+      conferenceUrl: json['conference'] as String?,
+      attachments: [
+        if (json['attachments'] case final List list)
+          for (final a in list)
+            if (a is Map && a['id'] is String && a['key'] is String)
+              Map<String, Object?>.from(a),
+      ],
+      guestEmails: strings(json['guestEmails']),
+      guestStatus: {
+        if (json['rsvp'] case final Map m)
+          for (final e in m.entries)
+            if (e.key is String && e.value is String)
+              e.key as String: e.value as String,
+      },
+      inviteSequence: (json['inviteSeq'] as num?)?.toInt() ?? 0,
       createdAt: _parseDate(json['createdAt']),
       updatedAt: updatedAt,
       extra: {
@@ -292,6 +345,12 @@ class CalendarEvent {
     List<String>? taskIds,
     Object? icalUid = _unset,
     Object? timeZone = _unset,
+    Object? conferenceUrl = _unset,
+    List<Map<String, Object?>>? attachments,
+    List<String>? guestEmails,
+    Map<String, String>? guestStatus,
+    int? inviteSequence,
+    bool? readOnly,
     DateTime? createdAt,
   }) => CalendarEvent(
     id: id ?? this.id,
@@ -315,6 +374,14 @@ class CalendarEvent {
     taskIds: taskIds ?? this.taskIds,
     icalUid: identical(icalUid, _unset) ? this.icalUid : icalUid as String?,
     timeZone: identical(timeZone, _unset) ? this.timeZone : timeZone as String?,
+    conferenceUrl: identical(conferenceUrl, _unset)
+        ? this.conferenceUrl
+        : conferenceUrl as String?,
+    attachments: attachments ?? this.attachments,
+    guestEmails: guestEmails ?? this.guestEmails,
+    guestStatus: guestStatus ?? this.guestStatus,
+    inviteSequence: inviteSequence ?? this.inviteSequence,
+    readOnly: readOnly ?? this.readOnly,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt,
     extra: extra,
@@ -329,11 +396,18 @@ class ZtCalendarInfo {
     required this.name,
     required this.color,
     this.hidden = false,
+    this.url,
   });
 
   final String id;
   final String name;
   final int color;
+
+  /// For a subscribed calendar: the .ics link it is fetched from (public
+  /// holidays, a school or sports calendar). Its events are read-only.
+  final String? url;
+
+  bool get isSubscription => url != null;
 
   /// Hidden calendars' events aren't shown (this setting syncs).
   final bool hidden;
@@ -350,6 +424,7 @@ class ZtCalendarInfo {
     'name': name,
     'color': color,
     'hidden': hidden,
+    'url': url,
   };
 
   static ZtCalendarInfo fromJson(String id, Map<String, Object?> json) =>
@@ -358,6 +433,7 @@ class ZtCalendarInfo {
         name: (json['name'] as String?) ?? 'Calendar',
         color: (json['color'] as num?)?.toInt() ?? defaultColor,
         hidden: json['hidden'] == true,
+        url: json['url'] as String?,
       );
 
   ZtCalendarInfo copyWith({String? name, int? color, bool? hidden}) =>
@@ -366,6 +442,7 @@ class ZtCalendarInfo {
         name: name ?? this.name,
         color: color ?? this.color,
         hidden: hidden ?? this.hidden,
+        url: url,
       );
 }
 

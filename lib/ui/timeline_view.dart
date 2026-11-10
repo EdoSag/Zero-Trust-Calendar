@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -13,6 +14,37 @@ import 'navigation.dart';
 
 const double _hourHeight = 56;
 const double _gutter = 52;
+
+/// Drags snap to quarter hours.
+const int _snapMinutes = 15;
+
+int _snap(double minutes) =>
+    (minutes / _snapMinutes).round() * _snapMinutes;
+
+/// An event being dragged to a new time (or resized), before it's saved.
+class _Drag {
+  _Drag(this.entry, {required this.resize, required this.origin});
+  final CalendarEntry entry;
+  final bool resize;
+
+  /// Where the finger went down (global).
+  final Offset origin;
+  int minutes = 0;
+  int days = 0;
+
+  DateTime get start => resize
+      ? entry.start
+      : entry.start.add(Duration(days: days, minutes: minutes));
+
+  DateTime get end {
+    if (!resize) return entry.end.add(Duration(days: days, minutes: minutes));
+    final e = entry.end.add(Duration(minutes: minutes));
+    final min = entry.start.add(const Duration(minutes: _snapMinutes));
+    return e.isBefore(min) ? min : e;
+  }
+
+  bool get changed => minutes != 0 || days != 0;
+}
 
 /// Day, 3-day and week views: day columns over a 24-hour timeline, with
 /// all-day entries in a strip on top. Swipe for the next days; tap an empty
@@ -140,6 +172,34 @@ class _TimelinePageState extends ConsumerState<_TimelinePage> {
     initialScrollOffset: widget.initialOffset,
   );
   Timer? _tick;
+  _Drag? _drag;
+  double _columnWidth = 1;
+
+  void _startDrag(CalendarEntry entry, Offset origin, {required bool resize}) {
+    HapticFeedback.selectionClick();
+    setState(() => _drag = _Drag(entry, resize: resize, origin: origin));
+  }
+
+  void _updateDrag(Offset position) {
+    final d = _drag;
+    if (d == null) return;
+    final delta = position - d.origin;
+    final minutes = _snap(delta.dy / _hourHeight * 60);
+    final days = d.resize || widget.days == 1 ? 0 : (delta.dx / _columnWidth).round();
+    if (minutes != d.minutes || days != d.days) {
+      setState(() {
+        d.minutes = minutes;
+        d.days = days;
+      });
+    }
+  }
+
+  Future<void> _endDrag() async {
+    final d = _drag;
+    setState(() => _drag = null);
+    if (d == null || !d.changed) return;
+    await moveEntry(context, ref, d.entry, d.start, d.end);
+  }
 
   @override
   void initState() {
@@ -270,11 +330,20 @@ class _TimelinePageState extends ConsumerState<_TimelinePage> {
                   ),
                   for (final d in days)
                     Expanded(
-                      child: _DayColumn(
-                        day: d,
-                        isToday: d == today,
-                        entries: [for (final e in timed) if (e.coversDay(d)) e],
-                        compact: widget.days > 3,
+                      child: LayoutBuilder(
+                        builder: (context, c) {
+                          _columnWidth = c.maxWidth;
+                          return _DayColumn(
+                            day: d,
+                            isToday: d == today,
+                            entries: [for (final e in timed) if (e.coversDay(d)) e],
+                            compact: widget.days > 3,
+                            drag: _drag,
+                            onDragStart: _startDrag,
+                            onDragUpdate: _updateDrag,
+                            onDragEnd: _endDrag,
+                          );
+                        },
                       ),
                     ),
                 ],
@@ -293,12 +362,20 @@ class _DayColumn extends ConsumerWidget {
     required this.isToday,
     required this.entries,
     required this.compact,
+    required this.drag,
+    required this.onDragStart,
+    required this.onDragUpdate,
+    required this.onDragEnd,
   });
 
   final DateTime day;
   final bool isToday;
   final List<CalendarEntry> entries;
   final bool compact;
+  final _Drag? drag;
+  final void Function(CalendarEntry, Offset, {required bool resize}) onDragStart;
+  final ValueChanged<Offset> onDragUpdate;
+  final VoidCallback onDragEnd;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -319,6 +396,10 @@ class _DayColumn extends ConsumerWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
+        final ghost = drag;
+        final showGhost = ghost != null &&
+            ghost.start.isBefore(dayEnd) &&
+            ghost.end.isAfter(day);
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTapUp: (details) {
@@ -327,6 +408,17 @@ class _DayColumn extends ConsumerWidget {
             createEvent(
               context,
               start: DateTime(day.year, day.month, day.day, hour, half ? 30 : 0),
+            );
+          },
+          // Long-press an empty slot: a new event at that quarter hour.
+          onLongPressStart: (details) {
+            HapticFeedback.selectionClick();
+            final minutes = (details.localPosition.dy / _hourHeight * 60 / _snapMinutes)
+                    .floor() *
+                _snapMinutes;
+            createEvent(
+              context,
+              start: day.add(Duration(minutes: minutes.clamp(0, 24 * 60 - _snapMinutes))),
             );
           },
           child: Stack(
@@ -354,7 +446,29 @@ class _DayColumn extends ConsumerWidget {
                   height: (y(p.end) - y(p.start)).clamp(18.0, double.infinity) - 2,
                   left: width / p.columns * p.column + 1,
                   width: width / p.columns - 2,
-                  child: _TimedBlock(entry: p.item, compact: compact),
+                  child: Opacity(
+                    opacity: identical(drag?.entry, p.item) ? 0.35 : 1,
+                    child: _TimedBlock(
+                      entry: p.item,
+                      compact: compact,
+                      onDragStart: onDragStart,
+                      onDragUpdate: onDragUpdate,
+                      onDragEnd: onDragEnd,
+                    ),
+                  ),
+                ),
+              if (showGhost)
+                Positioned(
+                  top: y(ghost.start.isBefore(day) ? day : ghost.start) + 1,
+                  height: (y(ghost.end.isAfter(dayEnd) ? dayEnd : ghost.end) -
+                              y(ghost.start.isBefore(day) ? day : ghost.start))
+                          .clamp(18.0, double.infinity) -
+                      2,
+                  left: 1,
+                  right: 1,
+                  child: IgnorePointer(
+                    child: _DragGhost(drag: ghost),
+                  ),
                 ),
               if (isToday)
                 Positioned(
@@ -385,17 +499,115 @@ class _DayColumn extends ConsumerWidget {
   }
 }
 
+/// Where a dragged event will land, with its new times.
+class _DragGhost extends StatelessWidget {
+  const _DragGhost({required this.drag});
+  final _Drag drag;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = eventColor(drag.entry.color);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.85),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 1.5),
+        boxShadow: const [BoxShadow(blurRadius: 6, color: Colors.black26)],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        child: Text(
+          '${formatSpan(context, drag.start, drag.end, false)}\n${drag.entry.title}',
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: onColor(color),
+            fontSize: 11.5,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _TimedBlock extends ConsumerWidget {
-  const _TimedBlock({required this.entry, required this.compact});
+  const _TimedBlock({
+    required this.entry,
+    required this.compact,
+    required this.onDragStart,
+    required this.onDragUpdate,
+    required this.onDragEnd,
+  });
 
   final CalendarEntry entry;
   final bool compact;
+  final void Function(CalendarEntry, Offset, {required bool resize}) onDragStart;
+  final ValueChanged<Offset> onDragUpdate;
+  final VoidCallback onDragEnd;
+
+  /// Your own events move; tasks, birthdays and subscribed calendars don't.
+  bool get _movable =>
+      entry.kind == EntryKind.event && !(entry.event?.readOnly ?? true);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final color = eventColor(entry.color);
     final fg = onColor(color);
     final isTask = entry.kind == EntryKind.task;
+    final block = _block(context, ref, color, fg, isTask);
+    if (!_movable) return block;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        GestureDetector(
+          onLongPressStart: (d) => onDragStart(entry, d.globalPosition, resize: false),
+          onLongPressMoveUpdate: (d) => onDragUpdate(d.globalPosition),
+          onLongPressEnd: (_) => onDragEnd(),
+          onLongPressCancel: onDragEnd,
+          child: block,
+        ),
+        // Drag the bottom edge to change the end time.
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 14,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onVerticalDragStart: (d) => onDragStart(entry, d.globalPosition, resize: true),
+            onVerticalDragUpdate: (d) => onDragUpdate(d.globalPosition),
+            onVerticalDragEnd: (_) => onDragEnd(),
+            onVerticalDragCancel: onDragEnd,
+            child: Semantics(
+              label: 'Drag to change the end time',
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: 18,
+                  height: 3,
+                  margin: const EdgeInsets.only(bottom: 3),
+                  decoration: BoxDecoration(
+                    color: (isTask ? Theme.of(context).colorScheme.onSurface : fg)
+                        .withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _block(
+    BuildContext context,
+    WidgetRef ref,
+    Color color,
+    Color fg,
+    bool isTask,
+  ) {
     return Semantics(
       button: true,
       label: '${entry.title}, ${formatSpan(context, entry.start, entry.end, false)}',

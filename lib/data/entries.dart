@@ -6,6 +6,7 @@ import '../model/calendar_event.dart';
 import '../model/linked_items.dart';
 import 'calendar_store.dart';
 import 'linked_apps.dart';
+import 'subscriptions.dart';
 
 enum EntryKind { event, task, birthday }
 
@@ -160,7 +161,7 @@ final entriesProvider = Provider.family<AsyncValue<List<CalendarEntry>>, DateRan
   ref,
   range,
 ) {
-  final events = ref.watch(eventsProvider);
+  final events = ref.watch(allEventsProvider);
   final calendars = ref.watch(calendarsProvider);
   final settings = ref.watch(calendarSettingsProvider);
   final tasks = settings.showTasks
@@ -177,7 +178,9 @@ final entriesProvider = Provider.family<AsyncValue<List<CalendarEntry>>, DateRan
       range: range,
       events: list,
       calendars: calendars.value ?? const [ZtCalendarInfo.personal],
-      tasks: tasks.where((t) => !t.completed).toList(),
+      tasks: settings.showCompletedTasks
+          ? tasks
+          : tasks.where((t) => !t.completed).toList(),
       contacts: contacts,
     ),
   );

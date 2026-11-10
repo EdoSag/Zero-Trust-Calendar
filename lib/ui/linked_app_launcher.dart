@@ -35,3 +35,19 @@ Uri mapsUri(String location) {
   }
   return Uri.parse('geo:0,0?q=${Uri.encodeComponent(location)}');
 }
+
+/// Opens [location] in the maps app (or a web link as is).
+Future<void> openLocation(String location) async {
+  final trimmed = location.trim();
+  final uri = Uri.tryParse(trimmed);
+  if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http')) {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+    return;
+  }
+  if (!await launchUrl(mapsUri(trimmed))) {
+    await launchUrl(
+      Uri.https('www.openstreetmap.org', '/search', {'query': trimmed}),
+      mode: LaunchMode.externalApplication,
+    );
+  }
+}

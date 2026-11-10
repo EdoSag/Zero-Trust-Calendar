@@ -18,6 +18,8 @@ class CalendarSettings {
     this.defaultAllDayReminder,
     this.weekStart,
     this.defaultDuration = 60,
+    this.phoneCalendarIds = const {},
+    this.showCompletedTasks = true,
   });
 
   final CalendarView view;
@@ -46,6 +48,13 @@ class CalendarSettings {
   /// Minutes a new event lasts.
   final int defaultDuration;
 
+  /// Calendars copied into Android's calendar on this phone ("Show on this
+  /// phone"). Per phone, never synced: it's this phone's privacy choice.
+  final Set<String> phoneCalendarIds;
+
+  /// Ticked-off ZT Tasks tasks stay on the calendar, crossed out.
+  final bool showCompletedTasks;
+
   static const _unset = Object();
 
   CalendarSettings copyWith({
@@ -58,6 +67,8 @@ class CalendarSettings {
     Object? defaultAllDayReminder = _unset,
     Object? weekStart = _unset,
     int? defaultDuration,
+    Set<String>? phoneCalendarIds,
+    bool? showCompletedTasks,
   }) => CalendarSettings(
     view: view ?? this.view,
     showTasks: showTasks ?? this.showTasks,
@@ -72,6 +83,8 @@ class CalendarSettings {
         : defaultAllDayReminder as int?,
     weekStart: identical(weekStart, _unset) ? this.weekStart : weekStart as int?,
     defaultDuration: defaultDuration ?? this.defaultDuration,
+    phoneCalendarIds: phoneCalendarIds ?? this.phoneCalendarIds,
+    showCompletedTasks: showCompletedTasks ?? this.showCompletedTasks,
   );
 
   Map<String, String> toPrefs() => {
@@ -84,6 +97,8 @@ class CalendarSettings {
     'defaultAllDayReminder': '${defaultAllDayReminder ?? 'none'}',
     'weekStart': '${weekStart ?? 'locale'}',
     'defaultDuration': '$defaultDuration',
+    'phoneCalendars': (phoneCalendarIds.toList()..sort()).join(','),
+    'showCompletedTasks': '$showCompletedTasks',
   };
 
   static CalendarSettings fromPrefs(Map<String, String?> p) {
@@ -105,6 +120,11 @@ class CalendarSettings {
       weekStart: int.tryParse(p['weekStart'] ?? ''),
       defaultDuration:
           int.tryParse(p['defaultDuration'] ?? '') ?? d.defaultDuration,
+      phoneCalendarIds: {
+        for (final id in (p['phoneCalendars'] ?? '').split(','))
+          if (id.isNotEmpty) id,
+      },
+      showCompletedTasks: b('showCompletedTasks', d.showCompletedTasks),
     );
   }
 }

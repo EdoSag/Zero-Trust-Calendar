@@ -31,3 +31,37 @@ DateTime instantFromWall(tz.Location zone, DateTime wall) {
   );
   return DateTime.fromMillisecondsSinceEpoch(z.millisecondsSinceEpoch);
 }
+
+/// Every IANA zone id ("Asia/Jerusalem"), sorted, without the legacy
+/// aliases ("US/Eastern", "Etc/GMT+3").
+List<String> allZoneIds() {
+  zoneFor('UTC');
+  return [
+    for (final id in tz.timeZoneDatabase.locations.keys)
+      if (id.contains('/') &&
+          !id.startsWith('Etc/') &&
+          !id.startsWith('US/') &&
+          !id.startsWith('SystemV/'))
+        id,
+  ]..sort();
+}
+
+/// "UTC+02:00" for [zone] at [at] (the phone's own zone when null).
+String utcOffsetLabel(tz.Location? zone, DateTime at) {
+  final offset = zone == null
+      ? at.timeZoneOffset
+      : tz.TZDateTime.from(at, zone).timeZoneOffset;
+  final minutes = offset.inMinutes;
+  final sign = minutes < 0 ? '-' : '+';
+  final abs = minutes.abs();
+  return 'UTC$sign${(abs ~/ 60).toString().padLeft(2, '0')}:'
+      '${(abs % 60).toString().padLeft(2, '0')}';
+}
+
+/// Whether [zone]'s clock reads differently from the phone's at [at].
+bool differsFromPhone(tz.Location zone, DateTime at) =>
+    tz.TZDateTime.from(at, zone).timeZoneOffset != at.timeZoneOffset;
+
+/// "Asia/Jerusalem" -> "Jerusalem", "America/Argentina/Buenos_Aires" ->
+/// "Buenos Aires".
+String zoneCity(String id) => id.split('/').last.replaceAll('_', ' ');
