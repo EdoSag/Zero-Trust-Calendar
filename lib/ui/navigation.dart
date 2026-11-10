@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../app/calendar_settings.dart';
+import '../data/calendar_store.dart';
 import '../data/entries.dart';
+import '../data/event_actions.dart';
 import '../data/linked_apps.dart';
+import '../model/linked_items.dart';
 import '../util/format.dart';
 import 'event_details_page.dart';
 import 'event_editor_page.dart';
@@ -66,12 +69,15 @@ Future<void> openEntry(BuildContext context, WidgetRef ref, CalendarEntry entry)
                   'Due ${relativeDay(entry.start)}'
                   '${entry.allDay ? '' : ', ${formatTime(sheet, entry.start)}'}',
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'From ZT Tasks. Edit or complete it there.',
-                  style: Theme.of(sheet).textTheme.bodySmall,
-                ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
+                if (entry.task!.repeats)
+                  Text(
+                    'A repeating task: tick it off in ZT Tasks, which moves it to its next date.',
+                    style: Theme.of(sheet).textTheme.bodySmall,
+                  )
+                else
+                  _TaskDoneTile(task: entry.task!),
+                const SizedBox(height: 8),
                 FilledButton.tonalIcon(
                   onPressed: () {
                     Navigator.of(sheet).pop();
@@ -156,6 +162,91 @@ Future<void> openEntry(BuildContext context, WidgetRef ref, CalendarEntry entry)
           ),
         ),
       );
+  }
+}
+
+/// Ticks a ZT Tasks task off from the calendar.
+class _TaskDoneTile extends ConsumerStatefulWidget {
+  const _TaskDoneTile({required this.task});
+  final LinkedTask task;
+
+  @override
+  ConsumerState<_TaskDoneTile> createState() => _TaskDoneTileState();
+}
+
+class _TaskDoneTileState extends ConsumerState<_TaskDoneTile> {
+  late bool _done = widget.task.completed;
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) => CheckboxListTile(
+    contentPadding: EdgeInsets.zero,
+    controlAffinity: ListTileControlAffinity.leading,
+    value: _done,
+    title: const Text('Done'),
+    subtitle: const Text('Saved in ZT Tasks on all your devices'),
+    onChanged: _busy
+        ? null
+        : (v) async {
+            final messenger = ScaffoldMessenger.of(context);
+            setState(() {
+              _busy = true;
+              _done = v == true;
+            });
+            try {
+              final mirror = await ref.read(linkedMirrorProvider(LinkedApp.tasks).future);
+              await mirror.setTaskCompleted(widget.task.id, v == true);
+            } on Object catch (e) {
+              setState(() => _done = widget.task.completed);
+              messenger.showSnackBar(SnackBar(content: Text('Could not update the task: $e')));
+            } finally {
+              if (mounted) setState(() => _busy = false);
+            }
+          },
+  );
+}
+
+/// Saves [entry]'s event at its new [start] and [end] (a drag in the day
+/// or week view). For a repeating event, asks which occurrences move.
+Future<void> moveEntry(
+  BuildContext context,
+  WidgetRef ref,
+  CalendarEntry entry,
+  DateTime start,
+  DateTime end,
+) async {
+  final event = entry.event;
+  if (event == null || event.readOnly) return;
+  final repo = ref.read(calendarRepositoryProvider);
+  final messenger = ScaffoldMessenger.of(context);
+  try {
+    if (event.repeats) {
+      final scope = await askSeriesScope(context, action: 'Move');
+      if (scope == null) return;
+      await repo.apply(
+        SeriesEdits.edit(
+          series: event,
+          occurrence: entry.start,
+          edited: event.copyWith(start: start, end: end),
+          scope: scope,
+          exceptions: await repo.exceptionsOf(event.id),
+        ),
+      );
+      return;
+    }
+    await repo.saveEvent(event.copyWith(start: start, end: end));
+    if (!context.mounted) return;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text('Moved to ${formatDay(start)}, ${formatTime(context, start)}'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () => repo.saveEvent(event).ignore(),
+        ),
+      ),
+    );
+  } on Object catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text('Could not move it: $e')));
   }
 }
 

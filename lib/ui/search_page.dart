@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/calendar_store.dart';
 import '../data/entries.dart';
+import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
 import '../util/format.dart';
 import 'entry_widgets.dart';
@@ -21,7 +22,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final events = ref.watch(eventsProvider).value ?? const <CalendarEvent>[];
+    final events = ref.watch(allEventsProvider).value ?? const <CalendarEvent>[];
     final calendars = ref.watch(calendarsProvider).value ?? const [ZtCalendarInfo.personal];
     final byId = {for (final c in calendars) c.id: c};
     final q = _query.toLowerCase();

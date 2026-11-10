@@ -9,6 +9,7 @@ import '../util/format.dart';
 import 'calendars_page.dart';
 import 'month_view.dart';
 import 'navigation.dart';
+import 'quick_add_sheet.dart';
 import 'schedule_view.dart';
 import 'search_page.dart';
 import 'settings_page.dart';
@@ -109,10 +110,24 @@ class HomePage extends ConsumerWidget {
       ),
       drawer: _CalendarDrawer(onView: (v) => _setView(ref, v)),
       body: body,
-      floatingActionButton: FloatingActionButton(
-        tooltip: 'New event',
-        onPressed: () => createEvent(context),
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'quick-add',
+            tooltip: 'Quick add event or task',
+            onPressed: () => showQuickAdd(context),
+            child: const Icon(Icons.bolt),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton(
+            heroTag: 'new-event',
+            tooltip: 'New event',
+            onPressed: () => createEvent(context),
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
     );
   }

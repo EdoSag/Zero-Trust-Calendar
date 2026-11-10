@@ -1,4 +1,6 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
@@ -12,9 +14,12 @@ import '../model/linked_items.dart';
 import '../model/recurrence.dart';
 import '../reminders/reminders.dart';
 import '../util/format.dart';
+import '../util/time_zones.dart';
+import 'attachments.dart';
 import 'linked_pickers.dart';
 import 'navigation.dart';
 import 'recurrence_picker.dart';
+import 'time_zone_picker.dart';
 
 /// Asks which occurrences a change to a repeating event applies to.
 Future<SeriesScope?> askSeriesScope(BuildContext context, {required String action}) =>
@@ -48,7 +53,11 @@ class EventEditorPage extends ConsumerStatefulWidget {
     this.initialStart,
     this.initialAllDay = false,
     this.duplicate = false,
+    this.draft,
   });
+
+  /// Prefilled fields for a new event (quick add's "More options").
+  final CalendarEvent? draft;
 
   /// The event (or series) to edit; null for a new one.
   final CalendarEvent? event;
@@ -78,6 +87,13 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
   late List<int> _reminders;
   late List<String> _noteIds;
   late List<String> _contactIds;
+  late List<String> _guestEmails;
+  late List<Map<String, Object?>> _attachments;
+  late final TextEditingController _conference;
+
+  /// IANA zone the times are set in; null is the phone's zone.
+  String? _tz;
+  tz.Location? get _zone => _allDay ? null : zoneFor(_tz);
   bool _saving = false;
   bool _dirty = false;
 
@@ -102,6 +118,9 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
       _reminders = [...e.reminders];
       _noteIds = [...e.noteIds];
       _contactIds = [...e.contactIds];
+      _guestEmails = [...e.guestEmails];
+      _attachments = [...e.attachments];
+      _tz = e.timeZone;
     } else {
       final now = DateTime.now();
       final base = widget.initialStart ??
@@ -122,11 +141,29 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
       ];
       _noteIds = [];
       _contactIds = [];
+      _guestEmails = [];
+      _attachments = [];
+      final d = widget.draft;
+      if (d != null) {
+        _start = d.start;
+        _end = d.end;
+        _allDay = d.allDay;
+        _rule = d.recurrence;
+        _calendarId = d.calendarId;
+        if (d.allDay != widget.initialAllDay) {
+          _reminders = [
+            if (_allDay && settings.defaultAllDayReminder != null) settings.defaultAllDayReminder!,
+            if (!_allDay && settings.defaultReminder != null) settings.defaultReminder!,
+          ];
+        }
+      }
     }
-    _title = TextEditingController(text: e?.title ?? '');
-    _location = TextEditingController(text: e?.location ?? '');
-    _description = TextEditingController(text: e?.description ?? '');
-    for (final c in [_title, _location, _description]) {
+    final source = e ?? widget.draft;
+    _title = TextEditingController(text: source?.title ?? '');
+    _location = TextEditingController(text: source?.location ?? '');
+    _description = TextEditingController(text: source?.description ?? '');
+    _conference = TextEditingController(text: source?.conferenceUrl ?? '');
+    for (final c in [_title, _location, _description, _conference]) {
       c.addListener(() => _dirty = true);
     }
   }
@@ -136,6 +173,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
     _title.dispose();
     _location.dispose();
     _description.dispose();
+    _conference.dispose();
     super.dispose();
   }
 
@@ -165,6 +203,12 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
       contactIds: _contactIds,
       taskIds: base?.taskIds ?? const [],
       icalUid: _isNew ? null : base!.icalUid,
+      timeZone: _allDay ? null : _tz,
+      conferenceUrl: _conference.text.trim().isEmpty ? null : _conference.text.trim(),
+      attachments: _attachments,
+      guestEmails: _guestEmails,
+      guestStatus: base?.guestStatus ?? const {},
+      inviteSequence: _isNew ? 0 : base!.inviteSequence,
       createdAt: _isNew ? null : base!.createdAt,
       extra: _isNew ? const {} : base!.extra,
     );
@@ -231,8 +275,21 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
     return discard ?? false;
   }
 
+  /// [t] on the clock of the event's zone (the phone's when it has none).
+  DateTime _shown(DateTime t) {
+    final z = _zone;
+    return z == null ? t : wallClockIn(z, t);
+  }
+
+  DateTime _fromShown(DateTime wall) {
+    final z = _zone;
+    return z == null ? wall : instantFromWall(z, wall);
+  }
+
   Future<void> _pickDate({required bool isStart}) async {
-    final current = isStart ? _start : (_allDay ? addDays(_end, -1) : _end);
+    final s0 = _shown(_start);
+    final e0 = _shown(_end);
+    final current = isStart ? s0 : (_allDay ? addDays(e0, -1) : e0);
     final d = await showDatePicker(
       context: context,
       initialDate: current,
@@ -241,44 +298,116 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
     );
     if (d == null) return;
     _set(() {
+      var s = s0;
+      var e = e0;
       if (isStart) {
-        final length = _end.difference(_start);
-        _start = DateTime(d.year, d.month, d.day, _start.hour, _start.minute);
-        _end = _allDay
-            ? addDays(_start, (length.inHours / 24).round().clamp(1, 100000))
-            : _start.add(length);
+        final length = e.difference(s);
+        s = DateTime(d.year, d.month, d.day, s.hour, s.minute);
+        e = _allDay
+            ? addDays(s, (length.inHours / 24).round().clamp(1, 100000))
+            : s.add(length);
       } else {
-        _end = _allDay
+        e = _allDay
             ? addDays(d, 1)
-            : DateTime(d.year, d.month, d.day, _end.hour, _end.minute);
-        if (!_end.isAfter(_start)) {
-          _end = _allDay ? addDays(_start, 1) : _start.add(const Duration(hours: 1));
+            : DateTime(d.year, d.month, d.day, e.hour, e.minute);
+        if (!e.isAfter(s)) {
+          e = _allDay ? addDays(s, 1) : s.add(const Duration(hours: 1));
         }
       }
+      _start = _allDay ? s : _fromShown(s);
+      _end = _allDay ? e : _fromShown(e);
     });
   }
 
   Future<void> _pickTime({required bool isStart}) async {
-    final current = isStart ? _start : _end;
+    final s0 = _shown(_start);
+    final e0 = _shown(_end);
     final t = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(current),
+      initialTime: TimeOfDay.fromDateTime(isStart ? s0 : e0),
     );
     if (t == null) return;
     _set(() {
+      var s = s0;
+      var e = e0;
       if (isStart) {
-        final length = _end.difference(_start);
-        _start = DateTime(_start.year, _start.month, _start.day, t.hour, t.minute);
-        _end = _start.add(length);
+        final length = e.difference(s);
+        s = DateTime(s.year, s.month, s.day, t.hour, t.minute);
+        e = s.add(length);
       } else {
-        _end = DateTime(_end.year, _end.month, _end.day, t.hour, t.minute);
-        if (!_end.isAfter(_start)) {
+        e = DateTime(e.year, e.month, e.day, t.hour, t.minute);
+        if (!e.isAfter(s)) {
           // Ending "earlier" means the next day, as across midnight.
-          _end = _end.add(const Duration(days: 1));
-          if (!_end.isAfter(_start)) _end = _start.add(const Duration(hours: 1));
+          e = e.add(const Duration(days: 1));
+          if (!e.isAfter(s)) e = s.add(const Duration(hours: 1));
         }
       }
+      _start = _fromShown(s);
+      _end = _fromShown(e);
     });
+  }
+
+  /// Keeps the times on the clock: 9:00 stays 9:00 in the new zone, as in
+  /// Google Calendar.
+  Future<void> _pickZone() async {
+    final picked = await pickTimeZone(context, current: _tz, at: _start);
+    if (picked == null) return;
+    final next = picked.isEmpty ? null : picked;
+    _set(() {
+      final s = _shown(_start);
+      final e = _shown(_end);
+      _tz = next;
+      _start = _fromShown(s);
+      _end = _fromShown(e);
+    });
+  }
+
+  Future<void> _addAttachment() async {
+    final files = await FilePicker.pickFiles(dialogTitle: 'Attach a file');
+    if (files.isEmpty || !mounted) return;
+    try {
+      final attachments = await ref.read(ztAttachmentsProvider.future);
+      for (final f in files) {
+        final bytes = await f.readAsBytes();
+        final ref0 = await attachments.put(bytes, mimeType: mimeTypeFor(f.name), name: f.name);
+        _set(() => _attachments = [..._attachments, ref0.toJson()]);
+      }
+    } on AttachmentTooLarge {
+      _snack('Files can be up to 20 MB.');
+    } on Object catch (e) {
+      _snack('Could not attach the file: $e');
+    }
+  }
+
+  Future<void> _addGuestEmail() async {
+    final controller = TextEditingController();
+    final email = await showDialog<String>(
+      context: context,
+      builder: (d) => AlertDialog(
+        title: const Text('Add guest by email'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(hintText: 'name@example.com'),
+          onSubmitted: (v) => Navigator.of(d).pop(v),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(d).pop(), child: const Text('Cancel')),
+          FilledButton(
+            onPressed: () => Navigator.of(d).pop(controller.text),
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    final v = email?.trim() ?? '';
+    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v)) {
+      if (v.isNotEmpty) _snack('That doesn\'t look like an email address.');
+      return;
+    }
+    if (!_guestEmails.contains(v)) _set(() => _guestEmails = [..._guestEmails, v]);
   }
 
   Future<void> _addReminder() async {
@@ -388,17 +517,33 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
               }),
             ),
             _DateTimeRow(
-              date: formatDay(_start),
-              time: _allDay ? null : formatTime(context, _start),
+              date: formatDay(_shown(_start)),
+              time: _allDay ? null : formatTime(context, _shown(_start)),
               onDate: () => _pickDate(isStart: true),
               onTime: () => _pickTime(isStart: true),
             ),
             _DateTimeRow(
-              date: formatDay(shownEnd),
-              time: _allDay ? null : formatTime(context, _end),
+              date: formatDay(_allDay ? shownEnd : _shown(_end)),
+              time: _allDay ? null : formatTime(context, _shown(_end)),
               onDate: () => _pickDate(isStart: false),
               onTime: () => _pickTime(isStart: false),
             ),
+            if (!_allDay)
+              ListTile(
+                leading: const Icon(Icons.public),
+                title: Text(
+                  _tz == null
+                      ? 'Phone\'s time zone (${utcOffsetLabel(null, _start)})'
+                      : '${zoneCity(_tz!)} (${utcOffsetLabel(_zone, _start)})',
+                ),
+                subtitle: _tz != null && differsFromPhone(_zone!, _start)
+                    ? Text(
+                        'Your time: ${formatDay(_start)}, '
+                        '${formatSpan(context, _start, _end, false)}',
+                      )
+                    : null,
+                onTap: _pickZone,
+              ),
             if (!isException)
               ListTile(
                 leading: const Icon(Icons.repeat),
@@ -463,6 +608,19 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
               ),
             ),
             const Divider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: _conference,
+                keyboardType: TextInputType.url,
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.videocam_outlined),
+                  hintText: 'Add video call link',
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+            const Divider(),
             ListTile(
               leading: const Icon(Icons.people_outline),
               title: Text(
@@ -475,6 +633,24 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
                 final picked = await pickContacts(context, selected: _contactIds.toSet());
                 if (picked != null) _set(() => _contactIds = picked.toList());
               },
+            ),
+            for (final email in _guestEmails)
+              ListTile(
+                contentPadding: const EdgeInsets.only(left: 72, right: 8),
+                title: Text(email),
+                trailing: IconButton(
+                  tooltip: 'Remove guest',
+                  icon: const Icon(Icons.close),
+                  onPressed: () => _set(() => _guestEmails = [..._guestEmails]..remove(email)),
+                ),
+              ),
+            ListTile(
+              contentPadding: const EdgeInsets.only(left: 72, right: 8),
+              title: Text(
+                'Add guest by email',
+                style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+              ),
+              onTap: _addGuestEmail,
             ),
             for (final id in _contactIds)
               ListTile(
@@ -520,6 +696,23 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
                   onPressed: () => _set(() => _noteIds = [..._noteIds]..remove(id)),
                 ),
               ),
+            const Divider(),
+            for (final a in _attachments)
+              AttachmentTile(
+                attachment: a,
+                onRemove: () => _set(() => _attachments = [..._attachments]..remove(a)),
+              ),
+            ListTile(
+              leading: Icon(_attachments.isEmpty ? Icons.attach_file : null),
+              title: Text(
+                'Add attachment',
+                style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+              ),
+              subtitle: _attachments.isEmpty
+                  ? const Text('Encrypted on this phone before upload')
+                  : null,
+              onTap: _addAttachment,
+            ),
             const Divider(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),

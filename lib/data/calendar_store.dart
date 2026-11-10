@@ -3,6 +3,7 @@ import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../model/calendar_event.dart';
 import 'event_actions.dart';
+import 'subscriptions.dart';
 
 /// Events are items with `kind: event`, calendars `kind: calendar`.
 final eventsCollection = ZtCollection<CalendarEvent>(
@@ -77,14 +78,56 @@ class CalendarRepository {
   Future<LocalItemStore> get _store => _ref.read(ztLocalStoreProvider.future);
 
   Future<void> saveEvent(CalendarEvent event) async {
+    if (event.readOnly) throw StateError('Subscribed events are read-only');
     final withCreated = event.createdAt == null
         ? event.copyWith(createdAt: DateTime.now())
         : event;
-    await eventsCollection.save(_sync, await _store, withCreated);
+    final store = await _store;
+    final before = await eventsCollection.get(store, event.id);
+    await eventsCollection.save(_sync, store, withCreated);
+    if (before != null) {
+      final kept = {for (final a in event.attachments) a['id']};
+      await _release([
+        for (final a in before.attachments)
+          if (!kept.contains(a['id'])) a,
+      ]);
+    }
   }
 
   Future<void> deleteEvent(String id) async {
+    final before = await eventsCollection.get(await _store, id);
     await eventsCollection.delete(_sync, id);
+    if (before != null) await _release(before.attachments);
+  }
+
+  /// Deletes the files of [attachments] that no other event still holds
+  /// (a changed occurrence keeps its series' attachments).
+  Future<void> _release(List<Map<String, Object?>> attachments) async {
+    if (attachments.isEmpty) return;
+    final inUse = {
+      for (final e in await eventsCollection.list(await _store))
+        for (final a in e.attachments) a['id'],
+    };
+    final refs = <ZtAttachmentRef>[
+      for (final a in attachments)
+        if (!inUse.contains(a['id']))
+          if (_parseRef(a) case final r?) r,
+    ];
+    if (refs.isEmpty) return;
+    try {
+      final files = await _ref.read(ztAttachmentsProvider.future);
+      await files.deleteAll(refs);
+    } on Object {
+      // Locked or offline: an orphan file costs storage, not privacy.
+    }
+  }
+
+  static ZtAttachmentRef? _parseRef(Map<String, Object?> json) {
+    try {
+      return ZtAttachmentRef.fromJson(json);
+    } on Object {
+      return null;
+    }
   }
 
   /// Deletes a series and every changed occurrence of it.
@@ -108,6 +151,7 @@ class CalendarRepository {
       if (e.calendarId == id) await deleteEvent(e.id);
     }
     await calendarsCollection.delete(_sync, id);
+    await feedsCollection.delete(_sync, CalendarFeed.itemIdFor(id));
   }
 
   /// Applies a series edit or delete (see [SeriesEdits]).

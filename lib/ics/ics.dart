@@ -10,9 +10,45 @@ import '../util/time_zones.dart';
 /// (`RECURRENCE-ID`) come back as exception events with [seriesId] set to
 /// their series' id.
 class IcsCalendar {
-  IcsCalendar({required this.name, required this.events});
+  IcsCalendar({
+    required this.name,
+    required this.events,
+    this.method,
+    this.cancelled = const [],
+    this.changedOccurrences = const {},
+  });
   final String? name;
   final List<CalendarEvent> events;
+
+  /// Events the file marks `STATUS:CANCELLED` (left out of [events]): the
+  /// UID, and for one cancelled occurrence its original start.
+  final List<({String uid, DateTime? occurrence})> cancelled;
+
+  /// Events in [events] that are one changed occurrence of a series the
+  /// file doesn't contain (an organizer's update to a single date), by
+  /// event id: the series UID and the occurrence's original start.
+  final Map<String, ({String uid, DateTime occurrence})> changedOccurrences;
+
+  /// `REQUEST` for an invitation, `CANCEL` for a cancellation, `PUBLISH`
+  /// or null for a plain calendar file.
+  final String? method;
+}
+
+/// The first video-call link in [text] (Google Meet, Zoom, Teams, Jitsi,
+/// Webex, Whereby), or null.
+String? findMeetingLink(String text) {
+  final m = RegExp(
+    r'https://(?:meet\.google\.com|[\w.-]*zoom\.us|teams\.microsoft\.com|teams\.live\.com|meet\.jit\.si|[\w.-]*webex\.com|whereby\.com)/[^\s<>"]*',
+    caseSensitive: false,
+  ).firstMatch(text);
+  return m?.group(0);
+}
+
+String? _mailto(String v) {
+  final t = v.trim();
+  final lower = t.toLowerCase();
+  if (!lower.startsWith('mailto:')) return null;
+  return t.substring(7).trim();
 }
 
 /// A content line: `NAME;PARAM=VALUE:value`.
@@ -176,6 +212,8 @@ abstract final class Ics {
     Map<String, _Line> props = {};
     List<_Line> exdates = [];
     List<int> alarms = [];
+    List<_Line> attendees = [];
+    String? method;
     for (final line in lines) {
       if (line.name == 'BEGIN') {
         depth.add(line.value.toUpperCase());
@@ -183,13 +221,14 @@ abstract final class Ics {
           props = {};
           exdates = [];
           alarms = [];
+          attendees = [];
         }
         continue;
       }
       if (line.name == 'END') {
         final ended = depth.isEmpty ? '' : depth.removeLast();
         if (ended == 'VEVENT') {
-          final event = _event(props, exdates, alarms, calendarId);
+          final event = _event(props, exdates, alarms, attendees, calendarId);
           if (event == null) continue;
           final recurrenceId = props['RECURRENCE-ID'];
           if (recurrenceId != null && event.icalUid != null) {
@@ -210,9 +249,13 @@ abstract final class Ics {
       final inAlarm = depth.isNotEmpty && depth.last == 'VALARM';
       if (depth.length == 1 && line.name == 'X-WR-CALNAME') {
         name = _unescape(line.value).trim();
+      } else if (depth.length == 1 && line.name == 'METHOD') {
+        method = line.value.trim().toUpperCase();
       } else if (inEvent) {
         if (line.name == 'EXDATE') {
           exdates.add(line);
+        } else if (line.name == 'ATTENDEE') {
+          attendees.add(line);
         } else {
           props[line.name] = line;
         }
@@ -224,21 +267,34 @@ abstract final class Ics {
       }
     }
 
+    final cancelled = <({String uid, DateTime? occurrence})>[
+      for (final e in events)
+        if (e.extra['_status'] == 'CANCELLED' && e.icalUid != null)
+          (uid: e.icalUid!, occurrence: null),
+    ];
+    final changed = <String, ({String uid, DateTime occurrence})>{};
     for (final (uid, original, ex) in pendingExceptions) {
+      final isCancelled = ex.extra['_status'] == 'CANCELLED';
+      if (isCancelled) cancelled.add((uid: uid, occurrence: original));
       final i = seriesByUid[uid];
       if (i == null) {
-        events.add(ex); // A lone changed occurrence: keep it as an event.
+        // A lone changed occurrence: keep it as an event, and say which
+        // occurrence it replaces so an invitation update can apply it.
+        if (!isCancelled) changed[ex.id] = (uid: uid, occurrence: original);
+        events.add(ex);
         continue;
       }
       final series = events[i];
       events[i] = series.copyWith(exceptions: {...series.exceptions, original});
-      final cancelled = ex.extra['_status'] == 'CANCELLED';
-      if (!cancelled) {
+      if (!isCancelled) {
         events.add(ex.copyWith(seriesId: series.id, originalStart: original));
       }
     }
     return IcsCalendar(
       name: name,
+      method: method,
+      cancelled: cancelled,
+      changedOccurrences: changed,
       events: [
         for (final e in events)
           if (e.extra['_status'] != 'CANCELLED') _withoutStatus(e),
@@ -259,6 +315,7 @@ abstract final class Ics {
     Map<String, _Line> p,
     List<_Line> exdates,
     List<int> alarms,
+    List<_Line> attendees,
     String calendarId,
   ) {
     final startLine = p['DTSTART'];
@@ -287,11 +344,18 @@ abstract final class Ics {
     final rrule = p['RRULE']?.value;
     final rule = RecurrenceRule.tryParse(rrule);
     final status = p['STATUS']?.value.toUpperCase();
-    // A repeating event keeps its zone's wall-clock time across DST.
+    // The event keeps its zone: a repeating one stays on that zone's clock
+    // across DST, and the details show its own time when travelling.
     final tzid = startLine.params['TZID'];
-    final zone = !allDay && rule != null && tzid != null && zoneFor(_ianaFor(tzid)) != null
+    final zone = !allDay && tzid != null && zoneFor(_ianaFor(tzid)) != null
         ? _ianaFor(tzid)
         : null;
+    final description = _unescape(p['DESCRIPTION']?.value ?? '').trim();
+    final location = _unescape(p['LOCATION']?.value ?? '').trim();
+    final conference = p['X-GOOGLE-CONFERENCE']?.value.trim() ??
+        p['CONFERENCE']?.value.trim() ??
+        findMeetingLink(location) ??
+        findMeetingLink(description);
     return CalendarEvent(
       id: const Uuid().v4(),
       title: _unescape(p['SUMMARY']?.value ?? '').trim(),
@@ -299,8 +363,13 @@ abstract final class Ics {
       end: end,
       allDay: allDay,
       calendarId: calendarId,
-      description: _unescape(p['DESCRIPTION']?.value ?? '').trim(),
-      location: _unescape(p['LOCATION']?.value ?? '').trim(),
+      description: description,
+      location: location,
+      conferenceUrl: conference,
+      guestEmails: [
+        for (final a in attendees)
+          if (_mailto(a.value) case final email? when email.isNotEmpty) email,
+      ],
       rrule: rule?.toString(),
       exceptions: {
         for (final line in exdates)
@@ -320,6 +389,7 @@ abstract final class Ics {
     Iterable<CalendarEvent> events, {
     String name = 'ZT Calendar',
     DateTime? now,
+    IcsInvite? invite,
   }) {
     final stamp = _utc(now ?? DateTime.now());
     final out = StringBuffer()
@@ -327,6 +397,7 @@ abstract final class Ics {
       ..write('VERSION:2.0\r\n')
       ..write('PRODID:-//Zero-Trust//ZT Calendar//EN\r\n')
       ..write('CALSCALE:GREGORIAN\r\n');
+    if (invite != null) out.write('METHOD:REQUEST\r\n');
     _fold(out, 'X-WR-CALNAME:${_escape(name)}');
     final all = events.toList();
     final byId = {for (final e in all) e.id: e};
@@ -359,8 +430,35 @@ abstract final class Ics {
       }
       _fold(out, 'SUMMARY:${_escape(e.title)}');
       if (e.location.isNotEmpty) _fold(out, 'LOCATION:${_escape(e.location)}');
-      if (e.description.isNotEmpty) {
-        _fold(out, 'DESCRIPTION:${_escape(e.description)}');
+      final call = e.conferenceUrl;
+      // Most calendars don't read CONFERENCE yet, so the link also goes in
+      // the description.
+      final description = call != null && !e.description.contains(call)
+          ? [if (e.description.isNotEmpty) e.description, 'Join: $call'].join('\n\n')
+          : e.description;
+      if (description.isNotEmpty) {
+        _fold(out, 'DESCRIPTION:${_escape(description)}');
+      }
+      if (call != null) {
+        _fold(out, 'CONFERENCE;VALUE=URI;FEATURE=VIDEO:$call');
+      }
+      if (invite != null) {
+        out.write('SEQUENCE:${e.inviteSequence}\r\n');
+        out.write('STATUS:CONFIRMED\r\n');
+        final org = invite.organizerEmail;
+        if (org != null && org.isNotEmpty) {
+          _fold(
+            out,
+            'ORGANIZER${invite.organizerName == null ? '' : ';CN=${_param(invite.organizerName!)}'}:mailto:$org',
+          );
+        }
+        for (final (guestName, email) in invite.guests) {
+          _fold(
+            out,
+            'ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE'
+            '${guestName == null ? '' : ';CN=${_param(guestName)}'}:mailto:$email',
+          );
+        }
       }
       if (e.rrule != null) _fold(out, 'RRULE:${e.rrule}');
       for (final x in (e.exceptions.toList()..sort())) {
@@ -388,6 +486,12 @@ abstract final class Ics {
   }
 
   static String _two(int n) => n.toString().padLeft(2, '0');
+
+  /// A parameter value, quoted when it holds `:;,`.
+  static String _param(String v) {
+    final clean = v.replaceAll('"', "'");
+    return RegExp('[:;,]').hasMatch(clean) ? '"$clean"' : clean;
+  }
 
   static String _date(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}${_two(d.month)}${_two(d.day)}';
@@ -436,4 +540,19 @@ abstract final class Ics {
     }
     return n;
   }
+}
+
+/// Who an emailed invitation is from and to (iCalendar METHOD:REQUEST).
+class IcsInvite {
+  const IcsInvite({
+    required this.organizerEmail,
+    this.organizerName,
+    required this.guests,
+  });
+
+  final String? organizerEmail;
+  final String? organizerName;
+
+  /// (name or null, email).
+  final List<(String?, String)> guests;
 }

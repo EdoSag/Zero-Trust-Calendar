@@ -18,6 +18,8 @@ import '../ics/import_service.dart';
 import '../reminders/reminders.dart';
 import '../util/format.dart';
 import 'calendars_page.dart';
+import 'phone_calendar_page.dart';
+import 'subscribe_page.dart';
 
 /// The shared Zero-Trust settings screen, with Calendar's own rows.
 class CalendarSettingsPage extends ConsumerWidget {
@@ -45,6 +47,26 @@ class CalendarSettingsPage extends ConsumerWidget {
           subtitle: const Text('Add, rename, recolour or hide'),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const CalendarsPage()),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.public),
+          title: const Text('Holidays and subscribed calendars'),
+          subtitle: const Text('Public holidays, school or team calendars'),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const HolidaysPage()),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.phone_android),
+          title: const Text('Show on this phone'),
+          subtitle: Text(
+            s.phoneCalendarIdsFor(ref.read(accountServiceProvider).currentUserId).isEmpty
+                ? 'Off. For your watch, car and other calendar apps'
+                : 'On for some calendars, copied to Android\'s calendar',
+          ),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const PhoneCalendarPage()),
           ),
         ),
         ListTile(
@@ -154,10 +176,17 @@ class CalendarSettingsPage extends ConsumerWidget {
         SwitchListTile(
           secondary: const Icon(Icons.task_alt),
           title: const Text('Show tasks from ZT Tasks'),
-          subtitle: const Text('Tasks with a due date, read-only'),
+          subtitle: const Text('Tasks with a due date. Tick them off here'),
           value: s.showTasks,
           onChanged: (v) => ctrl.update((x) => x.copyWith(showTasks: v)),
         ),
+        if (s.showTasks)
+          SwitchListTile(
+            secondary: const Icon(Icons.done_all),
+            title: const Text('Show completed tasks'),
+            value: s.showCompletedTasks,
+            onChanged: (v) => ctrl.update((x) => x.copyWith(showCompletedTasks: v)),
+          ),
         SwitchListTile(
           secondary: const Icon(Icons.cake_outlined),
           title: const Text('Show birthdays from ZT Contacts'),
@@ -168,8 +197,7 @@ class CalendarSettingsPage extends ConsumerWidget {
           leading: const Icon(Icons.sync),
           title: const Text('Refresh notes, tasks and contacts'),
           subtitle: const Text(
-            'Calendar keeps its own encrypted, read-only copy of them on '
-            'this phone. Edit them in their apps',
+            'Calendar keeps its own encrypted copy of them on this phone',
           ),
           onTap: () async {
             for (final app in LinkedApp.values) {

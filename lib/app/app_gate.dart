@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,8 +9,15 @@ import 'package:zero_trust_core/zero_trust_core.dart';
 import '../data/calendar_store.dart';
 import '../data/entries.dart';
 import '../data/linked_apps.dart';
+import '../data/phone_calendar_sync.dart';
+import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
+import '../platform/channels.dart';
 import '../reminders/reminders.dart';
+import '../ui/guest_actions.dart';
+import '../ui/import_sheet.dart';
+import '../ui/linked_app_launcher.dart';
+import '../ui/linked_pickers.dart';
 import '../ui/event_details_page.dart';
 import '../ui/home_page.dart';
 import '../ui/navigation.dart';
@@ -120,6 +128,16 @@ class _AppGateState extends ConsumerState<AppGate> with WidgetsBindingObserver {
       );
     }
 
+    // Signing out (from Settings, the unlock screen, or another device)
+    // takes this account's events out of Android's calendar.
+    ref.listen(currentUserProvider, (prev, next) {
+      if (prev != null && next == null) {
+        ref.read(calendarSettingsProvider.notifier).update(
+          (x) => x.copyWith(phoneCalendarIds: const {}),
+        );
+        const PhoneCalendarBridge().sync(const []).catchError((Object _) => false);
+      }
+    });
     final user = ref.watch(currentUserProvider);
     if (user == null || _signingIn) {
       return ZtSignInScreen(onUnlocked: _onUnlocked, onForgotPassword: _forgotPassword);
@@ -138,8 +156,10 @@ class _AppGateState extends ConsumerState<AppGate> with WidgetsBindingObserver {
   }
 }
 
-/// The calendar once unlocked: runs sync, keeps reminders and the home
-/// widget in step with the events, and opens events from reminder taps.
+/// The calendar once unlocked: runs sync, keeps reminders, the home widget
+/// and "Show on this phone" in step with the events, refreshes subscribed
+/// calendars, and handles reminder buttons and files other apps open
+/// Calendar with.
 class CalendarHome extends ConsumerStatefulWidget {
   const CalendarHome({super.key});
 
@@ -148,43 +168,90 @@ class CalendarHome extends ConsumerStatefulWidget {
 }
 
 class _CalendarHomeState extends ConsumerState<CalendarHome> {
-  StreamSubscription<(String, DateTime?)>? _taps;
+  StreamSubscription<ReminderTap>? _taps;
   StreamSubscription<Uri?>? _widgetTaps;
+  StreamSubscription<void>? _files;
   Timer? _debounce;
   Timer? _hourly;
+  String? _lastPhonePayload;
 
   @override
   void initState() {
     super.initState();
-    _taps = ref.read(reminderSchedulerProvider).taps.listen(_openFromReminder);
+    _taps = ref.read(reminderSchedulerProvider).taps.listen(_onReminder);
     _widgetTaps = HomeWidget.widgetClicked.listen(
       (_) => ref.read(focusedDayProvider.notifier).today(),
       onError: (_) {},
     );
+    _files = IncomingFiles.instance.arrived.listen((_) => _takeFiles());
     // Reminders more than 30 days ahead, and the widget's "next", move on
-    // as time passes.
-    _hourly = Timer.periodic(const Duration(hours: 1), (_) => _schedule());
-    WidgetsBinding.instance.addPostFrameCallback((_) => _schedule());
+    // as time passes; subscribed calendars are fetched again.
+    _hourly = Timer.periodic(const Duration(hours: 1), (_) {
+      _schedule();
+      _refreshFeeds();
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _schedule();
+      _takeFiles();
+      _refreshFeeds();
+    });
   }
 
   @override
   void dispose() {
     _taps?.cancel();
     _widgetTaps?.cancel();
+    _files?.cancel();
     _debounce?.cancel();
     _hourly?.cancel();
     super.dispose();
   }
 
-  void _openFromReminder((String, DateTime?) tap) {
+  void _refreshFeeds() {
+    ref.read(subscriptionServiceProvider).refreshStale().catchError((Object _) {});
+  }
+
+  Future<void> _takeFiles() async {
+    final files = await IncomingFiles.instance.take();
+    for (final f in files) {
+      if (!mounted) return;
+      await handleIncomingFile(context, ref, f);
+    }
+  }
+
+  Future<void> _onReminder(ReminderTap tap) async {
     if (!mounted) return;
-    final (eventId, occurrence) = tap;
-    if (occurrence != null) ref.read(focusedDayProvider.notifier).set(occurrence);
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => EventDetailsPage(eventId: eventId, occurrenceStart: occurrence),
-      ),
-    );
+    final event = (await ref.read(eventsProvider.future))
+        .where((e) => e.id == tap.eventId)
+        .firstOrNull;
+    if (!mounted) return;
+    if (tap.occurrence != null) ref.read(focusedDayProvider.notifier).set(tap.occurrence!);
+    switch (tap.action) {
+      case ReminderAction.map when event != null && event.location.isNotEmpty:
+        await openLocation(event.location);
+      case ReminderAction.note when event != null && event.noteIds.isNotEmpty:
+        final notes = await ref.read(linkedNotesProvider.future);
+        final note = notes.where((n) => n.id == event.noteIds.first).firstOrNull;
+        if (!mounted) return;
+        if (note != null) {
+          await showNoteSheet(context, note);
+        } else {
+          await openLinkedApp(LinkedApp.notes);
+        }
+      case ReminderAction.late when event != null:
+        final contacts = await ref.read(linkedContactsProvider.future);
+        if (!mounted) return;
+        await sendRunningLate(context, event, guestsOf(event, contacts));
+      default:
+        await Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => EventDetailsPage(
+              eventId: tap.eventId,
+              occurrenceStart: tap.occurrence,
+            ),
+          ),
+        );
+    }
   }
 
   void _schedule() {
@@ -222,7 +289,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     if (!mounted) return;
     final entries = buildEntries(
       range: DateRange(dayOf(now), addDays(dayOf(now), 14)),
-      events: events,
+      events: [...events, ...ref.read(feedEventsProvider)],
       calendars: calendars,
       contacts: settings.showBirthdays
           ? ref.read(linkedContactsProvider).value ?? const []
@@ -236,6 +303,39 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
         formatTime: (t) => formatTime(context, t),
       ),
     );
+    await _syncPhoneCalendar(events, calendars, settings, now);
+  }
+
+  /// "Show on this phone": copies the chosen calendars into Android's
+  /// calendar, only when something changed.
+  Future<void> _syncPhoneCalendar(
+    List<CalendarEvent> events,
+    List<ZtCalendarInfo> calendars,
+    CalendarSettings settings,
+    DateTime now,
+  ) async {
+    const bridge = PhoneCalendarBridge();
+    if (!bridge.supported) return;
+    final enabled = settings.phoneCalendarIdsFor(
+      ref.read(accountServiceProvider).currentUserId,
+    );
+    // Nothing on and nothing copied: skip. Otherwise an empty payload
+    // removes what an earlier account or setting put there.
+    if (enabled.isEmpty && _lastPhonePayload == '[]') return;
+    final payload = phoneCalendarPayload(
+      events: [...events, ...ref.read(feedEventsProvider)],
+      calendars: calendars,
+      enabledIds: enabled,
+      now: dayOf(now),
+    );
+    final key = jsonEncode(payload);
+    if (key == _lastPhonePayload) return;
+    try {
+      if (payload.isNotEmpty && !await bridge.hasPermission()) return;
+      if (await bridge.sync(payload)) _lastPhonePayload = key;
+    } on Object {
+      // Calendar provider unavailable: try again on the next change.
+    }
   }
 
   @override
@@ -244,6 +344,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     ref.watch(ztSyncControllerProvider);
     ref.listen(eventsProvider, (_, _) => _schedule());
     ref.listen(calendarsProvider, (_, _) => _schedule());
+    ref.listen(feedsProvider, (_, _) => _schedule());
     ref.listen(calendarSettingsProvider, (_, _) => _schedule());
     ref.listen(linkedContactsProvider, (_, _) => _schedule());
     return const HomePage();
