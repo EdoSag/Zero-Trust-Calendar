@@ -11,6 +11,7 @@ import '../reminders/reminders.dart';
 import '../util/format.dart';
 import '../util/quick_add.dart';
 import 'event_editor_page.dart';
+import 'inline_button_style.dart';
 
 /// Type an event ("Lunch with Dana Fri 1pm") or a ZT Tasks task ("Pay rent
 /// on the 1st"); see what it means before adding it.
@@ -173,6 +174,7 @@ class _QuickAddSheetState extends ConsumerState<_QuickAddSheet> {
                 ),
               const Spacer(),
               FilledButton(
+                style: inlineButtonStyle,
                 onPressed: q.title.isEmpty || _saving ? null : _add,
                 child: Text(_task ? 'Add task' : 'Add'),
               ),

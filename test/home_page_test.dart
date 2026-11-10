@@ -11,9 +11,11 @@ import 'package:zerotrust_calendar/data/subscriptions.dart';
 import 'package:zerotrust_calendar/model/calendar_event.dart';
 import 'package:zerotrust_calendar/model/linked_items.dart';
 import 'package:zerotrust_calendar/reminders/reminders.dart';
+import 'package:zerotrust_calendar/ui/event_details_page.dart';
 import 'package:zerotrust_calendar/ui/event_editor_page.dart';
 import 'package:zerotrust_calendar/ui/home_page.dart';
 import 'package:zerotrust_calendar/ui/month_view.dart';
+import 'package:zerotrust_calendar/ui/quick_add_sheet.dart';
 import 'package:zerotrust_calendar/ui/schedule_view.dart';
 import 'package:zerotrust_calendar/ui/timeline_view.dart';
 
@@ -33,10 +35,9 @@ Widget app(Widget home, List<CalendarEvent> events, {PreferencesStore? prefs}) {
       feedsProvider.overrideWith((ref) => Stream.value(const <CalendarFeed>[])),
     ],
     child: MaterialApp(
-      theme: ThemeData(
-        fontFamily: 'Roboto',
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6366F1)),
-      ),
+      // The real app theme: its full-width buttons vanish inside a Row, which
+      // a plain ThemeData would hide from these tests.
+      theme: ZtTheme.light(accent: ZtTheme.accentFor(calendarAppConfig)),
       localizationsDelegates: const [
         ZtL10n.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -46,6 +47,30 @@ Widget app(Widget home, List<CalendarEvent> events, {PreferencesStore? prefs}) {
       home: home,
     ),
   );
+}
+
+/// A 1080x2400 phone, like the devices the app ships to.
+void usePhoneScreen(WidgetTester tester) {
+  tester.view.physicalSize = const Size(1080, 2400);
+  tester.view.devicePixelRatio = 2.625;
+  addTearDown(tester.view.reset);
+}
+
+/// The button showing [label] is laid out inside the screen and a tap on its
+/// centre reaches it (a button that failed layout is not drawn at all).
+void expectTappableOnScreen(WidgetTester tester, String label) {
+  final button = find.ancestor(
+    of: find.text(label),
+    matching: find.byWidgetPredicate((w) => w is ButtonStyleButton),
+  );
+  expect(button, findsOneWidget, reason: '"$label" button is missing');
+  final rect = tester.getRect(button);
+  final screen = Offset.zero & tester.view.physicalSize / tester.view.devicePixelRatio;
+  expect(rect.width, greaterThan(0), reason: '"$label" has no width');
+  expect(rect.isFinite, isTrue, reason: '"$label" has no finite size');
+  expect(screen.contains(rect.center), isTrue, reason: '"$label" is off screen at $rect');
+  expect(button.hitTestable(), findsOneWidget,
+      reason: '"$label" is covered or cannot be tapped');
 }
 
 void main() {
@@ -112,6 +137,49 @@ void main() {
     await tester.tap(find.text('Every day'));
     await tester.pumpAndSettle();
     expect(find.text('Every day'), findsOneWidget);
+  });
+
+  testWidgets('the editor Save button is on screen with the app theme', (tester) async {
+    usePhoneScreen(tester);
+    await tester.pumpWidget(app(const EventEditorPage(), events));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expectTappableOnScreen(tester, 'Save');
+  });
+
+  testWidgets('the quick add sheet shows its Add button', (tester) async {
+    usePhoneScreen(tester);
+    await tester.pumpWidget(app(
+      Scaffold(
+        body: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => showQuickAdd(context),
+            child: const Text('open'),
+          ),
+        ),
+      ),
+      events,
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expectTappableOnScreen(tester, 'Add');
+  });
+
+  testWidgets('event details show the Join video call button', (tester) async {
+    usePhoneScreen(tester);
+    final call = CalendarEvent(
+      id: 'call',
+      title: 'Video call',
+      start: today9,
+      end: today9.add(const Duration(hours: 1)),
+      conferenceUrl: 'https://meet.example.com/abc',
+    );
+    await tester.pumpWidget(app(const EventDetailsPage(eventId: 'call'), [...events, call]));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expectTappableOnScreen(tester, 'Join video call');
   });
 
   test('settings round-trip through preferences', () {

@@ -20,6 +20,7 @@ import 'event_editor_page.dart';
 import 'guest_actions.dart';
 import 'linked_app_launcher.dart';
 import 'linked_pickers.dart';
+import 'inline_button_style.dart';
 
 /// One event (or one occurrence of a series): when, where, who, notes.
 class EventDetailsPage extends ConsumerWidget {
@@ -252,6 +253,7 @@ class EventDetailsPage extends ConsumerWidget {
               child: Row(
                 children: [
                   FilledButton.icon(
+                    style: inlineButtonStyle,
                     onPressed: () => launchUrl(
                       Uri.parse(call),
                       mode: LaunchMode.externalApplication,
