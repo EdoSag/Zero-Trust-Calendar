@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Resizable from 2x1 (title, + and a count) up to the whole screen; more
-     events show as it grows. See UpNextWidgetProvider. -->
+     events show as it grows. The header (14dp padding twice plus the 40dp
+     + button) needs 72dp, so that is the shortest it goes. See UpNextWidgetProvider. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="180dp"
     android:minHeight="110dp"
     android:minResizeWidth="110dp"
-    android:minResizeHeight="40dp"
+    android:minResizeHeight="72dp"
     android:targetCellWidth="3"
     android:targetCellHeight="2"
     android:updatePeriodMillis="0"
