@@ -239,6 +239,8 @@ Future<void> moveEntry(
     messenger.showSnackBar(
       SnackBar(
         content: Text('Moved to ${formatDay(start)}, ${formatTime(context, start)}'),
+        // Flutter keeps a snackbar with an action open until it is tapped.
+        persist: false,
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () => repo.saveEvent(event).ignore(),
