@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="up_next_widget_description">Your next events</string>
+    <string name="up_next_widget_description">Your next events, and + for a new one</string>
 </resources>

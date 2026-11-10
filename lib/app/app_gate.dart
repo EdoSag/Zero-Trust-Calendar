@@ -31,6 +31,10 @@ import 'calendar_settings.dart';
 /// Signed out: sign in or create an account. Signed in but locked (cold
 /// start, auto-lock): unlock with the account password or biometrics. A new
 /// recovery key is always shown, and confirmed, before the vault opens.
+/// The latest home screen widget tap not yet acted on. Set by [AppGate]
+/// whether or not the calendar is unlocked; taken by [CalendarHome].
+final ValueNotifier<Uri?> pendingWidgetTap = ValueNotifier<Uri?>(null);
+
 class AppGate extends ConsumerStatefulWidget {
   const AppGate({super.key});
 
@@ -43,15 +47,36 @@ class _AppGateState extends ConsumerState<AppGate> with WidgetsBindingObserver {
   /// Supabase reports the session a moment earlier.
   late bool _signingIn = ref.read(currentUserProvider) == null;
   UnlockResult? _awaitingRecoveryKey;
+  StreamSubscription<Uri?>? _widgetTaps;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Widget taps are caught here, above the unlock screen, and kept until
+    // CalendarHome is showing, so a tap made while locked still opens the
+    // new-event editor once unlocked.
+    _widgetTaps = HomeWidget.widgetClicked.listen(
+      (uri) {
+        if (uri != null) pendingWidgetTap.value = uri;
+      },
+      onError: (_) {},
+    );
+    _takeLaunchWidgetTap();
+  }
+
+  Future<void> _takeLaunchWidgetTap() async {
+    try {
+      final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
+      if (uri != null) pendingWidgetTap.value = uri;
+    } on Object {
+      // No widget support here.
+    }
   }
 
   @override
   void dispose() {
+    _widgetTaps?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -169,7 +194,6 @@ class CalendarHome extends ConsumerStatefulWidget {
 
 class _CalendarHomeState extends ConsumerState<CalendarHome> {
   StreamSubscription<ReminderTap>? _taps;
-  StreamSubscription<Uri?>? _widgetTaps;
   StreamSubscription<void>? _files;
   Timer? _debounce;
   Timer? _hourly;
@@ -179,10 +203,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
   void initState() {
     super.initState();
     _taps = ref.read(reminderSchedulerProvider).taps.listen(_onReminder);
-    _widgetTaps = HomeWidget.widgetClicked.listen(
-      (_) => ref.read(focusedDayProvider.notifier).today(),
-      onError: (_) {},
-    );
+    pendingWidgetTap.addListener(_takeWidgetTap);
     _files = IncomingFiles.instance.arrived.listen((_) => _takeFiles());
     // Reminders more than 30 days ahead, and the widget's "next", move on
     // as time passes; subscribed calendars are fetched again.
@@ -194,13 +215,23 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
       _schedule();
       _takeFiles();
       _refreshFeeds();
+      _takeWidgetTap();
     });
+  }
+
+  /// "Up next" opens today; its + opens a new event. Each tap is taken once.
+  void _takeWidgetTap() {
+    final uri = pendingWidgetTap.value;
+    if (uri == null || !mounted) return;
+    pendingWidgetTap.value = null;
+    ref.read(focusedDayProvider.notifier).today();
+    if (uri.host == 'new-event') createEvent(context);
   }
 
   @override
   void dispose() {
     _taps?.cancel();
-    _widgetTaps?.cancel();
+    pendingWidgetTap.removeListener(_takeWidgetTap);
     _files?.cancel();
     _debounce?.cancel();
     _hourly?.cancel();

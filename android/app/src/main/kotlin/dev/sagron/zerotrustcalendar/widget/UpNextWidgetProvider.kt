@@ -5,22 +5,28 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.Uri
+import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
 import dev.sagron.zerotrustcalendar.MainActivity
 import dev.sagron.zerotrustcalendar.R
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
+import es.antonborri.home_widget.HomeWidgetPlugin
 import es.antonborri.home_widget.HomeWidgetProvider
 
 /**
  * "Up next": the next few events, as the app last saved them
  * (lib/widget/up_next_widget.dart). It never reads the vault. Event titles
- * are only saved when the user turned on "Show event titles on the widget";
+ * are only saved when the user turned on "Show details on the home screen";
  * otherwise the rows say "Event" with the time.
+ *
+ * Shared Zero-Trust widget look (Zero-Trust-Core/android-widget-kit). The
+ * number of rows follows the widget's height; + opens a new event.
  */
 class UpNextWidgetProvider : HomeWidgetProvider() {
 
     companion object {
+        private const val MAX_ROWS = 5
         private val ROWS = intArrayOf(R.id.row0, R.id.row1, R.id.row2, R.id.row3, R.id.row4)
         private val TIMES = intArrayOf(R.id.time0, R.id.time1, R.id.time2, R.id.time3, R.id.time4)
         private val TITLES = intArrayOf(R.id.title0, R.id.title1, R.id.title2, R.id.title3, R.id.title4)
@@ -33,31 +39,73 @@ class UpNextWidgetProvider : HomeWidgetProvider() {
         appWidgetIds: IntArray,
         widgetData: SharedPreferences,
     ) {
-        val header = widgetData.getString("upnext_header", null) ?: "ZT Calendar"
-        val count = widgetData.getInt("upnext_count", 0)
-        val empty = widgetData.getString("upnext_empty", null) ?: "Open ZT Calendar to see what's next"
         appWidgetIds.forEach { widgetId ->
-            val views = RemoteViews(context.packageName, R.layout.widget_up_next)
-            views.setTextViewText(R.id.header, header)
-            for (i in ROWS.indices) {
-                if (i < count) {
-                    views.setViewVisibility(ROWS[i], View.VISIBLE)
-                    views.setTextViewText(TIMES[i], widgetData.getString("upnext_${i}_time", "") ?: "")
-                    views.setTextViewText(TITLES[i], widgetData.getString("upnext_${i}_title", "") ?: "")
-                    val color = widgetData.getString("upnext_${i}_color", null)
-                    val parsed = try { Color.parseColor(color ?: "#F97316") } catch (e: Exception) { Color.GRAY }
-                    views.setInt(DOTS[i], "setColorFilter", parsed)
-                } else {
-                    views.setViewVisibility(ROWS[i], View.GONE)
-                }
-            }
-            views.setViewVisibility(R.id.empty, if (count == 0) View.VISIBLE else View.GONE)
-            views.setTextViewText(R.id.empty, empty)
-            val open = HomeWidgetLaunchIntent.getActivity(
-                context, MainActivity::class.java, Uri.parse("ztcalendar://today"),
+            appWidgetManager.updateAppWidget(
+                widgetId,
+                buildViews(context, widgetData, appWidgetManager.getAppWidgetOptions(widgetId)),
             )
-            views.setOnClickPendingIntent(R.id.widget_root, open)
-            appWidgetManager.updateAppWidget(widgetId, views)
         }
+    }
+
+    /** Resized: redraw with as many rows as now fit. */
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: Bundle,
+    ) {
+        appWidgetManager.updateAppWidget(
+            appWidgetId,
+            buildViews(context, HomeWidgetPlugin.getData(context), newOptions),
+        )
+    }
+
+    private fun buildViews(context: Context, data: SharedPreferences, options: Bundle?): RemoteViews {
+        val views = RemoteViews(context.packageName, R.layout.widget_up_next)
+        // Portrait height; 0 when the launcher hasn't said yet.
+        val height = options?.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0) ?: 0
+        val showAppRow = height == 0 || height >= 160
+        val maxRows = if (height == 0) MAX_ROWS else ((height - 78 - (if (showAppRow) 26 else 0)) / 32).coerceIn(0, MAX_ROWS)
+        val locked = data.getBoolean("upnext_locked", false)
+        val count = data.getInt("upnext_count", 0).coerceIn(0, maxRows)
+
+        views.setViewVisibility(R.id.app_row, if (showAppRow) View.VISIBLE else View.GONE)
+        views.setTextViewText(R.id.header_title, data.getString("upnext_header", null) ?: "Up next")
+        val empty = data.getString("upnext_empty", null) ?: "Open ZT Calendar to see what's next"
+        val total = data.getInt("upnext_count", 0)
+        // The caption: what's missing, or how many more than fit.
+        val caption = when {
+            locked -> "Signed out"
+            total == 0 -> empty
+            total > count && count > 0 -> "+${total - count} more"
+            count == 0 -> if (total == 1) "1 event coming up" else "$total events coming up"
+            else -> ""
+        }
+        views.setTextViewText(R.id.summary, caption)
+        views.setViewVisibility(R.id.summary, if (caption.isEmpty()) View.GONE else View.VISIBLE)
+        views.setViewVisibility(R.id.locked, if (locked && (height == 0 || height >= 100)) View.VISIBLE else View.GONE)
+        views.setViewVisibility(R.id.rows, if (locked || count == 0) View.GONE else View.VISIBLE)
+
+        for (i in ROWS.indices) {
+            if (!locked && i < count) {
+                views.setViewVisibility(ROWS[i], View.VISIBLE)
+                views.setTextViewText(TIMES[i], data.getString("upnext_${i}_time", "") ?: "")
+                views.setTextViewText(TITLES[i], data.getString("upnext_${i}_title", "") ?: "")
+                val color = data.getString("upnext_${i}_color", null)
+                val parsed = try { Color.parseColor(color ?: "#F97316") } catch (e: Exception) { Color.GRAY }
+                views.setInt(DOTS[i], "setColorFilter", parsed)
+            } else {
+                views.setViewVisibility(ROWS[i], View.GONE)
+            }
+        }
+        views.setOnClickPendingIntent(
+            R.id.widget_root,
+            HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java, Uri.parse("ztcalendar://today")),
+        )
+        views.setOnClickPendingIntent(
+            R.id.add_button,
+            HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java, Uri.parse("ztcalendar://new-event")),
+        )
+        return views
     }
 }

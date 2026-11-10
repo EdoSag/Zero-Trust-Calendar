@@ -1,179 +1,243 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  "Up next" widget, in the shared Zero-Trust widget look
+  (Zero-Trust-Core/android-widget-kit). Event titles only appear when "Show
+  details on the home screen" is on; otherwise rows say "Event" with the
+  time. How many rows show depends on the widget's height.
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
+    style="@style/ZtWidget.Root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_background"
-    android:orientation="vertical"
-    android:padding="14dp">
-    <TextView
-        android:id="@+id/header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#C2410C"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:text="ZT Calendar"/>
-    <TextView
-        android:id="@+id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="6dp"
-        android:textColor="#5B5B66"
-        android:textSize="13sp"/>
+    android:orientation="vertical">
+
     <LinearLayout
-        android:id="@+id/row0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingTop="4dp"
-        android:visibility="gone">
-        <ImageView
-            android:id="@+id/dot0"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/widget_dot"/>
-        <TextView
-            android:id="@+id/time0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:textColor="#5B5B66"
-            android:textSize="12sp"/>
-        <TextView
-            android:id="@+id/title0"
+        android:gravity="center_vertical">
+        <LinearLayout
+            android:id="@+id/header_area"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="#1B1B21"
-            android:textSize="14sp"/>
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/app_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:layout_width="@dimen/zt_widget_header_icon"
+                    android:layout_height="@dimen/zt_widget_header_icon"
+                    android:src="@mipmap/ic_launcher"
+                    android:importantForAccessibility="no"/>
+                <TextView
+                    style="@style/ZtWidget.AppName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="ZT Calendar"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/header_title"
+                style="@style/ZtWidget.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Up next"/>
+            <TextView
+                android:id="@+id/summary"
+                style="@style/ZtWidget.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/add_button"
+            style="@style/ZtWidget.Action"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_zt_widget_add"
+            android:contentDescription="New event"/>
     </LinearLayout>
+
     <LinearLayout
-        android:id="@+id/row1"
+        android:id="@+id/rows"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingTop="4dp"
-        android:visibility="gone">
-        <ImageView
-            android:id="@+id/dot1"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/widget_dot"/>
-        <TextView
-            android:id="@+id/time1"
-            android:layout_width="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/row0"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:textColor="#5B5B66"
-            android:textSize="12sp"/>
-        <TextView
-            android:id="@+id/title1"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:minHeight="32dp"
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/dot0"
+                android:layout_width="4dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/widget_dot"
+                android:importantForAccessibility="no"/>
+            <TextView
+                android:id="@+id/title0"
+                style="@style/ZtWidget.Body"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/time0"
+                style="@style/ZtWidget.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/row1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="#1B1B21"
-            android:textSize="14sp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:minHeight="32dp"
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/dot1"
+                android:layout_width="4dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/widget_dot"
+                android:importantForAccessibility="no"/>
+            <TextView
+                android:id="@+id/title1"
+                style="@style/ZtWidget.Body"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/time1"
+                style="@style/ZtWidget.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/row2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:minHeight="32dp"
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/dot2"
+                android:layout_width="4dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/widget_dot"
+                android:importantForAccessibility="no"/>
+            <TextView
+                android:id="@+id/title2"
+                style="@style/ZtWidget.Body"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/time2"
+                style="@style/ZtWidget.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/row3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:minHeight="32dp"
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/dot3"
+                android:layout_width="4dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/widget_dot"
+                android:importantForAccessibility="no"/>
+            <TextView
+                android:id="@+id/title3"
+                style="@style/ZtWidget.Body"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/time3"
+                style="@style/ZtWidget.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/row4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:minHeight="32dp"
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/dot4"
+                android:layout_width="4dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/widget_dot"
+                android:importantForAccessibility="no"/>
+            <TextView
+                android:id="@+id/title4"
+                style="@style/ZtWidget.Body"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/time4"
+                style="@style/ZtWidget.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
     </LinearLayout>
+
     <LinearLayout
-        android:id="@+id/row2"
+        android:id="@+id/locked"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingTop="4dp"
         android:visibility="gone">
         <ImageView
-            android:id="@+id/dot2"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/widget_dot"/>
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_zt_widget_lock"
+            android:tint="@color/zt_widget_on_surface_variant"
+            android:importantForAccessibility="no"/>
         <TextView
-            android:id="@+id/time2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:textColor="#5B5B66"
-            android:textSize="12sp"/>
-        <TextView
-            android:id="@+id/title2"
+            android:id="@+id/locked_text"
+            style="@style/ZtWidget.Caption"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="#1B1B21"
-            android:textSize="14sp"/>
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/row3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingTop="4dp"
-        android:visibility="gone">
-        <ImageView
-            android:id="@+id/dot3"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/widget_dot"/>
-        <TextView
-            android:id="@+id/time3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:textColor="#5B5B66"
-            android:textSize="12sp"/>
-        <TextView
-            android:id="@+id/title3"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="#1B1B21"
-            android:textSize="14sp"/>
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/row4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingTop="4dp"
-        android:visibility="gone">
-        <ImageView
-            android:id="@+id/dot4"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/widget_dot"/>
-        <TextView
-            android:id="@+id/time4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:textColor="#5B5B66"
-            android:textSize="12sp"/>
-        <TextView
-            android:id="@+id/title4"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="#1B1B21"
-            android:textSize="14sp"/>
+            android:layout_marginStart="8dp"
+            android:maxLines="2"
+            android:text="Open ZT Calendar to see what's next"/>
     </LinearLayout>
 </LinearLayout>
