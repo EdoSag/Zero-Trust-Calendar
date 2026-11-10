@@ -1,0 +1,50 @@
+name: zerotrust_calendar
+description: "Zero-Trust Calendar: an end-to-end encrypted calendar, linked with ZT Notes, Tasks and Contacts."
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.9.0
+
+# Builds SQLite3MultipleCiphers instead of plain SQLite, so the core's local
+# store is encrypted as a whole file (see Zero-Trust-Core README, "Sync").
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  # Shared account, keys, sync, settings and look of every Zero-Trust app.
+  # Never add cryptography_flutter: it breaks the core's key derivation.
+  zero_trust_core:
+    git:
+      url: https://github.com/EdoSag/Zero-Trust-Core.git
+      path: packages/zero_trust_core
+      ref: v0.8.0
+  flutter_riverpod: ^3.5.0
+  supabase_flutter: ^2.9.0
+  flutter_dotenv: ^6.0.1
+  intl: any
+  url_launcher: ^6.3.1
+  share_plus: ^13.3.1
+  path_provider: ^2.1.6
+  flutter_local_notifications: ^23.0.0
+  timezone: ^0.11.2
+  file_picker: ^13.3.2
+  archive: ^4.0.9
+  home_widget: ^0.9.3
+  uuid: ^4.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
