@@ -114,10 +114,8 @@ class CalendarRepository {
       withCreated = withCreated.copyWith(attachments: const []);
       final space = _spaces[target];
       if (space == null) throw StateError('Shared calendar not open');
-      if (from == null && await (await _store).get(event.id) != null) {
-        await deleteEvent(event.id); // Moved in from the account's own.
-      }
-      if (from != null && from != target) await _deleteShared(from, event.id);
+      final own = await (await _store).get(event.id);
+      final movedIn = from == null && own != null && !own.deleted;
       final previous = (await space.store.get(event.id))?.json;
       await _ref.read(ztSpacesProvider.notifier).save(
         target,
@@ -127,13 +125,17 @@ class CalendarRepository {
           previous: eventsCollection.owns(previous) ? previous : null,
         ),
       );
+      // Only once the new copy is saved: a failed move must not lose the
+      // event.
+      if (movedIn) await _deleteOwn(event.id);
+      if (from != null && from != target) await _deleteShared(from, event.id);
       _ref.read(sharedRevisionProvider.notifier).bump();
       return;
     }
-    if (from != null) await _deleteShared(from, event.id); // Moved out.
     final store = await _store;
     final before = await eventsCollection.get(store, event.id);
     await eventsCollection.save(_sync, store, withCreated);
+    if (from != null) await _deleteShared(from, event.id); // Moved out.
     if (before != null) {
       final kept = {for (final a in event.attachments) a['id']};
       await _release([
@@ -152,6 +154,10 @@ class CalendarRepository {
     if (await _spaceHolding(id) case final spaceId?) {
       return _deleteShared(spaceId, id);
     }
+    await _deleteOwn(id);
+  }
+
+  Future<void> _deleteOwn(String id) async {
     final before = await eventsCollection.get(await _store, id);
     await eventsCollection.delete(_sync, id);
     if (before != null) await _release(before.attachments);
