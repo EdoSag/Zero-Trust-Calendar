@@ -4,12 +4,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:intl/intl.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
+import '../caldav/caldav_bridge.dart';
 import '../data/calendar_store.dart';
 import '../data/entries.dart';
+import '../data/find_a_time.dart';
 import '../data/linked_apps.dart';
 import '../data/phone_calendar_sync.dart';
+import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
 import '../platform/channels.dart';
@@ -22,9 +26,11 @@ import '../ui/event_details_page.dart';
 import '../ui/home_page.dart';
 import '../ui/navigation.dart';
 import '../util/format.dart';
+import '../widget/my_day_widget.dart';
 import '../widget/up_next_widget.dart';
 import 'auth_providers.dart';
 import 'calendar_settings.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Routes between the shared account screens and the calendar.
 ///
@@ -127,6 +133,7 @@ class _AppGateState extends ConsumerState<AppGate> with WidgetsBindingObserver {
         ref.read(vaultControllerProvider.notifier).lock();
         ref.read(reminderSchedulerProvider).cancelAll().ignore();
         clearUpNext().ignore();
+        clearMyDay().ignore();
         setState(() => _signingIn = true);
       }
     });
@@ -219,13 +226,16 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     });
   }
 
-  /// "Up next" opens today; its + opens a new event. Each tap is taken once.
+  /// "Up next" and "My day" open today; their + opens a new event. Each tap
+  /// is taken once.
   void _takeWidgetTap() {
     final uri = pendingWidgetTap.value;
     if (uri == null || !mounted) return;
     pendingWidgetTap.value = null;
     ref.read(focusedDayProvider.notifier).today();
     if (uri.host == 'new-event') createEvent(context);
+    // "My day": its task list opens ZT Tasks.
+    if (uri.host == 'tasks') openLinkedApp(LinkedApp.tasks).ignore();
   }
 
   @override
@@ -252,9 +262,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
 
   Future<void> _onReminder(ReminderTap tap) async {
     if (!mounted) return;
-    final event = (await ref.read(eventsProvider.future))
-        .where((e) => e.id == tap.eventId)
-        .firstOrNull;
+    final event = await ref.read(calendarRepositoryProvider).event(tap.eventId);
     if (!mounted) return;
     if (tap.occurrence != null) ref.read(focusedDayProvider.notifier).set(tap.occurrence!);
     switch (tap.action) {
@@ -292,8 +300,11 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
 
   Future<void> _apply() async {
     if (!mounted) return;
-    final events = ref.read(eventsProvider).value;
-    if (events == null) return;
+    final own = ref.read(eventsProvider).value;
+    if (own == null) return;
+    // Reminders, the widgets and the phone's calendar cover shared
+    // calendars too.
+    final events = [...own, ...ref.read(sharedEventsProvider)];
     final settings = ref.read(calendarSettingsProvider);
     final calendars = ref.read(calendarsProvider).value ?? const [ZtCalendarInfo.personal];
     final now = DateTime.now();
@@ -307,7 +318,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
             ? addDays(dayOf(start), (e.duration.inHours / 24).round())
             : start.add(e.duration);
         final when = e.allDay
-            ? '${relativeDay(start, now: now)}, all day'
+            ? '${relativeDay(start, now: now)}, ${currentL10n.allDayLower}'
             : '${relativeDay(start, now: now)}, ${formatSpan(context, start, end, false)}';
         return when;
       },
@@ -334,7 +345,52 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
         formatTime: (t) => formatTime(context, t),
       ),
     );
+    if (!mounted) return;
+    await publishMyDay(
+      myDay(
+        entries: entries,
+        tasks: ref.read(linkedTasksProvider).value ?? const [],
+        now: now,
+        showTitles: settings.widgetTitles,
+        formatTime: (t) => formatTime(context, t),
+        date: DateFormat.MMMMEEEEd(currentL10n.localeName).format(now),
+      ),
+    );
+    await _shareBusyTimes(events, calendars, now);
     await _syncPhoneCalendar(events, calendars, settings, now);
+  }
+
+  /// "Find a time": keeps this account's busy times (times only) up to
+  /// date in each shared calendar where it already shares them. Turning
+  /// sharing on or off is only done by the switch, so another phone of the
+  /// same account never undoes it.
+  Future<void> _shareBusyTimes(
+    List<CalendarEvent> events,
+    List<ZtCalendarInfo> calendars,
+    DateTime now,
+  ) async {
+    final me = ref.read(accountServiceProvider).currentUserId;
+    if (me == null) return;
+    final actions = ref.read(sharedCalendarActionsProvider);
+    for (final c
+        in ref.read(sharedCalendarsProvider).value ??
+            const <SharedCalendar>[]) {
+      if (c.waiting || !c.busy.any((b) => b.userId == me)) continue;
+      try {
+        await actions.publishBusy(
+          c.spaceId,
+          busyBlocks(
+            events: events,
+            calendars: calendars,
+            from: dayOf(now),
+            exceptCalendarId: c.id,
+          ),
+          onlyUpdate: true,
+        );
+      } on Object {
+        // Offline or locked: next time.
+      }
+    }
   }
 
   /// "Show on this phone": copies the chosen calendars into Android's
@@ -373,11 +429,20 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
   Widget build(BuildContext context) {
     // Runs sync for the unlocked vault (push, pull, live changes).
     ref.watch(ztSyncControllerProvider);
+    // And for every shared calendar (on unlock, live, every 5 minutes).
+    ref.watch(ztSpacesProvider);
+    // The desktop calendar bridge, when the user turned it on (K16).
+    ref.watch(desktopBridgeProvider);
     ref.listen(eventsProvider, (_, _) => _schedule());
+    ref.listen(sharedEventsProvider, (_, _) => _schedule());
+    ref.listen(linkedTasksProvider, (_, _) => _schedule());
     ref.listen(calendarsProvider, (_, _) => _schedule());
     ref.listen(feedsProvider, (_, _) => _schedule());
     ref.listen(calendarSettingsProvider, (_, _) => _schedule());
     ref.listen(linkedContactsProvider, (_, _) => _schedule());
+    // Reminders and the widget carry text in the app's language. The
+    // debounce lets the new language load first.
+    ref.listen(ztLanguageProvider, (_, _) => _schedule());
     return const HomePage();
   }
 }

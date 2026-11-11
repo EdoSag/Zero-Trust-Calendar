@@ -11,6 +11,7 @@ import 'package:zero_trust_core/zero_trust_core.dart';
 import '../ics/ics.dart';
 import '../model/calendar_event.dart';
 import 'calendar_store.dart';
+import 'shared_calendars.dart';
 
 /// The last copy of a subscribed calendar (public holidays, a school or
 /// team .ics link): its events as fetched, kept as one encrypted item so
@@ -98,11 +99,12 @@ final feedEventsProvider = Provider<List<CalendarEvent>>((ref) {
   ];
 });
 
-/// Your events plus subscribed calendars' events.
+/// Your events plus shared and subscribed calendars' events.
 final allEventsProvider = Provider<AsyncValue<List<CalendarEvent>>>((ref) {
   final own = ref.watch(eventsProvider);
   final feeds = ref.watch(feedEventsProvider);
-  return own.whenData((list) => [...list, ...feeds]);
+  final shared = ref.watch(sharedEventsProvider);
+  return own.whenData((list) => [...list, ...shared, ...feeds]);
 });
 
 /// A public holiday calendar to subscribe to. These are the public Google

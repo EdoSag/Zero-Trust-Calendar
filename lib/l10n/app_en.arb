@@ -1,0 +1,1171 @@
+{
+  "@@locale": "en",
+  "noTitle": "(No title)",
+  "snooze10Min": "Snooze 10 min",
+  "map": "Map",
+  "note": "Note",
+  "runningLate": "Running late",
+  "event": "Event",
+  "eventReminders": "Event reminders",
+  "remindersBeforeYourEvents": "Reminders before your events",
+  "attachment": "Attachment",
+  "removeAttachment": "Remove attachment",
+  "image": "Image",
+  "thisFileHasntFinishedUploading": "This file hasn't finished uploading from the phone that added it.",
+  "calendars": "Calendars",
+  "newCalendar": "New calendar",
+  "calendarsLikeEventsAreEnd": "Calendars, like events, are end-to-end encrypted and sync to your other devices.",
+  "editCalendar": "Edit calendar",
+  "name": "Name",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  "save": "Save",
+  "itsEventsDisappearFromAll": "Its events disappear from all your devices. You can subscribe again any time.",
+  "itsEventsAreDeletedToo": "Its events are deleted too, on all your devices. This can't be undone.",
+  "allDay": "All day",
+  "thisEventWasDeleted": "This event was deleted.",
+  "noReplyYet": "No reply yet",
+  "edit": "Edit",
+  "copyToMyCalendar": "Copy to my calendar",
+  "duplicate": "Duplicate",
+  "shareAsIcsFile": "Share as .ics file",
+  "joinVideoCall": "Join video call",
+  "openInMaps": "Open in maps",
+  "subscribedCalendarReadOnly": "Subscribed calendar, read-only",
+  "emailGuests": "Email guests",
+  "emailInvitation": "Email invitation",
+  "emailUpdate": "Email update",
+  "someGuestsAreNoLonger": "Some guests are no longer in ZT Contacts",
+  "notes": "Notes",
+  "link": "Link",
+  "noteNotAvailableYet": "Note not available yet",
+  "stillSyncingOrDeletedIn": "Still syncing, or deleted in ZT Notes",
+  "unlinkNote": "Unlink note",
+  "linkMeetingNotesAnAgenda": "Link meeting notes, an agenda or a packing list from ZT Notes.",
+  "deleteThisEvent": "Delete this event?",
+  "itIsDeletedOnAll": "It is deleted on all your devices.",
+  "thisEvent": "This event",
+  "thisAndFollowingEvents": "This and following events",
+  "allEvents": "All events",
+  "thisEventWasChangedBy": "This event was changed by a newer ZT Calendar. Update the app to edit it.",
+  "discardChanges": "Discard changes?",
+  "keepEditing": "Keep editing",
+  "discard": "Discard",
+  "attachAFile": "Attach a file",
+  "filesCanBeUpTo": "Files can be up to 20 MB.",
+  "addGuestByEmail": "Add guest by email",
+  "add": "Add",
+  "thatDoesntLookLikeAn": "That doesn't look like an email address.",
+  "addReminder": "Add reminder",
+  "close": "Close",
+  "addTitle": "Add title",
+  "eventColour": "Event colour",
+  "removeReminder": "Remove reminder",
+  "addLocation": "Add location",
+  "addVideoCallLink": "Add video call link",
+  "addGuestsFromZtContacts": "Add guests from ZT Contacts",
+  "guests": "Guests",
+  "removeGuest": "Remove guest",
+  "contact": "Contact",
+  "linkANoteFromZt": "Link a note from ZT Notes",
+  "addAttachment": "Add attachment",
+  "encryptedOnThisPhoneBefore": "Encrypted on this phone before upload",
+  "addDescription": "Add description",
+  "guest": "Guest",
+  "going": "Going",
+  "maybe": "Maybe",
+  "notGoing": "Not going",
+  "noPhoneNumbersOrEmail": "No phone numbers or email addresses for the guests.",
+  "ourMeeting": "our meeting",
+  "sendBy": "Send by",
+  "textMessage": "Text message",
+  "email": "Email",
+  "noAppToSendIt": "No app to send it with.",
+  "addAGuestWithAn": "Add a guest with an email address first.",
+  "emailInvitationX": "Email invitation?",
+  "emailUpdatedInvitation": "Email updated invitation?",
+  "continueLabel": "Continue",
+  "openTheAttachedInviteIcs": "Open the attached invite.ics to add it to your calendar.",
+  "notSupportedOnThisDevice": "Not supported on this device.",
+  "schedule": "Schedule",
+  "day": "Day",
+  "s3Days": "3 days",
+  "week": "Week",
+  "month": "Month",
+  "search": "Search",
+  "today": "Today",
+  "changeView": "Change view",
+  "quickAddEventOrTask": "Quick add event or task",
+  "newEvent": "New event",
+  "tasksFromZtTasks": "Tasks from ZT Tasks",
+  "birthdaysFromZtContacts": "Birthdays from ZT Contacts",
+  "manageCalendars": "Manage calendars",
+  "settings": "Settings",
+  "noEventsInThatFile": "No events in that file.",
+  "eventUpdated": "Event updated",
+  "alreadyInYourCalendar": "Already in your calendar",
+  "cancelledEvent": "Cancelled event",
+  "invitation": "Invitation",
+  "updatedInvitation": "Updated invitation",
+  "addToZtCalendar": "Add to ZT Calendar",
+  "itIsntInYourCalendar": "It isn't in your calendar.",
+  "theOrganizerCancelledItRemove": "The organizer cancelled it. Remove it from your calendar?",
+  "toReplyAnswerTheOrganizer": "To reply, answer the organizer from your mail app.",
+  "remove": "Remove",
+  "update": "Update",
+  "calendarColour": "Calendar colour",
+  "done": "Done",
+  "colour": "Colour",
+  "searchZtContacts": "Search ZT Contacts",
+  "contactsYouKeepInZt": "Contacts you keep in ZT Contacts show here.",
+  "eventNotes": "Event notes",
+  "linkANote": "Link a note",
+  "newNoteForThisEvent": "New note for this event",
+  "createdInZtNotesEncrypted": "Created in ZT Notes, encrypted like your other notes",
+  "searchZtNotes": "Search ZT Notes",
+  "yourZtNotesNotesShow": "Your ZT Notes notes show here.",
+  "thisNoteIsEmpty": "This note is empty.",
+  "editItInZtNotes": "Edit it in ZT Notes.",
+  "openZtNotes": "Open ZT Notes",
+  "aRepeatingTaskTickIt": "A repeating task: tick it off in ZT Tasks, which moves it to its next date.",
+  "openZtTasks": "Open ZT Tasks",
+  "call": "Call",
+  "message": "Message",
+  "savedInZtTasksOn": "Saved in ZT Tasks on all your devices",
+  "move": "Move",
+  "undo": "Undo",
+  "showOnThisPhone": "Show on this phone?",
+  "turnOn": "Turn on",
+  "calendarPermissionIsNeededFor": "Calendar permission is needed for this.",
+  "showOnThisPhoneX": "Show on this phone",
+  "letsWearOsAndroidAuto": "Lets Wear OS, Android Auto, the clock's alarm screen and other calendar apps show these events. They are copied without encryption into a calendar on this phone only.",
+  "signInFirst": "Sign in first.",
+  "onlyAvailableOnAndroid": "Only available on Android.",
+  "taskAddedToZtTasks": "Task added to ZT Tasks",
+  "task": "Task",
+  "payRentFriday": "Pay rent Friday",
+  "lunchWithDanaFri1pm": "Lunch with Dana Fri 1pm",
+  "addedToZtTasksWith": "Added to ZT Tasks with its due date",
+  "tryDentistTomorrow930": "Try \"Dentist tomorrow 9:30 at Smile Clinic\" or \"מחר ב-13:00 פגישה\"",
+  "addATitle": "(Add a title)",
+  "moreOptions": "More options",
+  "addTask": "Add task",
+  "savedInZtTasksEncrypted": "Saved in ZT Tasks, encrypted like everything else.",
+  "repeat": "Repeat",
+  "custom": "Custom…",
+  "customRepeat": "Custom repeat",
+  "repeatsEvery": "Repeats every",
+  "on": "On",
+  "ends": "Ends",
+  "never": "Never",
+  "showEarlier": "Show earlier",
+  "nothingPlannedTapToAdd": "Nothing planned. Tap + to add an event.",
+  "nothingToday": "Nothing today",
+  "searchEvents": "Search events",
+  "noEventsFound": "No events found",
+  "addRenameRecolourOrHide": "Add, rename, recolour or hide",
+  "holidaysAndSubscribedCalendars": "Holidays and subscribed calendars",
+  "publicHolidaysSchoolOrTeam": "Public holidays, school or team calendars",
+  "offForYourWatchCar": "Off. For your watch, car and other calendar apps",
+  "onForSomeCalendarsCopied": "On for some calendars, copied to Android's calendar",
+  "startOfTheWeek": "Start of the week",
+  "defaultEventLength": "Default event length",
+  "defaultReminder": "Default reminder",
+  "none": "None",
+  "defaultAllDayReminder": "Default all-day reminder",
+  "eventTitlesInReminders": "Event titles in reminders",
+  "offRemindersOnlySayEvent": "Off: reminders only say \"Event\". Titles are handed to the phone so they can show while Calendar is locked.",
+  "showDetailsOnTheHome": "Show details on the home screen",
+  "offTheUpNextWidget": "Off: the \"Up next\" and \"My day\" widgets show only times. On: event and task titles are stored unencrypted on this phone for the home screen.",
+  "showTasksFromZtTasks": "Show tasks from ZT Tasks",
+  "tasksWithADueDate": "Tasks with a due date. Tick them off here",
+  "showCompletedTasks": "Show completed tasks",
+  "showBirthdaysFromZtContacts": "Show birthdays from ZT Contacts",
+  "refreshNotesTasksAndContacts": "Refresh notes, tasks and contacts",
+  "calendarKeepsItsOwnEncrypted": "Calendar keeps its own encrypted copy of them on this phone",
+  "upToDate": "Up to date",
+  "importFromGoogleCalendarOr": "Import from Google Calendar or .ics",
+  "anIcsFileOrThe": "An .ics file, or the Google Takeout .zip with your calendars",
+  "exportAllEventsIcs": "Export all events (.ics)",
+  "unencryptedFileForOtherCalendar": "Unencrypted file, for other calendar apps",
+  "exportEvents": "Export events?",
+  "theIcsFileIsNot": "The .ics file is not encrypted. Anyone who gets it can read your events. Share it only with apps you trust.",
+  "exportLabel": "Export",
+  "importEvents": "Import events",
+  "fromGoogleCalendarGoTo": "From Google Calendar: go to takeout.google.com, choose only \"Calendar\", download the .zip and pick it here. Every calendar in it is added, and importing the same file again skips events you already have.\n\nFrom other apps: export an .ics file and pick it.",
+  "chooseFile": "Choose file",
+  "chooseAnIcsOrZip": "Choose an .ics or .zip file",
+  "subscribeToACalendar": "Subscribe to a calendar",
+  "calendarDownloadsItFromThat": "Calendar downloads it from that address (the site sees a download from your phone, nothing about your account) and keeps an encrypted copy, refreshed twice a day. Its events are read-only.",
+  "subscribe": "Subscribe",
+  "holidaysAndSubscriptions": "Holidays and subscriptions",
+  "subscribeByLink": "Subscribe by link",
+  "anyIcsOrWebcalLink": "Any .ics or webcal link: school, team, sports",
+  "publicHolidaysComeFromGoogles": "Public holidays come from Google's public holiday calendars, downloaded like any web page: no Google account is used and nothing about you is sent.",
+  "downloading": "Downloading…",
+  "refreshNow": "Refresh now",
+  "unsubscribe": "Unsubscribe",
+  "searchCityOrRegion": "Search city or region",
+  "phonesTimeZone": "Phone's time zone",
+  "dragToChangeTheEnd": "Drag to change the end time",
+  "birthday": "Birthday",
+  "upNext": "Up next",
+  "nothingComingUp": "Nothing coming up",
+  "openZtCalendarToSee": "Open ZT Calendar to see what's next",
+  "tomorrow": "Tomorrow",
+  "yesterday": "Yesterday",
+  "spanTo": "{from} to {to}",
+  "@spanTo": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderOnTheDay": "On the day at 9:00",
+  "reminderDaysBeforeAt9": "{count, plural, =1{The day before at 9:00} other{{count} days before at 9:00}}",
+  "@reminderDaysBeforeAt9": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderAtStart": "At the start",
+  "reminderWeeksBefore": "{count, plural, =1{1 week before} other{{count} weeks before}}",
+  "@reminderWeeksBefore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderDaysBefore": "{count, plural, =1{1 day before} other{{count} days before}}",
+  "@reminderDaysBefore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderHoursBefore": "{count, plural, =1{1 hour before} other{{count} hours before}}",
+  "@reminderHoursBefore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderMinutesBefore": "{count, plural, =1{1 minute before} other{{count} minutes before}}",
+  "@reminderMinutesBefore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ordFirst": "first",
+  "ordSecond": "second",
+  "ordThird": "third",
+  "ordFourth": "fourth",
+  "ordFifth": "fifth",
+  "ordLast": "last",
+  "ordSecondToLast": "second to last",
+  "onTheNthWeekday": "On the {ordinal} {weekday}",
+  "@onTheNthWeekday": {
+    "placeholders": {
+      "ordinal": {
+        "type": "String"
+      },
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "doesNotRepeat": "Does not repeat",
+  "everyNDays": "{count, plural, =1{Every day} other{Every {count} days}}",
+  "@everyNDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "everyNWeeks": "{count, plural, =1{Every week} other{Every {count} weeks}}",
+  "@everyNWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "everyNMonths": "{count, plural, =1{Every month} other{Every {count} months}}",
+  "@everyNMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "everyNYears": "{count, plural, =1{Every year} other{Every {count} years}}",
+  "@everyNYears": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "everyWeekday": "Every weekday",
+  "ruleOnWeekdays": "{rule} on weekdays",
+  "@ruleOnWeekdays": {
+    "placeholders": {
+      "rule": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleOnEveryDay": "{rule} on every day",
+  "@ruleOnEveryDay": {
+    "placeholders": {
+      "rule": {
+        "type": "String"
+      }
+    }
+  },
+  "listAnd": "{items} and {last}",
+  "@listAnd": {
+    "placeholders": {
+      "items": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleOnDays": "{rule} on {days}",
+  "@ruleOnDays": {
+    "placeholders": {
+      "rule": {
+        "type": "String"
+      },
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleOnNthWeekday": "{rule} on the {ordinal} {weekday}",
+  "@ruleOnNthWeekday": {
+    "placeholders": {
+      "rule": {
+        "type": "String"
+      },
+      "ordinal": {
+        "type": "String"
+      },
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleOnLastDay": "{rule} on the last day",
+  "@ruleOnLastDay": {
+    "placeholders": {
+      "rule": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleOnDay": "{rule} on day {day}",
+  "@ruleOnDay": {
+    "placeholders": {
+      "rule": {
+        "type": "String"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "ruleOnDate": "{rule} on {date}",
+  "@ruleOnDate": {
+    "placeholders": {
+      "rule": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleTimes": "{count, plural, =1{, once} other{, {count} times}}",
+  "@ruleTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ruleUntil": ", until {date}",
+  "@ruleUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "personal": "Personal",
+  "couldNotOpenFile": "Could not open the file: {error}",
+  "@couldNotOpenFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "nEvents": "{count, plural, =1{1 event} other{{count} events}}",
+  "@nEvents": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "subscribedReadOnly": "subscribed, read-only",
+  "hiddenLabel": "hidden",
+  "unsubscribeFrom": "Unsubscribe from \"{name}\"?",
+  "@unsubscribeFrom": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteNamed": "Delete \"{name}\"?",
+  "@deleteNamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarDefaultName": "Calendar",
+  "allDayLower": "all day",
+  "untilTime": "Until {time}",
+  "@untilTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "dueAt": "Due {when}",
+  "@dueAt": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "toDate": "to {date}",
+  "@toDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "timeInZone": "{span} in {city} ({offset})",
+  "@timeInZone": {
+    "placeholders": {
+      "span": {
+        "type": "String"
+      },
+      "city": {
+        "type": "String"
+      },
+      "offset": {
+        "type": "String"
+      }
+    }
+  },
+  "nGuests": "{count, plural, =1{1 guest} other{{count} guests}}",
+  "@nGuests": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "callName": "Call {name}",
+  "@callName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "actionRepeatingEvent": "{action} repeating event",
+  "@actionRepeatingEvent": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotSave": "Could not save: {error}",
+  "@couldNotSave": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotAttach": "Could not attach the file: {error}",
+  "@couldNotAttach": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "phoneTimeZoneOffset": "Phone's time zone ({offset})",
+  "@phoneTimeZoneOffset": {
+    "placeholders": {
+      "offset": {
+        "type": "String"
+      }
+    }
+  },
+  "yourTime": "Your time: {time}",
+  "@yourTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutMinutes": "About {count} minutes",
+  "@aboutMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "runningLateText": "Running about {count} minutes late for {title}. Sorry!",
+  "@runningLateText": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteEmailWarning": "Your mail app opens with an invitation to {names}. Email isn't end-to-end encrypted: the event's title, time, place and description go in it. Attachments and linked notes don't.",
+  "@inviteEmailWarning": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteSubject": "Invitation: {title} ({when})",
+  "@inviteSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteYoureInvited": "You're invited: {title}",
+  "@inviteYoureInvited": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteWhen": "When: {when}",
+  "@inviteWhen": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteWhere": "Where: {where}",
+  "@inviteWhere": {
+    "placeholders": {
+      "where": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteJoin": "Join: {link}",
+  "@inviteJoin": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "removedCancelled": "{count, plural, =1{Removed 1 cancelled event} other{Removed {count} cancelled events}}",
+  "@removedCancelled": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addedNEvents": "{count, plural, =1{Added 1 event} other{Added {count} events}}",
+  "@addedNEvents": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "couldNotAddIt": "Could not add it: {error}",
+  "@couldNotAddIt": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "andNMore": "and {count} more",
+  "@andNMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openApp": "Open {app}",
+  "@openApp": {
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotCreateNote": "Could not create the note: {error}",
+  "@couldNotCreateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "turnsAge": "turns {age}",
+  "@turnsAge": {
+    "placeholders": {
+      "age": {
+        "type": "int"
+      }
+    }
+  },
+  "couldNotUpdateTask": "Could not update the task: {error}",
+  "@couldNotUpdateTask": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "movedTo": "Moved to {when}",
+  "@movedTo": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotMove": "Could not move it: {error}",
+  "@couldNotMove": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addedTitle": "Added \"{title}\"",
+  "@addedTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "onDayN": "On day {day}",
+  "@onDayN": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "endsOn": "On ",
+  "endsAfter": "After ",
+  "timesSuffix": " {count, plural, =1{time} other{times}}",
+  "@timesSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "couldNotLoadEvents": "Could not load events: {error}",
+  "@couldNotLoadEvents": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "showUntil": "Show until {date}",
+  "@showUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "likeYourRegionDay": "Like your region ({day})",
+  "@likeYourRegionDay": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "likeYourRegion": "Like your region",
+  "nMinutes": "{count, plural, =1{1 minute} other{{count} minutes}}",
+  "@nMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nHours": "{count, plural, =1{1 hour} other{{count} hours}}",
+  "@nHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nHoursDecimal": "{count} hours",
+  "@nHoursDecimal": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importedNEvents": "{count, plural, =1{Imported 1 event} other{Imported {count} events}}",
+  "@importedNEvents": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "intoNewCalendars": "{count, plural, =1{ into 1 new calendar} other{ into {count} new calendars}}",
+  "@intoNewCalendars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "skippedAlreadyHere": ", skipped {count} already here",
+  "@skippedAlreadyHere": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "couldNotImportFile": "Could not import that file: {error}",
+  "@couldNotImportFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadingName": "Downloading {name}…",
+  "@downloadingName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "subscribedTo": "Subscribed to {name}",
+  "@subscribedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotSubscribe": "Could not subscribe: {error}",
+  "@couldNotSubscribe": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "holidaysOf": "{name} holidays",
+  "@holidaysOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lastRefreshFailed": "Last refresh failed: {error}",
+  "@lastRefreshFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "followsPhoneZone": "Follows the phone when you travel ({offset})",
+  "@followsPhoneZone": {
+    "placeholders": {
+      "offset": {
+        "type": "String"
+      }
+    }
+  },
+  "birthdayOf": "{name}'s birthday",
+  "@birthdayOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "regionIsraelJewishHolidays": "Israel (Jewish holidays)",
+  "regionIsraelJewishHolidaysHebrew": "Israel (Jewish holidays, Hebrew)",
+  "regionUnitedStates": "United States",
+  "regionUnitedKingdom": "United Kingdom",
+  "regionCanada": "Canada",
+  "regionAustralia": "Australia",
+  "regionIreland": "Ireland",
+  "regionGermany": "Germany",
+  "regionFrance": "France",
+  "regionItaly": "Italy",
+  "regionSpain": "Spain",
+  "regionNetherlands": "Netherlands",
+  "regionPortugal": "Portugal",
+  "regionPoland": "Poland",
+  "regionSweden": "Sweden",
+  "regionRussia": "Russia",
+  "regionIndia": "India",
+  "regionJapan": "Japan",
+  "regionChina": "China",
+  "regionBrazil": "Brazil",
+  "regionMexico": "Mexico",
+  "regionSouthAfrica": "South Africa",
+  "regionChristianHolidays": "Christian holidays",
+  "regionIslamicHolidays": "Islamic holidays",
+  "unitDays": "{count, plural, =1{day} other{days}}",
+  "@unitDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unitWeeks": "{count, plural, =1{week} other{weeks}}",
+  "@unitWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unitMonths": "{count, plural, =1{month} other{months}}",
+  "@unitMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unitYears": "{count, plural, =1{year} other{years}}",
+  "@unitYears": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "widgetSignedOut": "Signed out",
+  "widgetMore": "+{n} more",
+  "widgetComingUp": "{count, plural, =1{1 event coming up} other{{count} events coming up}}",
+  "@widgetMore": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "@widgetComingUp": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sharedCalendarUnnamed": "Shared calendar",
+  "sharedNoAttachments": "Files can't be added to events in a shared calendar: the other members couldn't open them.",
+  "sharedAttachmentsDropped": "This event's files stay out of the shared calendar: the other members couldn't open them.",
+  "familyCalendarName": "Family",
+  "newFamilyCalendar": "New family calendar",
+  "newSharedCalendar": "New shared calendar",
+  "sharedCalendarIntro": "Everyone you invite sees and edits its events. Everything is end-to-end encrypted: only your phones can read it.",
+  "requiredField": "Required",
+  "yourName": "Your name",
+  "yourNameHint": "How the other members see you in this calendar.",
+  "create": "Create",
+  "needsInternet": "This needs an internet connection. Try again when you're online.",
+  "sharedCalendarGone": "You're no longer in this calendar.",
+  "joinRequest": "{name} wants to join",
+  "@joinRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "joinRequestHint": "Check the code on their phone, then let them in",
+  "sharedYouAreAdmin": "Shared · you're an admin",
+  "sharedYouAreMember": "Shared · you're a member",
+  "myColour": "My colour",
+  "myColourHint": "Only on your devices",
+  "showInMyCalendar": "Show in my calendar",
+  "nMembers": "{count, plural, =1{1 member} other{{count} members}}",
+  "@nMembers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nWaitingToJoin": "{count, plural, =1{1 asking to join} other{{count} asking to join}}",
+  "@nWaitingToJoin": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "memberYou": "{name} (you)",
+  "@memberYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "roleAdmin": "Admin",
+  "roleMember": "Member",
+  "roleAdminHint": "Admins also invite and remove people, and rename the calendar.",
+  "roleMemberHint": "Members see, add and change events.",
+  "memberOptions": "Member options",
+  "makeMember": "Make a member",
+  "makeAdmin": "Make an admin",
+  "invitePeople": "Invite people",
+  "sharedPrivacyNote": "Events here are encrypted with a key only the members' phones hold. The server sees that this calendar exists and who is in it, never its name or events. Files and linked notes stay private to whoever added them.",
+  "leaveCalendar": "Leave calendar",
+  "deleteForEveryone": "Delete for everyone",
+  "sharedRenameHint": "The name and colour change for every member, unless they picked their own colour.",
+  "removeMemberTitle": "Remove {name}?",
+  "@removeMemberTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "removeMemberBody": "They lose access, and the calendar moves to a new key so they can't read anything added from now on.",
+  "leaveCalendarTitle": "Leave {name}?",
+  "@leaveCalendarTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "leaveCalendarBody": "Its events disappear from your devices. Someone has to invite you again to come back.",
+  "deleteForEveryoneTitle": "Delete {name} for everyone?",
+  "@deleteForEveryoneTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteForEveryoneBody": "The calendar and all its events are deleted for every member. This can't be undone.",
+  "waitingToJoin": "Waiting to join",
+  "waitingToJoinShort": "An admin still has to let you in",
+  "waitingToJoinBody": "Show this code to the person who invited you. Once they see the same code and let you in, the calendar appears here.",
+  "cancelJoin": "Cancel joining",
+  "confirmJoinTitle": "Let {name} into {calendar}?",
+  "@confirmJoinTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "calendar": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmJoinBody": "Their phone shows a code. Let them in only if it's exactly this one:",
+  "codesDiffer": "Codes differ",
+  "later": "Later",
+  "codesMatch": "Codes match",
+  "joinedCalendar": "{name} joined",
+  "@joinedCalendar": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteTo": "Invite to {name}",
+  "@inviteTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteIntro": "Make a one-time invite for one person. Send the link, or let them scan the code.",
+  "createInvite": "Create invite",
+  "inviteReady": "Scan this with ZT Calendar on their phone, or send them the link.",
+  "inviteQr": "Invite QR code",
+  "linkCopied": "Link copied",
+  "copyLink": "Copy link",
+  "shareLink": "Share",
+  "inviteMessage": "Join my calendar \"{name}\" in ZT Calendar: {link}",
+  "@inviteMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteNextSteps": "The link works once, for 7 days. When they open it, you'll both see a code: let them in only if the codes match.",
+  "checkForAnswers": "Check for answers",
+  "inviteOtherApp": "This invite is for another Zero-Trust app.",
+  "inviteInvalid": "That isn't a Zero-Trust invite link.",
+  "inviteUsed": "This invite was already used, withdrawn or has expired. Ask for a new one.",
+  "joinSharedCalendar": "Join a shared calendar",
+  "joinSharedCalendarHint": "With an invite link or QR code",
+  "joinCodeTitle": "Compare this code",
+  "joinCodeBody": "The person who invited you sees a code too. They let you in once both codes match.",
+  "joinIntro": "Paste the invite link you got, or scan the QR code on the other phone.",
+  "inviteLink": "Invite link",
+  "scanQr": "Scan QR code",
+  "join": "Join",
+  "newCalendarHint": "Only for you",
+  "newSharedCalendarHint": "With friends, a team or a club",
+  "newFamilyCalendarHint": "One calendar for the whole household",
+  "myDay": "My day",
+  "myDayNext": "Next",
+  "myDayNow": "Now",
+  "myDayTask": "Task",
+  "myDayNoTasks": "No tasks due today",
+  "myDayTasksDue": "{count, plural, =0{Tasks due today} =1{1 task due today} other{{count} tasks due today}}",
+  "@myDayTasksDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "myDayOverdue": "{count, plural, =1{+1 overdue} other{+{count} overdue}}",
+  "@myDayOverdue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "copy": "Copy",
+  "copied": "Copied",
+  "desktopApps": "Desktop calendar apps",
+  "desktopAppsSubtitleOff": "Off. Let Thunderbird, Apple Calendar or Evolution read your events over Wi-Fi",
+  "desktopAppsSubtitleOn": "On while ZT Calendar is unlocked",
+  "desktopAppsIntro": "Your computer's calendar app can show your ZT Calendar events, read-only, over your home or office Wi-Fi. The phone serves them itself: nothing goes through a server, and it stops when the app locks.",
+  "desktopAppsSwitch": "Share with computers on this Wi-Fi",
+  "desktopAppsRunning": "On. Computers with the password can read your visible calendars",
+  "desktopAppsStarting": "Starts when ZT Calendar is unlocked",
+  "desktopAppsOff": "Off",
+  "desktopAppsFailed": "Couldn't start",
+  "desktopAppsServer": "Server address (CalDAV)",
+  "desktopAppsNoWifi": "Connect the phone to Wi-Fi to see its address",
+  "desktopAppsUser": "User name",
+  "desktopAppsPassword": "Password",
+  "desktopAppsFingerprint": "Certificate fingerprint (SHA-256)",
+  "desktopAppsHowTo": "In your calendar app, add a CalDAV account (Thunderbird: New Calendar, On the Network; Apple Calendar: Add Account, Other CalDAV, Manual) with this address, user name and password. The app warns that the certificate isn't trusted: check that its fingerprint matches the one above, then trust it. The computer and phone must be on the same Wi-Fi, and the computer refreshes while ZT Calendar is open and unlocked.",
+  "desktopAppsNewPassword": "Make a new password",
+  "desktopAppsNewPasswordHint": "Computers using the old one lose access",
+  "desktopAppsPrivacy": "Only computers on a local network (home or office Wi-Fi) are answered, only with the password, and only to read. Traffic is encrypted with this phone's own certificate. A computer keeps the copy it last read, unencrypted, in its calendar app: turn this on only for computers you trust. Hidden calendars, tasks and birthdays are not shared.",
+  "shareBusyTimes": "Share when I'm busy",
+  "shareBusyTimesHint": "Members see when you're busy in your other calendars (times only, never titles), so Find a time works. Encrypted like the rest of this calendar.",
+  "findATime": "Find a time",
+  "findATimeSharing": "{count} of {total} members share when they're busy",
+  "@findATimeSharing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "findATimeLength": "{minutes} min",
+  "@findATimeLength": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "findATimeEvenings": "Evenings",
+  "findATimeWeekends": "Weekends",
+  "findATimeEveryone": "Free for everyone in the calendar, in the next two weeks. Tap a time to add the event.",
+  "findATimeMissing": "Not counting {names}: they don't share when they're busy. Tap a time to add the event.",
+  "@findATimeMissing": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "findATimeNone": "No time works for everyone in the next two weeks. Try a shorter length, evenings or weekends."
+}

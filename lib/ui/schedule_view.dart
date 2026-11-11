@@ -6,6 +6,7 @@ import '../data/entries.dart';
 import '../util/format.dart';
 import 'entry_widgets.dart';
 import 'navigation.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// The agenda: days with something on them, from the focused day on, with
 /// today marked even when it's empty.
@@ -30,7 +31,7 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
     final entries = async.value;
     if (entries == null) {
       return async.hasError
-          ? Center(child: Text('Could not load events: ${async.error}'))
+          ? Center(child: Text(context.l10n.couldNotLoadEvents('${async.error}')))
           : const Center(child: CircularProgressIndicator());
     }
     final today = dayOf(DateTime.now());
@@ -55,7 +56,7 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
             child: TextButton.icon(
               onPressed: () => setState(() => _daysBack += 30),
               icon: const Icon(Icons.expand_less),
-              label: const Text('Show earlier'),
+              label: Text(context.l10n.showEarlier),
             ),
           );
         }
@@ -68,7 +69,7 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Text(
-                      'Nothing planned. Tap + to add an event.',
+                      context.l10n.nothingPlannedTapToAdd,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -77,7 +78,7 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
                 TextButton.icon(
                   onPressed: () => setState(() => _daysAhead += _chunk),
                   icon: const Icon(Icons.expand_more),
-                  label: Text('Show until ${DateFormat.yMMMd().format(addDays(to, _chunk))}'),
+                  label: Text(context.l10n.showUntil(DateFormat.yMMMd().format(addDays(to, _chunk)))),
                 ),
               ],
             ),
@@ -105,7 +106,7 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
                 SizedBox(
                   width: 56,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 8, left: 12),
+                    padding: const EdgeInsetsDirectional.only(top: 8, start: 12),
                     child: Column(
                       children: [
                         Text(
@@ -146,7 +147,7 @@ class _ScheduleViewState extends ConsumerState<ScheduleView> {
                         ? Padding(
                             padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
                             child: Text(
-                              'Nothing today',
+                              context.l10n.nothingToday,
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),

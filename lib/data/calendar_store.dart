@@ -3,7 +3,9 @@ import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../model/calendar_event.dart';
 import 'event_actions.dart';
+import 'shared_calendars.dart';
 import 'subscriptions.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Events are items with `kind: event`, calendars `kind: calendar`.
 final eventsCollection = ZtCollection<CalendarEvent>(
@@ -40,12 +42,15 @@ final eventsProvider = StreamProvider<List<CalendarEvent>>((ref) async* {
   }
 });
 
-/// The account's calendars, "Personal" first. "Personal" always exists:
-/// it has a fixed id, so two devices creating it don't make two.
+/// The account's calendars, "Personal" first, shared calendars included.
+/// "Personal" always exists: it has a fixed id, so two devices creating it
+/// don't make two.
 final calendarsProvider = StreamProvider<List<ZtCalendarInfo>>((ref) async* {
   final store = await ref.watch(ztLocalStoreProvider.future);
+  final shared = ref.watch(sharedCalendarsProvider).value ?? const <SharedCalendar>[];
+  final unnamed = appL10nFor(ref.watch(ztLanguageProvider)).sharedCalendarUnnamed;
   List<ZtCalendarInfo> withDefault(List<ZtCalendarInfo> list) {
-    final out = [...list]
+    final out = mergeSharedCalendars(list, shared, unnamed: unnamed)
       ..sort((a, b) {
         if (a.id == CalendarEvent.defaultCalendarId) return -1;
         if (b.id == CalendarEvent.defaultCalendarId) return 1;
@@ -77,14 +82,60 @@ class CalendarRepository {
   SyncController get _sync => _ref.read(ztSyncControllerProvider.notifier);
   Future<LocalItemStore> get _store => _ref.read(ztLocalStoreProvider.future);
 
+  /// The open shared calendars' spaces, by space id.
+  Map<String, SharedSpace> get _spaces => {
+    for (final e in _ref.read(ztSpacesProvider).entries)
+      if (e.space case final s?) e.info.id: s,
+  };
+
+  /// The space an event is stored in now, or null for the account's own
+  /// store (or nowhere yet).
+  Future<String?> _spaceHolding(String eventId) async {
+    if (await (await _store).get(eventId) case final item? when !item.deleted) {
+      return null;
+    }
+    for (final MapEntry(:key, :value) in _spaces.entries) {
+      final item = await value.store.get(eventId);
+      if (item != null && !item.deleted) return key;
+    }
+    return null;
+  }
+
   Future<void> saveEvent(CalendarEvent event) async {
     if (event.readOnly) throw StateError('Subscribed events are read-only');
-    final withCreated = event.createdAt == null
+    var withCreated = event.createdAt == null
         ? event.copyWith(createdAt: DateTime.now())
         : event;
+    final target = spaceIdOf(event.calendarId);
+    final from = await _spaceHolding(event.id);
+    if (target != null) {
+      // Attachments are sealed with this account's own key, which the
+      // other members don't have, so shared events don't carry them.
+      withCreated = withCreated.copyWith(attachments: const []);
+      final space = _spaces[target];
+      if (space == null) throw StateError('Shared calendar not open');
+      final own = await (await _store).get(event.id);
+      final movedIn = from == null && own != null && !own.deleted;
+      final previous = (await space.store.get(event.id))?.json;
+      await _ref.read(ztSpacesProvider.notifier).save(
+        target,
+        event.id,
+        eventsCollection.encode(
+          withCreated,
+          previous: eventsCollection.owns(previous) ? previous : null,
+        ),
+      );
+      // Only once the new copy is saved: a failed move must not lose the
+      // event.
+      if (movedIn) await _deleteOwn(event.id);
+      if (from != null && from != target) await _deleteShared(from, event.id);
+      _ref.read(sharedRevisionProvider.notifier).bump();
+      return;
+    }
     final store = await _store;
     final before = await eventsCollection.get(store, event.id);
     await eventsCollection.save(_sync, store, withCreated);
+    if (from != null) await _deleteShared(from, event.id); // Moved out.
     if (before != null) {
       final kept = {for (final a in event.attachments) a['id']};
       await _release([
@@ -94,7 +145,19 @@ class CalendarRepository {
     }
   }
 
+  Future<void> _deleteShared(String spaceId, String id) async {
+    await _ref.read(ztSpacesProvider.notifier).delete(spaceId, id);
+    _ref.read(sharedRevisionProvider.notifier).bump();
+  }
+
   Future<void> deleteEvent(String id) async {
+    if (await _spaceHolding(id) case final spaceId?) {
+      return _deleteShared(spaceId, id);
+    }
+    await _deleteOwn(id);
+  }
+
+  Future<void> _deleteOwn(String id) async {
     final before = await eventsCollection.get(await _store, id);
     await eventsCollection.delete(_sync, id);
     if (before != null) await _release(before.attachments);
@@ -132,8 +195,7 @@ class CalendarRepository {
 
   /// Deletes a series and every changed occurrence of it.
   Future<void> deleteSeries(CalendarEvent series) async {
-    final store = await _store;
-    for (final e in await eventsCollection.list(store)) {
+    for (final e in await allEvents()) {
       if (e.seriesId == series.id) await deleteEvent(e.id);
     }
     await deleteEvent(series.id);
@@ -146,6 +208,8 @@ class CalendarRepository {
   /// Deletes a calendar and its events. "Personal" can't be deleted.
   Future<void> deleteCalendar(String id) async {
     if (id == CalendarEvent.defaultCalendarId) return;
+    // Shared calendars are left or deleted through SharedCalendarActions.
+    if (spaceIdOf(id) != null) return;
     final store = await _store;
     for (final e in await eventsCollection.list(store)) {
       if (e.calendarId == id) await deleteEvent(e.id);
@@ -166,13 +230,25 @@ class CalendarRepository {
 
   /// Changed occurrences of the series [seriesId].
   Future<List<CalendarEvent>> exceptionsOf(String seriesId) async => [
-    for (final e in await eventsCollection.list(await _store))
+    for (final e in await allEvents())
       if (e.seriesId == seriesId) e,
   ];
 
-  Future<CalendarEvent?> event(String id) async =>
-      eventsCollection.get(await _store, id);
+  Future<CalendarEvent?> event(String id) async {
+    if (await eventsCollection.get(await _store, id) case final e?) return e;
+    for (final MapEntry(:key, :value) in _spaces.entries) {
+      if (await eventsCollection.get(value.store, id) case final e?) {
+        return e.copyWith(calendarId: sharedCalendarId(key));
+      }
+    }
+    return null;
+  }
 
-  Future<List<CalendarEvent>> allEvents() async =>
-      eventsCollection.list(await _store);
+  /// The account's own events and its shared calendars' events.
+  Future<List<CalendarEvent>> allEvents() async => [
+    ...await eventsCollection.list(await _store),
+    for (final MapEntry(:key, :value) in _spaces.entries)
+      for (final e in await eventsCollection.list(value.store))
+        e.copyWith(calendarId: sharedCalendarId(key)),
+  ];
 }

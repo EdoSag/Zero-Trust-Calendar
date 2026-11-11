@@ -70,15 +70,19 @@ class UpNextWidgetProvider : HomeWidgetProvider() {
         val count = data.getInt("upnext_count", 0).coerceIn(0, maxRows)
 
         views.setViewVisibility(R.id.app_row, if (showAppRow) View.VISIBLE else View.GONE)
-        views.setTextViewText(R.id.header_title, data.getString("upnext_header", null) ?: "Up next")
-        val empty = data.getString("upnext_empty", null) ?: "Open ZT Calendar to see what's next"
+        views.setTextViewText(R.id.header_title, data.getString("upnext_header", null) ?: context.getString(R.string.up_next_header))
+        val empty = data.getString("upnext_empty", null) ?: context.getString(R.string.up_next_open_app)
+        // Captions the app saved in its own language, else this phone's.
+        fun text(key: String, res: Int) = data.getString(key, null) ?: context.getString(res)
         val total = data.getInt("upnext_count", 0)
         // The caption: what's missing, or how many more than fit.
         val caption = when {
-            locked -> "Signed out"
+            locked -> text("upnext_text_signed_out", R.string.up_next_signed_out)
             total == 0 -> empty
-            total > count && count > 0 -> "+${total - count} more"
-            count == 0 -> if (total == 1) "1 event coming up" else "$total events coming up"
+            total > count && count > 0 ->
+                text("upnext_text_more", R.string.up_next_more).replace("{n}", "${total - count}")
+            count == 0 -> if (total == 1) text("upnext_text_coming_one", R.string.up_next_coming_one)
+                else text("upnext_text_coming_many", R.string.up_next_coming_many).replace("{n}", "$total")
             else -> ""
         }
         views.setTextViewText(R.id.summary, caption)

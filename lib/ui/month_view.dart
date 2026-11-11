@@ -174,9 +174,9 @@ class _DayCell extends ConsumerWidget {
       onLongPress: onLongPress,
       child: Container(
         decoration: BoxDecoration(
-          border: Border(
+          border: BorderDirectional(
             top: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.6), width: 0.5),
-            left: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.6), width: 0.5),
+            start: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.6), width: 0.5),
           ),
         ),
         padding: const EdgeInsets.fromLTRB(2, 2, 2, 0),

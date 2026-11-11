@@ -21,6 +21,7 @@ import 'guest_actions.dart';
 import 'linked_app_launcher.dart';
 import 'linked_pickers.dart';
 import 'inline_button_style.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// One event (or one occurrence of a series): when, where, who, notes.
 class EventDetailsPage extends ConsumerWidget {
@@ -45,7 +46,7 @@ class EventDetailsPage extends ConsumerWidget {
         body: Center(
           child: events == null
               ? const CircularProgressIndicator()
-              : const Text('This event was deleted.'),
+              : Text(context.l10n.thisEventWasDeleted),
         ),
       );
     }
@@ -96,9 +97,9 @@ class EventDetailsPage extends ConsumerWidget {
               ),
             SimpleDialogOption(
               onPressed: () => Navigator.of(d).pop(''),
-              child: const Padding(
+              child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 6),
-                child: Text('No reply yet'),
+                child: Text(context.l10n.noReplyYet),
               ),
             ),
           ],
@@ -127,13 +128,13 @@ class EventDetailsPage extends ConsumerWidget {
         actions: [
           if (!readOnly)
             IconButton(
-              tooltip: 'Edit',
+              tooltip: context.l10n.edit,
               icon: const Icon(Icons.edit_outlined),
               onPressed: edit,
             ),
           if (!readOnly)
             IconButton(
-              tooltip: 'Delete',
+              tooltip: context.l10n.delete,
               icon: const Icon(Icons.delete_outline),
               onPressed: () => _delete(context, ref, event, occ),
             ),
@@ -175,14 +176,14 @@ class EventDetailsPage extends ConsumerWidget {
             itemBuilder: (_) => [
               PopupMenuItem(
                 value: 'duplicate',
-                child: Text(readOnly ? 'Copy to my calendar' : 'Duplicate'),
+                child: Text(readOnly ? context.l10n.copyToMyCalendar : context.l10n.duplicate),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'share',
-                child: Text('Share as .ics file'),
+                child: Text(context.l10n.shareAsIcsFile),
               ),
               if (guests.isNotEmpty)
-                const PopupMenuItem(value: 'late', child: Text('Running late')),
+                PopupMenuItem(value: 'late', child: Text(context.l10n.runningLate)),
             ],
           ),
         ],
@@ -196,7 +197,7 @@ class EventDetailsPage extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 8, right: 24, left: 4),
+                  padding: const EdgeInsetsDirectional.only(top: 8, end: 24, start: 4),
                   child: Container(
                     width: 16,
                     height: 16,
@@ -211,14 +212,14 @@ class EventDetailsPage extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SelectableText(
-                        event.title.isEmpty ? '(No title)' : event.title,
+                        event.title.isEmpty ? context.l10n.noTitle : event.title,
                         style: theme.textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 4),
                       Text(
                         event.allDay
                             ? '${formatLongDay(occ)}'
-                                  '${addDays(occEnd, -1).isAfter(occ) ? ' to ${formatLongDay(addDays(occEnd, -1))}' : ''}'
+                                  '${addDays(occEnd, -1).isAfter(occ) ? ' ${context.l10n.toDate(formatLongDay(addDays(occEnd, -1)))}' : ''}'
                             : sameDay(occ, occEnd)
                             ? '${formatLongDay(occ)}\n${formatSpan(context, occ, occEnd, false)}'
                             : formatSpan(context, occ, occEnd, false),
@@ -228,8 +229,7 @@ class EventDetailsPage extends ConsumerWidget {
                         Padding(
                           padding: const EdgeInsets.only(top: 2),
                           child: Text(
-                            '${formatSpan(context, wallClockIn(zone, occ), wallClockIn(zone, occEnd), false)} '
-                            'in ${zoneCity(event.timeZone!)} (${utcOffsetLabel(zone, occ)})',
+                            context.l10n.timeInZone(formatSpan(context, wallClockIn(zone, occ), wallClockIn(zone, occEnd), false), zoneCity(event.timeZone!), utcOffsetLabel(zone, occ)),
                             style: theme.textTheme.bodySmall,
                           ),
                         ),
@@ -259,7 +259,7 @@ class EventDetailsPage extends ConsumerWidget {
                       mode: LaunchMode.externalApplication,
                     ),
                     icon: const Icon(Icons.videocam_outlined),
-                    label: const Text('Join video call'),
+                    label: Text(context.l10n.joinVideoCall),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -276,7 +276,7 @@ class EventDetailsPage extends ConsumerWidget {
             ListTile(
               leading: const Icon(Icons.place_outlined),
               title: Text(event.location),
-              subtitle: const Text('Open in maps'),
+              subtitle: Text(context.l10n.openInMaps),
               onTap: () => openLocation(event.location),
             ),
           ListTile(
@@ -287,7 +287,7 @@ class EventDetailsPage extends ConsumerWidget {
             ),
             title: Text(calendar.name),
             subtitle: calendar.isSubscription
-                ? const Text('Subscribed calendar, read-only')
+                ? Text(context.l10n.subscribedCalendarReadOnly)
                 : null,
           ),
           for (final m in event.reminders)
@@ -313,7 +313,7 @@ class EventDetailsPage extends ConsumerWidget {
             ListTile(
               leading: const Icon(Icons.people_outline),
               title: Text(
-                '${guests.length} ${guests.length == 1 ? 'guest' : 'guests'}',
+                context.l10n.nGuests(guests.length),
               ),
               subtitle: () {
                 final counts = <String, int>{};
@@ -333,7 +333,7 @@ class EventDetailsPage extends ConsumerWidget {
               trailing: guestEmails.isEmpty
                   ? null
                   : IconButton(
-                      tooltip: 'Email guests',
+                      tooltip: context.l10n.emailGuests,
                       icon: const Icon(Icons.email_outlined),
                       onPressed: () => launchUrl(
                         Uri(
@@ -346,11 +346,11 @@ class EventDetailsPage extends ConsumerWidget {
             ),
             for (final g in guests)
               ListTile(
-                contentPadding: const EdgeInsets.only(left: 72, right: 8),
+                contentPadding: const EdgeInsetsDirectional.only(start: 72, end: 8),
                 title: Text(g.label),
                 subtitle: Text(
                   [
-                    rsvpLabels[event.guestStatus[g.key]]?.$1 ?? 'No reply yet',
+                    rsvpLabels[event.guestStatus[g.key]]?.$1 ?? context.l10n.noReplyYet,
                     if (g.name != null && g.email != null) g.email!,
                   ].join(' · '),
                 ),
@@ -358,7 +358,7 @@ class EventDetailsPage extends ConsumerWidget {
                 trailing: g.phone == null
                     ? null
                     : IconButton(
-                        tooltip: 'Call ${g.label}',
+                        tooltip: context.l10n.callName(g.label),
                         icon: const Icon(Icons.call_outlined),
                         onPressed: () =>
                             launchUrl(Uri(scheme: 'tel', path: g.phone)),
@@ -376,30 +376,30 @@ class EventDetailsPage extends ConsumerWidget {
                       icon: const Icon(Icons.send_outlined),
                       label: Text(
                         event.inviteSequence == 0
-                            ? 'Email invitation'
-                            : 'Email update',
+                            ? context.l10n.emailInvitation
+                            : context.l10n.emailUpdate,
                       ),
                     ),
                     OutlinedButton.icon(
                       onPressed: () => sendRunningLate(context, event, guests),
                       icon: const Icon(Icons.directions_run),
-                      label: const Text('Running late'),
+                      label: Text(context.l10n.runningLate),
                     ),
                   ],
                 ),
               ),
             if (guests.length <
                 event.contactIds.length + event.guestEmails.length)
-              const ListTile(
-                contentPadding: EdgeInsets.only(left: 72, right: 8),
-                title: Text('Some guests are no longer in ZT Contacts'),
+              ListTile(
+                contentPadding: EdgeInsetsDirectional.only(start: 72, end: 8),
+                title: Text(context.l10n.someGuestsAreNoLonger),
               ),
           ],
           if (!readOnly) ...[
             const Divider(),
             ListTile(
               leading: const Icon(Icons.sticky_note_2_outlined),
-              title: const Text('Notes'),
+              title: Text(context.l10n.notes),
               trailing: TextButton.icon(
                 onPressed: () async {
                   final id = await pickNote(
@@ -417,7 +417,7 @@ class EventDetailsPage extends ConsumerWidget {
                       );
                 },
                 icon: const Icon(Icons.add),
-                label: const Text('Link'),
+                label: Text(context.l10n.link),
               ),
             ),
             for (final id in event.noteIds)
@@ -425,10 +425,10 @@ class EventDetailsPage extends ConsumerWidget {
                 builder: (context) {
                   final note = notes.where((n) => n.id == id).firstOrNull;
                   return ListTile(
-                    contentPadding: const EdgeInsets.only(left: 72, right: 8),
-                    title: Text(note?.displayTitle ?? 'Note not available yet'),
+                    contentPadding: const EdgeInsetsDirectional.only(start: 72, end: 8),
+                    title: Text(note?.displayTitle ?? context.l10n.noteNotAvailableYet),
                     subtitle: note == null
-                        ? const Text('Still syncing, or deleted in ZT Notes')
+                        ? Text(context.l10n.stillSyncingOrDeletedIn)
                         : note.body.trim().isEmpty
                         ? null
                         : Text(
@@ -440,7 +440,7 @@ class EventDetailsPage extends ConsumerWidget {
                         ? null
                         : () => showNoteSheet(context, note),
                     trailing: IconButton(
-                      tooltip: 'Unlink note',
+                      tooltip: context.l10n.unlinkNote,
                       icon: const Icon(Icons.link_off),
                       onPressed: () => ref
                           .read(calendarRepositoryProvider)
@@ -455,9 +455,9 @@ class EventDetailsPage extends ConsumerWidget {
               ),
             if (event.noteIds.isEmpty)
               Padding(
-                padding: const EdgeInsets.only(left: 72, right: 16),
+                padding: const EdgeInsetsDirectional.only(start: 72, end: 16),
                 child: Text(
-                  'Link meeting notes, an agenda or a packing list from ZT Notes.',
+                  context.l10n.linkMeetingNotesAnAgenda,
                   style: theme.textTheme.bodySmall,
                 ),
               ),
@@ -484,7 +484,7 @@ class EventDetailsPage extends ConsumerWidget {
   ) async {
     final repo = ref.read(calendarRepositoryProvider);
     if (event.repeats) {
-      final scope = await askSeriesScope(context, action: 'Delete');
+      final scope = await askSeriesScope(context, action: context.l10n.delete);
       if (scope == null) return;
       await repo.apply(
         SeriesEdits.delete(
@@ -498,16 +498,16 @@ class EventDetailsPage extends ConsumerWidget {
       final ok = await showDialog<bool>(
         context: context,
         builder: (d) => AlertDialog(
-          title: const Text('Delete this event?'),
-          content: const Text('It is deleted on all your devices.'),
+          title: Text(context.l10n.deleteThisEvent),
+          content: Text(context.l10n.itIsDeletedOnAll),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(d).pop(false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.cancel),
             ),
             TextButton(
               onPressed: () => Navigator.of(d).pop(true),
-              child: const Text('Delete'),
+              child: Text(context.l10n.delete),
             ),
           ],
         ),

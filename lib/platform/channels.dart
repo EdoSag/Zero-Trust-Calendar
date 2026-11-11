@@ -6,12 +6,16 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Something another app opened Calendar with: an .ics file (an invitation
-/// from a mail app, a download) or a webcal:// subscribe link.
+/// from a mail app, a download), a webcal:// subscribe link or a shared
+/// calendar invite.
 @immutable
 class IncomingFile {
-  const IncomingFile({this.name, this.bytes, this.url});
+  const IncomingFile({this.name, this.bytes, this.url, this.invite});
   final String? name;
   final Uint8List? bytes;
+
+  /// A shared calendar invite link (https://zerotrust.bz/join/calendar#…).
+  final String? invite;
 
   /// For a subscribe link: the https:// address of the calendar.
   final String? url;
@@ -48,6 +52,7 @@ class IncomingFiles {
               name: item['name'] as String?,
               bytes: item['bytes'] as Uint8List?,
               url: item['url'] as String?,
+              invite: item['invite'] as String?,
             ),
       ];
     } on MissingPluginException {

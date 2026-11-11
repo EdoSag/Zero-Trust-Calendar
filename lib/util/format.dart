@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../model/calendar_event.dart';
 import '../model/recurrence.dart';
+import '../l10n/l10n.dart';
 
 DateTime dayOf(DateTime t) => DateTime(t.year, t.month, t.day);
 
@@ -49,9 +50,9 @@ String relativeDay(DateTime d, {DateTime? now}) {
   final today = dayOf(now ?? DateTime.now());
   final diff = dayOf(d).difference(today).inHours / 24;
   return switch (diff.round()) {
-    0 => 'Today',
-    1 => 'Tomorrow',
-    -1 => 'Yesterday',
+    0 => currentL10n.today,
+    1 => currentL10n.tomorrow,
+    -1 => currentL10n.yesterday,
     _ =>
       d.year == today.year
           ? DateFormat.MMMEd().format(d)
@@ -63,110 +64,107 @@ String relativeDay(DateTime d, {DateTime? now}) {
 String formatSpan(BuildContext context, DateTime start, DateTime end, bool allDay) {
   if (allDay) {
     final last = addDays(end, -1);
-    if (!last.isAfter(start)) return 'All day';
-    return '${formatDay(start)} to ${formatDay(last)}';
+    if (!last.isAfter(start)) return currentL10n.allDay;
+    return currentL10n.spanTo(formatDay(start), formatDay(last));
   }
   if (sameDay(start, end) || end == addDays(dayOf(start), 1)) {
-    return '${formatTime(context, start)} to ${formatTime(context, end)}';
+    return currentL10n.spanTo(formatTime(context, start), formatTime(context, end));
   }
-  return '${formatDay(start)} ${formatTime(context, start)} to '
-      '${formatDay(end)} ${formatTime(context, end)}';
+  return currentL10n.spanTo('${formatDay(start)} ${formatTime(context, start)}',
+      '${formatDay(end)} ${formatTime(context, end)}');
 }
 
 /// "10 minutes before", "1 day before", "At the start".
 String reminderLabel(int minutes, {bool allDay = false}) {
+  final l = currentL10n;
   if (allDay) {
     // Relative to 9:00 on the day.
-    if (minutes == 0) return 'On the day at 9:00';
+    if (minutes == 0) return l.reminderOnTheDay;
     if (minutes % (24 * 60) == 0) {
-      final days = minutes ~/ (24 * 60);
-      return days == 1 ? 'The day before at 9:00' : '$days days before at 9:00';
+      return l.reminderDaysBeforeAt9(minutes ~/ (24 * 60));
     }
   }
-  if (minutes == 0) return 'At the start';
+  if (minutes == 0) return l.reminderAtStart;
   if (minutes % (7 * 24 * 60) == 0) {
-    final w = minutes ~/ (7 * 24 * 60);
-    return w == 1 ? '1 week before' : '$w weeks before';
+    return l.reminderWeeksBefore(minutes ~/ (7 * 24 * 60));
   }
   if (minutes % (24 * 60) == 0) {
-    final d = minutes ~/ (24 * 60);
-    return d == 1 ? '1 day before' : '$d days before';
+    return l.reminderDaysBefore(minutes ~/ (24 * 60));
   }
   if (minutes % 60 == 0) {
-    final h = minutes ~/ 60;
-    return h == 1 ? '1 hour before' : '$h hours before';
+    return l.reminderHoursBefore(minutes ~/ 60);
   }
-  return minutes == 1 ? '1 minute before' : '$minutes minutes before';
+  return l.reminderMinutesBefore(minutes);
 }
 
-const _weekdayNames = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
+/// "Monday" in the app's language (1 = Monday, as [DateTime.weekday]).
+String weekdayName(int weekday) =>
+    DateFormat.EEEE().format(DateTime(2024, 1, weekday)); // Jan 1 2024: Monday
 
-String _ordinal(int n) => switch (n) {
-  1 => 'first',
-  2 => 'second',
-  3 => 'third',
-  4 => 'fourth',
-  5 => 'fifth',
-  -1 => 'last',
-  -2 => 'second to last',
-  _ => '${n}th',
-};
+String _ordinal(int n) {
+  final l = currentL10n;
+  return switch (n) {
+    1 => l.ordFirst,
+    2 => l.ordSecond,
+    3 => l.ordThird,
+    4 => l.ordFourth,
+    5 => l.ordFifth,
+    -1 => l.ordLast,
+    -2 => l.ordSecondToLast,
+    _ => '$n',
+  };
+}
+
+/// "On the first Monday" for a monthly repeat.
+String monthlyWeekdayLabel(int n, int weekday) =>
+    currentL10n.onTheNthWeekday(_ordinal(n), weekdayName(weekday));
 
 /// "Every week on Monday and Wednesday, 10 times".
 String describeRule(RecurrenceRule? rule, DateTime start) {
-  if (rule == null) return 'Does not repeat';
+  final l = currentL10n;
+  if (rule == null) return l.doesNotRepeat;
   final n = rule.interval;
-  String every(String one, String many) => n == 1 ? 'Every $one' : 'Every $n $many';
   var text = switch (rule.frequency) {
-    Frequency.daily => every('day', 'days'),
-    Frequency.weekly => every('week', 'weeks'),
-    Frequency.monthly => every('month', 'months'),
-    Frequency.yearly => every('year', 'years'),
+    Frequency.daily => l.everyNDays(n),
+    Frequency.weekly => l.everyNWeeks(n),
+    Frequency.monthly => l.everyNMonths(n),
+    Frequency.yearly => l.everyNYears(n),
   };
   if (rule.frequency == Frequency.weekly) {
     final days = rule.byDay.isEmpty
         ? [start.weekday]
         : (rule.byDay.map((d) => d.weekday).toSet().toList()..sort());
     if (days.length == 5 && days.every((d) => d <= 5)) {
-      text = n == 1 ? 'Every weekday' : '$text on weekdays';
+      text = n == 1 ? l.everyWeekday : l.ruleOnWeekdays(text);
     } else if (days.length == 7) {
-      text = '$text on every day';
+      text = l.ruleOnEveryDay(text);
     } else {
-      final names = days.map((d) => _weekdayNames[d - 1]).toList();
+      final names = days.map(weekdayName).toList();
       final joined = names.length == 1
           ? names.first
-          : '${names.sublist(0, names.length - 1).join(', ')} and ${names.last}';
-      text = '$text on $joined';
+          : l.listAnd(names.sublist(0, names.length - 1).join(', '), names.last);
+      text = l.ruleOnDays(text, joined);
     }
   } else if (rule.frequency == Frequency.monthly) {
     if (rule.byDay.length == 1 && rule.byDay.first.n != null) {
       final d = rule.byDay.first;
-      text = '$text on the ${_ordinal(d.n!)} ${_weekdayNames[d.weekday - 1]}';
+      text = l.ruleOnNthWeekday(text, _ordinal(d.n!), weekdayName(d.weekday));
     } else if (rule.byDay.length == 1 && rule.bySetPos.length == 1) {
-      text =
-          '$text on the ${_ordinal(rule.bySetPos.first)} '
-          '${_weekdayNames[rule.byDay.first.weekday - 1]}';
+      text = l.ruleOnNthWeekday(text, _ordinal(rule.bySetPos.first),
+          weekdayName(rule.byDay.first.weekday));
     } else if (rule.byMonthDay.length == 1) {
       final d = rule.byMonthDay.first;
-      text = d == -1 ? '$text on the last day' : '$text on day $d';
+      text = d == -1 ? l.ruleOnLastDay(text) : l.ruleOnDay(text, d);
     } else if (rule.byDay.isEmpty && rule.byMonthDay.isEmpty) {
-      text = '$text on day ${start.day}';
+      text = l.ruleOnDay(text, start.day);
     }
   } else if (rule.frequency == Frequency.yearly && rule.byMonth.length <= 1) {
-    text = '$text on ${DateFormat.MMMMd().format(start)}';
+    text = l.ruleOnDate(text, DateFormat.MMMMd().format(start));
   }
   if (rule.count != null) {
-    text += rule.count == 1 ? ', once' : ', ${rule.count} times';
+    text += l.ruleTimes(rule.count!);
   } else if (rule.until != null) {
-    text += ', until ${DateFormat.yMMMd().format(rule.until!)}';
+    text += l.ruleUntil(DateFormat.yMMMd().format(rule.until!));
   }
   return text;
 }
@@ -181,5 +179,5 @@ String calendarName(List<ZtCalendarInfo> calendars, String id) {
   for (final c in calendars) {
     if (c.id == id) return c.name;
   }
-  return 'Personal';
+  return currentL10n.personal;
 }

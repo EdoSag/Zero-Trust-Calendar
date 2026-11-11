@@ -10,9 +10,11 @@ import '../ics/ics.dart';
 import '../ics/import_service.dart';
 import '../model/calendar_event.dart';
 import '../platform/channels.dart';
+import 'shared_calendar_pages.dart';
 import '../util/format.dart';
 import 'subscribe_page.dart';
 import 'inline_button_style.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Handles a file or link another app opened Calendar with: an .ics file
 /// or invitation ("Add to ZT Calendar"), or a webcal:// subscribe link.
@@ -21,6 +23,14 @@ Future<void> handleIncomingFile(
   WidgetRef ref,
   IncomingFile file,
 ) async {
+  if (file.invite != null) {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => JoinCalendarPage(initialLink: file.invite),
+      ),
+    );
+    return;
+  }
   if (file.url != null) {
     await showSubscribeDialog(context, ref, url: file.url);
     return;
@@ -32,7 +42,7 @@ Future<void> handleIncomingFile(
   if (!context.mounted) return;
   if (parsed.events.isEmpty && parsed.cancelled.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('No events in that file.')),
+      SnackBar(content: Text(context.l10n.noEventsInThatFile)),
     );
     return;
   }
@@ -191,11 +201,11 @@ class _AddFileSheetState extends ConsumerState<_AddFileSheet> {
       if (_cancel) {
         final n = await _applyCancel(repo, mine);
         messenger.showSnackBar(
-          SnackBar(content: Text('Removed $n cancelled ${n == 1 ? 'event' : 'events'}')),
+          SnackBar(content: Text(currentL10n.removedCancelled(n))),
         );
       } else if (_invite && _matchCount(mine) > 0) {
         await _applyUpdate(repo, mine);
-        messenger.showSnackBar(const SnackBar(content: Text('Event updated')));
+        messenger.showSnackBar(SnackBar(content: Text(currentL10n.eventUpdated)));
       } else {
         final plan = IcsImportPlan.build(
           files: [(widget.name.toLowerCase().endsWith('.zip') ? widget.name : 'event.ics', widget.bytes)],
@@ -210,8 +220,8 @@ class _AddFileSheetState extends ConsumerState<_AddFileSheet> {
           SnackBar(
             content: Text(
               plan.events.isEmpty
-                  ? 'Already in your calendar'
-                  : 'Added ${plan.events.length} ${plan.events.length == 1 ? 'event' : 'events'}',
+                  ? currentL10n.alreadyInYourCalendar
+                  : currentL10n.addedNEvents(plan.events.length),
             ),
           ),
         );
@@ -219,7 +229,7 @@ class _AddFileSheetState extends ConsumerState<_AddFileSheet> {
       navigator.pop();
     } on Object catch (e) {
       setState(() => _busy = false);
-      messenger.showSnackBar(SnackBar(content: Text('Could not add it: $e')));
+      messenger.showSnackBar(SnackBar(content: Text(currentL10n.couldNotAddIt('$e'))));
     }
   }
 
@@ -235,10 +245,10 @@ class _AddFileSheetState extends ConsumerState<_AddFileSheet> {
     final mine = ref.watch(eventsProvider).value ?? const <CalendarEvent>[];
     final matched = _matchCount(mine);
     final title = _cancel
-        ? 'Cancelled event'
+        ? context.l10n.cancelledEvent
         : _invite
-        ? (matched == 0 ? 'Invitation' : 'Updated invitation')
-        : 'Add to ZT Calendar';
+        ? (matched == 0 ? context.l10n.invitation : context.l10n.updatedInvitation)
+        : context.l10n.addToZtCalendar;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
@@ -252,7 +262,7 @@ class _AddFileSheetState extends ConsumerState<_AddFileSheet> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.event),
-                title: Text(e.title.isEmpty ? '(No title)' : e.title),
+                title: Text(e.title.isEmpty ? context.l10n.noTitle : e.title),
                 subtitle: Text(
                   [
                     e.allDay
@@ -264,17 +274,17 @@ class _AddFileSheetState extends ConsumerState<_AddFileSheet> {
                 ),
               ),
             if (events.length > 5)
-              Text('and ${events.length - 5} more', style: theme.textTheme.bodySmall),
+              Text(context.l10n.andNMore(events.length - 5), style: theme.textTheme.bodySmall),
             if (_cancel)
               Text(
                 matched == 0
-                    ? 'It isn\'t in your calendar.'
-                    : 'The organizer cancelled it. Remove it from your calendar?',
+                    ? context.l10n.itIsntInYourCalendar
+                    : context.l10n.theOrganizerCancelledItRemove,
               )
             else if (!(_invite && matched > 0) && calendars.length > 1)
               DropdownButtonFormField<String>(
                 initialValue: _calendarId,
-                decoration: const InputDecoration(labelText: 'Calendar'),
+                decoration: InputDecoration(labelText: context.l10n.calendarDefaultName),
                 items: [
                   for (final c in calendars)
                     DropdownMenuItem(
@@ -294,7 +304,7 @@ class _AddFileSheetState extends ConsumerState<_AddFileSheet> {
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  'To reply, answer the organizer from your mail app.',
+                  context.l10n.toReplyAnswerTheOrganizer,
                   style: theme.textTheme.bodySmall,
                 ),
               ),
@@ -304,7 +314,7 @@ class _AddFileSheetState extends ConsumerState<_AddFileSheet> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(context.l10n.cancel),
                 ),
                 const SizedBox(width: 8),
                 FilledButton(
@@ -312,10 +322,10 @@ class _AddFileSheetState extends ConsumerState<_AddFileSheet> {
                   onPressed: _busy || (_cancel && matched == 0) ? null : _apply,
                   child: Text(
                     _cancel
-                        ? 'Remove'
+                        ? context.l10n.remove
                         : _invite && matched > 0
-                        ? 'Update'
-                        : 'Add',
+                        ? context.l10n.update
+                        : context.l10n.add,
                   ),
                 ),
               ],

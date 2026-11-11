@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../app/calendar_settings.dart';
+import '../caldav/caldav_bridge.dart';
 import '../data/calendar_store.dart';
 import '../data/linked_apps.dart';
 import '../ics/ics.dart';
@@ -18,8 +19,10 @@ import '../ics/import_service.dart';
 import '../reminders/reminders.dart';
 import '../util/format.dart';
 import 'calendars_page.dart';
+import 'desktop_bridge_page.dart';
 import 'phone_calendar_page.dart';
 import 'subscribe_page.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// The shared Zero-Trust settings screen, with Calendar's own rows.
 class CalendarSettingsPage extends ConsumerWidget {
@@ -43,27 +46,39 @@ class CalendarSettingsPage extends ConsumerWidget {
       appSection: <Widget>[
         ListTile(
           leading: const Icon(Icons.edit_calendar_outlined),
-          title: const Text('Calendars'),
-          subtitle: const Text('Add, rename, recolour or hide'),
+          title: Text(context.l10n.calendars),
+          subtitle: Text(context.l10n.addRenameRecolourOrHide),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const CalendarsPage()),
           ),
         ),
         ListTile(
           leading: const Icon(Icons.public),
-          title: const Text('Holidays and subscribed calendars'),
-          subtitle: const Text('Public holidays, school or team calendars'),
+          title: Text(context.l10n.holidaysAndSubscribedCalendars),
+          subtitle: Text(context.l10n.publicHolidaysSchoolOrTeam),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const HolidaysPage()),
           ),
         ),
         ListTile(
+          leading: const Icon(Icons.computer),
+          title: Text(context.l10n.desktopApps),
+          subtitle: Text(
+            ref.watch(desktopBridgeProvider).enabled
+                ? context.l10n.desktopAppsSubtitleOn
+                : context.l10n.desktopAppsSubtitleOff,
+          ),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const DesktopBridgePage()),
+          ),
+        ),
+        ListTile(
           leading: const Icon(Icons.phone_android),
-          title: const Text('Show on this phone'),
+          title: Text(context.l10n.showOnThisPhoneX),
           subtitle: Text(
             s.phoneCalendarIdsFor(ref.read(accountServiceProvider).currentUserId).isEmpty
-                ? 'Off. For your watch, car and other calendar apps'
-                : 'On for some calendars, copied to Android\'s calendar',
+                ? context.l10n.offForYourWatchCar
+                : context.l10n.onForSomeCalendarsCopied,
           ),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const PhoneCalendarPage()),
@@ -71,17 +86,17 @@ class CalendarSettingsPage extends ConsumerWidget {
         ),
         ListTile(
           leading: const Icon(Icons.first_page),
-          title: const Text('Start of the week'),
+          title: Text(context.l10n.startOfTheWeek),
           subtitle: Text(
             weekStart == null
-                ? 'Like your region (${DateFormat.EEEE().format(DateTime(2024, 1, localeWeekStart(context)))})'
+                ? context.l10n.likeYourRegionDay(DateFormat.EEEE().format(DateTime(2024, 1, localeWeekStart(context))))
                 : DateFormat.EEEE().format(DateTime(2024, 1, weekStart)),
           ),
           onTap: () async {
             final picked = await showDialog<int>(
               context: context,
               builder: (d) => SimpleDialog(
-                title: const Text('Start of the week'),
+                title: Text(context.l10n.startOfTheWeek),
                 children: [
                   for (final v in [0, DateTime.saturday, DateTime.sunday, DateTime.monday])
                     SimpleDialogOption(
@@ -89,7 +104,7 @@ class CalendarSettingsPage extends ConsumerWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: Text(
-                          v == 0 ? 'Like your region' : DateFormat.EEEE().format(DateTime(2024, 1, v)),
+                          v == 0 ? context.l10n.likeYourRegion : DateFormat.EEEE().format(DateTime(2024, 1, v)),
                         ),
                       ),
                     ),
@@ -103,12 +118,12 @@ class CalendarSettingsPage extends ConsumerWidget {
         ),
         ListTile(
           leading: const Icon(Icons.timelapse),
-          title: const Text('Default event length'),
+          title: Text(context.l10n.defaultEventLength),
           subtitle: Text(_minutesLabel(s.defaultDuration)),
           onTap: () async {
             final picked = await _pickFrom(
               context,
-              'Default event length',
+              context.l10n.defaultEventLength,
               const [15, 30, 45, 60, 90, 120],
               _minutesLabel,
             );
@@ -117,14 +132,14 @@ class CalendarSettingsPage extends ConsumerWidget {
         ),
         ListTile(
           leading: const Icon(Icons.notifications_outlined),
-          title: const Text('Default reminder'),
-          subtitle: Text(s.defaultReminder == null ? 'None' : reminderLabel(s.defaultReminder!)),
+          title: Text(context.l10n.defaultReminder),
+          subtitle: Text(s.defaultReminder == null ? context.l10n.none : reminderLabel(s.defaultReminder!)),
           onTap: () async {
             final picked = await _pickFrom(
               context,
-              'Default reminder',
+              context.l10n.defaultReminder,
               const [-1, 0, 5, 10, 15, 30, 60, 24 * 60],
-              (m) => m < 0 ? 'None' : reminderLabel(m),
+              (m) => m < 0 ? context.l10n.none : reminderLabel(m),
             );
             if (picked != null) {
               await ctrl.update((x) => x.copyWith(defaultReminder: picked < 0 ? null : picked));
@@ -133,18 +148,18 @@ class CalendarSettingsPage extends ConsumerWidget {
         ),
         ListTile(
           leading: const Icon(Icons.notifications_none),
-          title: const Text('Default all-day reminder'),
+          title: Text(context.l10n.defaultAllDayReminder),
           subtitle: Text(
             s.defaultAllDayReminder == null
-                ? 'None'
+                ? context.l10n.none
                 : reminderLabel(s.defaultAllDayReminder!, allDay: true),
           ),
           onTap: () async {
             final picked = await _pickFrom(
               context,
-              'Default all-day reminder',
+              context.l10n.defaultAllDayReminder,
               const [-1, 0, 24 * 60, 2 * 24 * 60, 7 * 24 * 60],
-              (m) => m < 0 ? 'None' : reminderLabel(m, allDay: true),
+              (m) => m < 0 ? context.l10n.none : reminderLabel(m, allDay: true),
             );
             if (picked != null) {
               await ctrl.update(
@@ -155,49 +170,47 @@ class CalendarSettingsPage extends ConsumerWidget {
         ),
         SwitchListTile(
           secondary: const Icon(Icons.title),
-          title: const Text('Event titles in reminders'),
-          subtitle: const Text(
-            'Off: reminders only say "Event". Titles are handed to the '
-            'phone so they can show while Calendar is locked.',
+          title: Text(context.l10n.eventTitlesInReminders),
+          subtitle: Text(
+            context.l10n.offRemindersOnlySayEvent,
           ),
           value: s.notificationTitles,
           onChanged: (v) => ctrl.update((x) => x.copyWith(notificationTitles: v)),
         ),
         SwitchListTile(
           secondary: const Icon(Icons.widgets_outlined),
-          title: const Text('Show details on the home screen'),
-          subtitle: const Text(
-            'Off: the "Up next" widget shows only times. On: event titles are '
-            'stored unencrypted on this phone for the home screen.',
+          title: Text(context.l10n.showDetailsOnTheHome),
+          subtitle: Text(
+            context.l10n.offTheUpNextWidget,
           ),
           value: s.widgetTitles,
           onChanged: (v) => ctrl.update((x) => x.copyWith(widgetTitles: v)),
         ),
         SwitchListTile(
           secondary: const Icon(Icons.task_alt),
-          title: const Text('Show tasks from ZT Tasks'),
-          subtitle: const Text('Tasks with a due date. Tick them off here'),
+          title: Text(context.l10n.showTasksFromZtTasks),
+          subtitle: Text(context.l10n.tasksWithADueDate),
           value: s.showTasks,
           onChanged: (v) => ctrl.update((x) => x.copyWith(showTasks: v)),
         ),
         if (s.showTasks)
           SwitchListTile(
             secondary: const Icon(Icons.done_all),
-            title: const Text('Show completed tasks'),
+            title: Text(context.l10n.showCompletedTasks),
             value: s.showCompletedTasks,
             onChanged: (v) => ctrl.update((x) => x.copyWith(showCompletedTasks: v)),
           ),
         SwitchListTile(
           secondary: const Icon(Icons.cake_outlined),
-          title: const Text('Show birthdays from ZT Contacts'),
+          title: Text(context.l10n.showBirthdaysFromZtContacts),
           value: s.showBirthdays,
           onChanged: (v) => ctrl.update((x) => x.copyWith(showBirthdays: v)),
         ),
         ListTile(
           leading: const Icon(Icons.sync),
-          title: const Text('Refresh notes, tasks and contacts'),
-          subtitle: const Text(
-            'Calendar keeps its own encrypted copy of them on this phone',
+          title: Text(context.l10n.refreshNotesTasksAndContacts),
+          subtitle: Text(
+            context.l10n.calendarKeepsItsOwnEncrypted,
           ),
           onTap: () async {
             for (final app in LinkedApp.values) {
@@ -206,7 +219,7 @@ class CalendarSettingsPage extends ConsumerWidget {
             }
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Up to date')),
+                SnackBar(content: Text(context.l10n.upToDate)),
               );
             }
           },
@@ -215,16 +228,16 @@ class CalendarSettingsPage extends ConsumerWidget {
       backupSection: <Widget>[
         ListTile(
           leading: const Icon(Icons.file_download_outlined),
-          title: const Text('Import from Google Calendar or .ics'),
-          subtitle: const Text(
-            'An .ics file, or the Google Takeout .zip with your calendars',
+          title: Text(context.l10n.importFromGoogleCalendarOr),
+          subtitle: Text(
+            context.l10n.anIcsFileOrThe,
           ),
           onTap: () => importCalendarFile(context, ref),
         ),
         ListTile(
           leading: const Icon(Icons.file_upload_outlined),
-          title: const Text('Export all events (.ics)'),
-          subtitle: const Text('Unencrypted file, for other calendar apps'),
+          title: Text(context.l10n.exportAllEventsIcs),
+          subtitle: Text(context.l10n.unencryptedFileForOtherCalendar),
           onTap: () => _export(context, ref),
         ),
       ],
@@ -232,7 +245,11 @@ class CalendarSettingsPage extends ConsumerWidget {
   }
 
   static String _minutesLabel(int m) =>
-      m < 60 ? '$m minutes' : m % 60 == 0 ? (m == 60 ? '1 hour' : '${m ~/ 60} hours') : '${m / 60} hours';
+      m < 60
+          ? currentL10n.nMinutes(m)
+          : m % 60 == 0
+          ? currentL10n.nHours(m ~/ 60)
+          : currentL10n.nHoursDecimal('${m / 60}');
 
   Future<int?> _pickFrom(
     BuildContext context,
@@ -260,14 +277,13 @@ class CalendarSettingsPage extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (d) => AlertDialog(
-        title: const Text('Export events?'),
-        content: const Text(
-          'The .ics file is not encrypted. Anyone who gets it can read your '
-          'events. Share it only with apps you trust.',
+        title: Text(context.l10n.exportEvents),
+        content: Text(
+          context.l10n.theIcsFileIsNot,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(d).pop(false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.of(d).pop(true), child: const Text('Export')),
+          TextButton(onPressed: () => Navigator.of(d).pop(false), child: Text(context.l10n.cancel)),
+          TextButton(onPressed: () => Navigator.of(d).pop(true), child: Text(context.l10n.exportLabel)),
         ],
       ),
     );
@@ -290,21 +306,18 @@ Future<void> importCalendarFile(BuildContext context, WidgetRef ref) async {
   final help = await showDialog<bool>(
     context: context,
     builder: (d) => AlertDialog(
-      title: const Text('Import events'),
-      content: const Text(
-        'From Google Calendar: go to takeout.google.com, choose only '
-        '"Calendar", download the .zip and pick it here. Every calendar in it '
-        'is added, and importing the same file again skips events you '
-        'already have.\n\nFrom other apps: export an .ics file and pick it.',
+      title: Text(context.l10n.importEvents),
+      content: Text(
+        context.l10n.fromGoogleCalendarGoTo,
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(d).pop(false), child: const Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.of(d).pop(true), child: const Text('Choose file')),
+        TextButton(onPressed: () => Navigator.of(d).pop(false), child: Text(context.l10n.cancel)),
+        FilledButton(onPressed: () => Navigator.of(d).pop(true), child: Text(context.l10n.chooseFile)),
       ],
     ),
   );
   if (help != true) return;
-  final files = await FilePicker.pickFiles(dialogTitle: 'Choose an .ics or .zip file');
+  final files = await FilePicker.pickFiles(dialogTitle: currentL10n.chooseAnIcsOrZip);
   if (files.isEmpty) return;
   try {
     final picked = <(String, Uint8List)>[
@@ -325,14 +338,13 @@ Future<void> importCalendarFile(BuildContext context, WidgetRef ref) async {
     messenger.showSnackBar(
       SnackBar(
         content: Text(
-          'Imported ${plan.events.length} '
-          '${plan.events.length == 1 ? 'event' : 'events'}'
-          '${plan.newCalendars.isEmpty ? '' : ' into ${plan.newCalendars.length} new ${plan.newCalendars.length == 1 ? 'calendar' : 'calendars'}'}'
-          '${plan.skipped == 0 ? '' : ', skipped ${plan.skipped} already here'}.',
+          '${currentL10n.importedNEvents(plan.events.length)}'
+          '${plan.newCalendars.isEmpty ? '' : currentL10n.intoNewCalendars(plan.newCalendars.length)}'
+          '${plan.skipped == 0 ? '' : currentL10n.skippedAlreadyHere(plan.skipped)}.',
         ),
       ),
     );
   } on Object catch (e) {
-    messenger.showSnackBar(SnackBar(content: Text('Could not import that file: $e')));
+    messenger.showSnackBar(SnackBar(content: Text(currentL10n.couldNotImportFile('$e'))));
   }
 }
