@@ -26,6 +26,8 @@ import '../ui/event_details_page.dart';
 import '../ui/home_page.dart';
 import '../ui/navigation.dart';
 import '../util/format.dart';
+import '../booking/booking_pages.dart';
+import '../booking/booking_sync.dart';
 import '../widget/my_day_widget.dart';
 import '../widget/up_next_widget.dart';
 import 'auth_providers.dart';
@@ -202,6 +204,7 @@ class CalendarHome extends ConsumerStatefulWidget {
 class _CalendarHomeState extends ConsumerState<CalendarHome> {
   StreamSubscription<ReminderTap>? _taps;
   StreamSubscription<void>? _files;
+  StreamSubscription<void>? _bookings;
   Timer? _debounce;
   Timer? _hourly;
   String? _lastPhonePayload;
@@ -212,6 +215,15 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     _taps = ref.read(reminderSchedulerProvider).taps.listen(_onReminder);
     pendingWidgetTap.addListener(_takeWidgetTap);
     _files = IncomingFiles.instance.arrived.listen((_) => _takeFiles());
+    // A visitor booked or cancelled on a booking page: take it now.
+    try {
+      _bookings = ref
+          .read(bookingBackendProvider)
+          .changes()
+          .listen((_) => _schedule(), onError: (Object _) {});
+    } on Object {
+      // Not signed in or no network: the hourly pass picks bookings up.
+    }
     // Reminders more than 30 days ahead, and the widget's "next", move on
     // as time passes; subscribed calendars are fetched again.
     _hourly = Timer.periodic(const Duration(hours: 1), (_) {
@@ -243,6 +255,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     _taps?.cancel();
     pendingWidgetTap.removeListener(_takeWidgetTap);
     _files?.cancel();
+    _bookings?.cancel();
     _debounce?.cancel();
     _hourly?.cancel();
     super.dispose();
@@ -357,7 +370,30 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
       ),
     );
     await _shareBusyTimes(events, calendars, now);
+    await _syncBookings(events, calendars, now);
     await _syncPhoneCalendar(events, calendars, settings, now);
+  }
+
+  /// Booking pages: new bookings into the calendar, cancelled ones out,
+  /// busy times up to date for visitors.
+  Future<void> _syncBookings(
+    List<CalendarEvent> events,
+    List<ZtCalendarInfo> calendars,
+    DateTime now,
+  ) async {
+    try {
+      await ref.read(bookingSyncProvider).sync(
+        events: events,
+        calendars: calendars,
+        now: now,
+        text: (
+          title: currentL10n.bookingEventTitle,
+          footer: currentL10n.bookingEventFooter,
+        ),
+      );
+    } on Object {
+      // Offline, or booking pages not set up on the server: next time.
+    }
   }
 
   /// "Find a time": keeps this account's busy times (times only) up to

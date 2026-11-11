@@ -1783,4 +1783,152 @@ class AppL10nHe extends AppL10n {
   @override
   String get findATimeNone =>
       'אין זמן שמתאים לכולם בשבועיים הקרובים. אפשר לנסות משך קצר יותר, ערבים או סופי שבוע.';
+
+  @override
+  String get bookingPages => 'דפי קביעת פגישות';
+
+  @override
+  String get bookingPagesHint => 'אפשר לקבוע איתך זמן דרך קישור';
+
+  @override
+  String get bookingPagesIntro =>
+      'משתפים קישור ומי שמקבל אותו בוחר זמן פנוי. הפגישה נכנסת ישר ללוח השנה שלך.';
+
+  @override
+  String get bookingPrivacy =>
+      'המבקרים רואים את כותרת הדף, השם שלך בו, משך הפגישה והזמנים הפנויים שלך. כדי להציע זמנים פנויים, השרת שלנו רואה מתי את/ה עסוק/ה (שעות התחלה וסיום בלבד, אף פעם לא כותרות) ומתי נקבעו פגישות. שמות, כתובות מייל והערות מוצפנים במכשיר של המבקר במפתח של הדף הזה, כך שרק הטלפונים שלך יכולים לקרוא אותם.';
+
+  @override
+  String get newBookingPage => 'דף חדש לקביעת פגישות';
+
+  @override
+  String get bookingPage => 'דף קביעת פגישות';
+
+  @override
+  String get bookingNoPages => 'אין עדיין דפים לקביעת פגישות.';
+
+  @override
+  String bookingLoadFailed(String error) {
+    return 'לא ניתן לטעון את הדפים: $error';
+  }
+
+  @override
+  String get bookingTitle => 'כותרת';
+
+  @override
+  String get bookingTitleHint => 'לדוגמה: שיחה של 30 דקות';
+
+  @override
+  String get bookingHostName => 'השם שלך בדף';
+
+  @override
+  String get bookingDescription => 'תיאור (לא חובה)';
+
+  @override
+  String get bookingLength => 'משך';
+
+  @override
+  String get bookingStep => 'שעות התחלה כל';
+
+  @override
+  String get bookingBuffer => 'זמן פנוי סביב אירועים';
+
+  @override
+  String get bookingNone => 'ללא';
+
+  @override
+  String get bookingNotice => 'הקביעה המוקדמת ביותר';
+
+  @override
+  String bookingNoticeHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: '$hours שעות מראש',
+      two: 'שעתיים מראש',
+      one: 'שעה מראש',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String bookingNoticeDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days ימים מראש',
+      two: 'יומיים מראש',
+      one: 'יום מראש',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bookingHorizon => 'כמה זמן קדימה';
+
+  @override
+  String bookingHorizonDays(int days) {
+    return '$days ימים';
+  }
+
+  @override
+  String get bookingCalendar => 'להוסיף פגישות אל';
+
+  @override
+  String get bookingTimeZone => 'אזור זמן';
+
+  @override
+  String get bookingHours => 'שעות זמינות';
+
+  @override
+  String get bookingUnavailable => 'לא זמין';
+
+  @override
+  String get bookingAddHours => 'הוספת שעות';
+
+  @override
+  String get bookingActive => 'מקבל פגישות';
+
+  @override
+  String get bookingPaused => 'מושהה';
+
+  @override
+  String get bookingShare => 'שיתוף הקישור';
+
+  @override
+  String get bookingDelete => 'מחיקת הדף';
+
+  @override
+  String get bookingDeleteConfirm =>
+      'למחוק את הדף? הקישור יפסיק לעבוד. פגישות שכבר בלוח השנה שלך יישארו בו.';
+
+  @override
+  String get bookingUpcoming => 'פגישות קרובות';
+
+  @override
+  String get bookingNoneYet => 'אין עדיין פגישות.';
+
+  @override
+  String get bookingAdding => 'נוסף ללוח השנה שלך';
+
+  @override
+  String get bookingNeedsTitle => 'יש לתת לדף כותרת.';
+
+  @override
+  String get bookingNeedsHours => 'יש לבחור לפחות יום אחד עם שעות.';
+
+  @override
+  String bookingEventTitle(String name, String page) {
+    return '$name ($page)';
+  }
+
+  @override
+  String bookingEventFooter(String page) {
+    return 'נקבע דרך דף קביעת הפגישות „$page”.';
+  }
+
+  @override
+  String bookingShareText(String link) {
+    return 'אפשר לקבוע איתי זמן כאן: $link';
+  }
 }

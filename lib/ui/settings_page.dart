@@ -18,6 +18,7 @@ import '../ics/ics.dart';
 import '../ics/import_service.dart';
 import '../reminders/reminders.dart';
 import '../util/format.dart';
+import 'booking_pages_page.dart';
 import 'calendars_page.dart';
 import 'desktop_bridge_page.dart';
 import 'phone_calendar_page.dart';
@@ -50,6 +51,14 @@ class CalendarSettingsPage extends ConsumerWidget {
           subtitle: Text(context.l10n.addRenameRecolourOrHide),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const CalendarsPage()),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.event_available_outlined),
+          title: Text(context.l10n.bookingPages),
+          subtitle: Text(context.l10n.bookingPagesHint),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const BookingPagesPage()),
           ),
         ),
         ListTile(

@@ -2802,6 +2802,240 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'No time works for everyone in the next two weeks. Try a shorter length, evenings or weekends.'**
   String get findATimeNone;
+
+  /// No description provided for @bookingPages.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking pages'**
+  String get bookingPages;
+
+  /// No description provided for @bookingPagesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Let people book time with you from a link'**
+  String get bookingPagesHint;
+
+  /// No description provided for @bookingPagesIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Share a link and people pick a free time. It goes straight into your calendar.'**
+  String get bookingPagesIntro;
+
+  /// No description provided for @bookingPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Visitors see the page\'s title, your name on it, its length and your free times. To offer free times, our server sees when you\'re busy (start and end only, never titles) and when bookings are. Names, emails and notes are encrypted on the visitor\'s device to this page\'s key, so only your phones can read them.'**
+  String get bookingPrivacy;
+
+  /// No description provided for @newBookingPage.
+  ///
+  /// In en, this message translates to:
+  /// **'New booking page'**
+  String get newBookingPage;
+
+  /// No description provided for @bookingPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking page'**
+  String get bookingPage;
+
+  /// No description provided for @bookingNoPages.
+  ///
+  /// In en, this message translates to:
+  /// **'No booking pages yet.'**
+  String get bookingNoPages;
+
+  /// No description provided for @bookingLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load booking pages: {error}'**
+  String bookingLoadFailed(String error);
+
+  /// No description provided for @bookingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get bookingTitle;
+
+  /// No description provided for @bookingTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For example: 30-minute chat'**
+  String get bookingTitleHint;
+
+  /// No description provided for @bookingHostName.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name on the page'**
+  String get bookingHostName;
+
+  /// No description provided for @bookingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get bookingDescription;
+
+  /// No description provided for @bookingLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Length'**
+  String get bookingLength;
+
+  /// No description provided for @bookingStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Start times every'**
+  String get bookingStep;
+
+  /// No description provided for @bookingBuffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Free time around events'**
+  String get bookingBuffer;
+
+  /// No description provided for @bookingNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get bookingNone;
+
+  /// No description provided for @bookingNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Earliest booking'**
+  String get bookingNotice;
+
+  /// No description provided for @bookingNoticeHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours, plural, =1{1 hour ahead} other{{hours} hours ahead}}'**
+  String bookingNoticeHours(int hours);
+
+  /// No description provided for @bookingNoticeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =1{1 day ahead} other{{days} days ahead}}'**
+  String bookingNoticeDays(int days);
+
+  /// No description provided for @bookingHorizon.
+  ///
+  /// In en, this message translates to:
+  /// **'How far ahead'**
+  String get bookingHorizon;
+
+  /// No description provided for @bookingHorizonDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String bookingHorizonDays(int days);
+
+  /// No description provided for @bookingCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Add bookings to'**
+  String get bookingCalendar;
+
+  /// No description provided for @bookingTimeZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Time zone'**
+  String get bookingTimeZone;
+
+  /// No description provided for @bookingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Available hours'**
+  String get bookingHours;
+
+  /// No description provided for @bookingUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get bookingUnavailable;
+
+  /// No description provided for @bookingAddHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Add hours'**
+  String get bookingAddHours;
+
+  /// No description provided for @bookingActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Taking bookings'**
+  String get bookingActive;
+
+  /// No description provided for @bookingPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get bookingPaused;
+
+  /// No description provided for @bookingShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share link'**
+  String get bookingShare;
+
+  /// No description provided for @bookingDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete booking page'**
+  String get bookingDelete;
+
+  /// No description provided for @bookingDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this booking page? Its link stops working. Bookings already in your calendar stay there.'**
+  String get bookingDeleteConfirm;
+
+  /// No description provided for @bookingUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming bookings'**
+  String get bookingUpcoming;
+
+  /// No description provided for @bookingNoneYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings yet.'**
+  String get bookingNoneYet;
+
+  /// No description provided for @bookingAdding.
+  ///
+  /// In en, this message translates to:
+  /// **'Being added to your calendar'**
+  String get bookingAdding;
+
+  /// No description provided for @bookingNeedsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Give the page a title.'**
+  String get bookingNeedsTitle;
+
+  /// No description provided for @bookingNeedsHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one day with hours.'**
+  String get bookingNeedsHours;
+
+  /// No description provided for @bookingEventTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ({page})'**
+  String bookingEventTitle(String name, String page);
+
+  /// No description provided for @bookingEventFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked on your booking page “{page}”.'**
+  String bookingEventFooter(String page);
+
+  /// No description provided for @bookingShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'Book a time with me: {link}'**
+  String bookingShareText(String link);
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
