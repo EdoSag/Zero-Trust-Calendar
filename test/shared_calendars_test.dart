@@ -89,7 +89,7 @@ void main() {
     final link = await a.spaces.invite(space.id);
     expect(
       link.toString(),
-      startsWith('https://zerotrust.bz/join#zt1.calendar.'),
+      startsWith('https://zerotrust.bz/join/calendar#zt1.calendar.'),
     );
     final started = await b.spaces.answer(
       SpaceInviteLink.parse(link.toString()),
