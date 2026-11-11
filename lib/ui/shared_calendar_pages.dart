@@ -23,11 +23,15 @@ void _snack(BuildContext context, String text) {
 /// The name this account already uses in its shared calendars, to suggest
 /// it again.
 String _myKnownName(WidgetRef ref) {
-  final me = ref.read(accountServiceProvider).currentUserId;
-  for (final c in ref.read(sharedCalendarsProvider).value ?? const []) {
-    for (final m in c.members) {
-      if (m.userId == me && m.name.trim().isNotEmpty) return m.name;
+  try {
+    final me = ref.read(accountServiceProvider).currentUserId;
+    for (final c in ref.read(sharedCalendarsProvider).value ?? const []) {
+      for (final m in c.members) {
+        if (m.userId == me && m.name.trim().isNotEmpty) return m.name;
+      }
     }
+  } on Object {
+    // Signed out or offline: no suggestion.
   }
   return '';
 }
@@ -782,10 +786,16 @@ class JoinCalendarPage extends ConsumerStatefulWidget {
 
 class _JoinCalendarPageState extends ConsumerState<JoinCalendarPage> {
   late final _link = TextEditingController(text: widget.initialLink);
-  late final _name = TextEditingController(text: _myKnownName(ref));
+  final _name = TextEditingController();
   final _form = GlobalKey<FormState>();
   bool _busy = false;
   String? _code;
+
+  @override
+  void initState() {
+    super.initState();
+    _name.text = _myKnownName(ref);
+  }
 
   @override
   void dispose() {
