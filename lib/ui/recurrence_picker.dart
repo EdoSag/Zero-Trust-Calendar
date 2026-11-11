@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../model/recurrence.dart';
 import '../util/format.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Asks how an event repeats. Returns `(rule,)`, with a null rule for "does
 /// not repeat", or null when cancelled.
@@ -40,16 +41,16 @@ Future<(RecurrenceRule?,)?> pickRecurrence(
   final picked = await showDialog<Object>(
     context: context,
     builder: (dialog) => SimpleDialog(
-      title: const Text('Repeat'),
+      title: Text(context.l10n.repeat),
       children: [
         for (final rule in presets)
           _option(dialog, describeRule(rule, start), rule, rule == current),
         if (!isPreset) _option(dialog, describeRule(current, start), current, true),
         SimpleDialogOption(
           onPressed: () => Navigator.of(dialog).pop('custom'),
-          child: const Padding(
+          child: Padding(
             padding: EdgeInsets.symmetric(vertical: 8),
-            child: Text('Custom…'),
+            child: Text(context.l10n.custom),
           ),
         ),
       ],
@@ -154,27 +155,29 @@ class _CustomRecurrencePageState extends State<CustomRecurrencePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // Monday-first chips; the order a user expects doesn't change meaning.
-    const letters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    // Monday-first chips, one narrow weekday letter each in the app's language.
+    final letters = [
+      for (var d = 1; d <= 7; d++) DateFormat.EEEEE().format(DateTime(2024, 1, d)),
+    ];
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          tooltip: 'Cancel',
+          tooltip: context.l10n.cancel,
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Custom repeat'),
+        title: Text(context.l10n.customRepeat),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(_build()),
-            child: const Text('Done'),
+            child: Text(context.l10n.done),
           ),
         ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text('Repeats every', style: theme.textTheme.titleSmall),
+          Text(context.l10n.repeatsEvery, style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
           Row(
             children: [
@@ -199,10 +202,10 @@ class _CustomRecurrencePageState extends State<CustomRecurrencePage> {
                     DropdownMenuItem(
                       value: f,
                       child: Text(switch (f) {
-                        Frequency.daily => _interval == 1 ? 'day' : 'days',
-                        Frequency.weekly => _interval == 1 ? 'week' : 'weeks',
-                        Frequency.monthly => _interval == 1 ? 'month' : 'months',
-                        Frequency.yearly => _interval == 1 ? 'year' : 'years',
+                        Frequency.daily => context.l10n.unitDays(_interval),
+                        Frequency.weekly => context.l10n.unitWeeks(_interval),
+                        Frequency.monthly => context.l10n.unitMonths(_interval),
+                        Frequency.yearly => context.l10n.unitYears(_interval),
                       }),
                     ),
                 ],
@@ -211,7 +214,7 @@ class _CustomRecurrencePageState extends State<CustomRecurrencePage> {
           ),
           if (_freq == Frequency.weekly) ...[
             const SizedBox(height: 20),
-            Text('On', style: theme.textTheme.titleSmall),
+            Text(context.l10n.on, style: theme.textTheme.titleSmall),
             const SizedBox(height: 8),
             Wrap(
               spacing: 6,
@@ -242,25 +245,17 @@ class _CustomRecurrencePageState extends State<CustomRecurrencePage> {
                 children: [
                   RadioListTile<bool>(
                     value: false,
-                    title: Text('On day ${widget.start.day}'),
+                    title: Text(context.l10n.onDayN(widget.start.day)),
                   ),
                   RadioListTile<bool>(
                     value: true,
                     title: Text(
-                      describeRule(
-                        RecurrenceRule(
-                          frequency: Frequency.monthly,
-                          byDay: [
-                            WeekdayNum(
-                              widget.start.weekday,
-                              ((widget.start.day - 1) ~/ 7 + 1) > 4
-                                  ? -1
-                                  : (widget.start.day - 1) ~/ 7 + 1,
-                            ),
-                          ],
-                        ),
-                        widget.start,
-                      ).replaceFirst('Every month ', '').replaceFirst('on t', 'On t'),
+                      monthlyWeekdayLabel(
+                        ((widget.start.day - 1) ~/ 7 + 1) > 4
+                            ? -1
+                            : (widget.start.day - 1) ~/ 7 + 1,
+                        widget.start.weekday,
+                      ),
                     ),
                   ),
                 ],
@@ -268,18 +263,18 @@ class _CustomRecurrencePageState extends State<CustomRecurrencePage> {
             ),
           ],
           const SizedBox(height: 20),
-          Text('Ends', style: theme.textTheme.titleSmall),
+          Text(context.l10n.ends, style: theme.textTheme.titleSmall),
           RadioGroup<_End>(
             groupValue: _end,
             onChanged: (v) => setState(() => _end = v ?? _End.never),
             child: Column(
               children: [
-                const RadioListTile<_End>(value: _End.never, title: Text('Never')),
+                RadioListTile<_End>(value: _End.never, title: Text(context.l10n.never)),
                 RadioListTile<_End>(
                   value: _End.onDate,
                   title: Row(
                     children: [
-                      const Text('On '),
+                      Text(context.l10n.endsOn),
                       TextButton(
                         onPressed: () async {
                           final d = await showDatePicker(
@@ -304,7 +299,7 @@ class _CustomRecurrencePageState extends State<CustomRecurrencePage> {
                   value: _End.after,
                   title: Row(
                     children: [
-                      const Text('After '),
+                      Text(context.l10n.endsAfter),
                       SizedBox(
                         width: 56,
                         child: TextField(
@@ -317,7 +312,7 @@ class _CustomRecurrencePageState extends State<CustomRecurrencePage> {
                           ),
                         ),
                       ),
-                      Text(' ${_count == 1 ? 'time' : 'times'}'),
+                      Text(context.l10n.timesSuffix(_count)),
                     ],
                   ),
                 ),

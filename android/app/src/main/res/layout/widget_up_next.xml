@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  "Up next" widget, in the shared Zero-Trust widget look
+  "@string/up_next_header" widget, in the shared Zero-Trust widget look
   (Zero-Trust-Core/android-widget-kit). Event titles only appear when "Show
   details on the home screen" is on; otherwise rows say "Event" with the
   time. How many rows show depends on the widget's height.
@@ -47,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Up next"/>
+                android:text="@string/up_next_header"/>
             <TextView
                 android:id="@+id/summary"
                 style="@style/ZtWidget.Caption"
@@ -60,7 +60,7 @@
             style="@style/ZtWidget.Action"
             android:layout_marginStart="8dp"
             android:src="@drawable/ic_zt_widget_add"
-            android:contentDescription="New event"/>
+            android:contentDescription="@string/up_next_new_event"/>
     </LinearLayout>
 
     <LinearLayout
@@ -238,6 +238,6 @@
             android:layout_weight="1"
             android:layout_marginStart="8dp"
             android:maxLines="2"
-            android:text="Open ZT Calendar to see what's next"/>
+            android:text="@string/up_next_open_app"/>
     </LinearLayout>
 </LinearLayout>

@@ -11,6 +11,7 @@ import '../util/day_layout.dart';
 import '../util/format.dart';
 import 'entry_widgets.dart';
 import 'navigation.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 const double _hourHeight = 56;
 const double _gutter = 52;
@@ -315,9 +316,9 @@ class _TimelinePageState extends ConsumerState<_TimelinePage> {
                     child: Stack(
                       children: [
                         for (var h = 1; h < 24; h++)
-                          Positioned(
+                          PositionedDirectional(
                             top: h * _hourHeight - 7,
-                            right: 6,
+                            end: 6,
                             child: Text(
                               formatHour(context, h),
                               style: theme.textTheme.labelSmall?.copyWith(
@@ -441,10 +442,10 @@ class _DayColumn extends ConsumerWidget {
                 child: Container(width: 0.5, color: scheme.outlineVariant),
               ),
               for (final p in placements)
-                Positioned(
+                PositionedDirectional(
                   top: y(p.start) + 1,
                   height: (y(p.end) - y(p.start)).clamp(18.0, double.infinity) - 2,
-                  left: width / p.columns * p.column + 1,
+                  start: width / p.columns * p.column + 1,
                   width: width / p.columns - 2,
                   child: Opacity(
                     opacity: identical(drag?.entry, p.item) ? 0.35 : 1,
@@ -580,7 +581,7 @@ class _TimedBlock extends ConsumerWidget {
             onVerticalDragEnd: (_) => onDragEnd(),
             onVerticalDragCancel: onDragEnd,
             child: Semantics(
-              label: 'Drag to change the end time',
+              label: context.l10n.dragToChangeTheEnd,
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(

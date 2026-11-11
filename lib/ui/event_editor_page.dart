@@ -21,18 +21,19 @@ import 'navigation.dart';
 import 'recurrence_picker.dart';
 import 'time_zone_picker.dart';
 import 'inline_button_style.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Asks which occurrences a change to a repeating event applies to.
 Future<SeriesScope?> askSeriesScope(BuildContext context, {required String action}) =>
     showDialog<SeriesScope>(
       context: context,
       builder: (dialog) => SimpleDialog(
-        title: Text('$action repeating event'),
+        title: Text(context.l10n.actionRepeatingEvent(action)),
         children: [
-          for (final (scope, label) in const [
-            (SeriesScope.thisEvent, 'This event'),
-            (SeriesScope.thisAndFollowing, 'This and following events'),
-            (SeriesScope.allEvents, 'All events'),
+          for (final (scope, label) in [
+            (SeriesScope.thisEvent, context.l10n.thisEvent),
+            (SeriesScope.thisAndFollowing, context.l10n.thisAndFollowingEvents),
+            (SeriesScope.allEvents, context.l10n.allEvents),
           ])
             SimpleDialogOption(
               onPressed: () => Navigator.of(dialog).pop(scope),
@@ -225,7 +226,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
     setState(() => _saving = true);
     try {
       if (!_isNew && original!.repeats && occurrence != null) {
-        final scope = await askSeriesScope(context, action: 'Save');
+        final scope = await askSeriesScope(context, action: context.l10n.save);
         if (scope == null) {
           setState(() => _saving = false);
           return;
@@ -248,10 +249,10 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
       }
       if (mounted) Navigator.of(context).pop(true);
     } on ItemFromNewerVersion {
-      _snack('This event was changed by a newer ZT Calendar. Update the app to edit it.');
+      _snack(currentL10n.thisEventWasChangedBy);
       setState(() => _saving = false);
     } on Object catch (e) {
-      _snack('Could not save: $e');
+      _snack(currentL10n.couldNotSave('$e'));
       setState(() => _saving = false);
     }
   }
@@ -266,10 +267,10 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
     final discard = await showDialog<bool>(
       context: context,
       builder: (d) => AlertDialog(
-        title: const Text('Discard changes?'),
+        title: Text(context.l10n.discardChanges),
         actions: [
-          TextButton(onPressed: () => Navigator.of(d).pop(false), child: const Text('Keep editing')),
-          TextButton(onPressed: () => Navigator.of(d).pop(true), child: const Text('Discard')),
+          TextButton(onPressed: () => Navigator.of(d).pop(false), child: Text(context.l10n.keepEditing)),
+          TextButton(onPressed: () => Navigator.of(d).pop(true), child: Text(context.l10n.discard)),
         ],
       ),
     );
@@ -364,7 +365,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
   }
 
   Future<void> _addAttachment() async {
-    final files = await FilePicker.pickFiles(dialogTitle: 'Attach a file');
+    final files = await FilePicker.pickFiles(dialogTitle: context.l10n.attachAFile);
     if (files.isEmpty || !mounted) return;
     try {
       final attachments = await ref.read(ztAttachmentsProvider.future);
@@ -374,9 +375,9 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
         _set(() => _attachments = [..._attachments, ref0.toJson()]);
       }
     } on AttachmentTooLarge {
-      _snack('Files can be up to 20 MB.');
+      _snack(currentL10n.filesCanBeUpTo);
     } on Object catch (e) {
-      _snack('Could not attach the file: $e');
+      _snack(currentL10n.couldNotAttach('$e'));
     }
   }
 
@@ -385,7 +386,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
     final email = await showDialog<String>(
       context: context,
       builder: (d) => AlertDialog(
-        title: const Text('Add guest by email'),
+        title: Text(context.l10n.addGuestByEmail),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -394,10 +395,10 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
           onSubmitted: (v) => Navigator.of(d).pop(v),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(d).pop(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.of(d).pop(), child: Text(context.l10n.cancel)),
           FilledButton(
             onPressed: () => Navigator.of(d).pop(controller.text),
-            child: const Text('Add'),
+            child: Text(context.l10n.add),
           ),
         ],
       ),
@@ -405,7 +406,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
     controller.dispose();
     final v = email?.trim() ?? '';
     if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v)) {
-      if (v.isNotEmpty) _snack('That doesn\'t look like an email address.');
+      if (v.isNotEmpty) _snack(currentL10n.thatDoesntLookLikeAn);
       return;
     }
     if (!_guestEmails.contains(v)) _set(() => _guestEmails = [..._guestEmails, v]);
@@ -418,7 +419,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
     final picked = await showDialog<int>(
       context: context,
       builder: (d) => SimpleDialog(
-        title: const Text('Add reminder'),
+        title: Text(context.l10n.addReminder),
         children: [
           for (final m in options)
             if (!_reminders.contains(m))
@@ -457,7 +458,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            tooltip: 'Close',
+            tooltip: context.l10n.close,
             icon: const Icon(Icons.close),
             onPressed: () async {
               if (await _confirmDiscard() && context.mounted) Navigator.of(context).pop();
@@ -465,11 +466,11 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
           ),
           actions: [
             Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsetsDirectional.only(end: 8),
               child: FilledButton(
                 style: inlineButtonStyle,
                 onPressed: _saving ? null : _save,
-                child: const Text('Save'),
+                child: Text(context.l10n.save),
               ),
             ),
           ],
@@ -484,8 +485,8 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
                 autofocus: _isNew,
                 textCapitalization: TextCapitalization.sentences,
                 style: theme.textTheme.headlineSmall,
-                decoration: const InputDecoration(
-                  hintText: 'Add title',
+                decoration: InputDecoration(
+                  hintText: context.l10n.addTitle,
                   border: InputBorder.none,
                 ),
               ),
@@ -493,7 +494,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
             const Divider(height: 1),
             SwitchListTile(
               secondary: const Icon(Icons.schedule),
-              title: const Text('All day'),
+              title: Text(context.l10n.allDay),
               value: _allDay,
               onChanged: (v) => _set(() {
                 _allDay = v;
@@ -535,13 +536,12 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
                 leading: const Icon(Icons.public),
                 title: Text(
                   _tz == null
-                      ? 'Phone\'s time zone (${utcOffsetLabel(null, _start)})'
+                      ? context.l10n.phoneTimeZoneOffset(utcOffsetLabel(null, _start))
                       : '${zoneCity(_tz!)} (${utcOffsetLabel(_zone, _start)})',
                 ),
                 subtitle: _tz != null && differsFromPhone(_zone!, _start)
                     ? Text(
-                        'Your time: ${formatDay(_start)}, '
-                        '${formatSpan(context, _start, _end, false)}',
+                        context.l10n.yourTime('${formatDay(_start)}, ${formatSpan(context, _start, _end, false)}'),
                       )
                     : null,
                 onTap: _pickZone,
@@ -559,7 +559,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
             ListTile(
               leading: Icon(Icons.circle, color: Color(_color ?? calendar.color)),
               title: Text(calendar.name),
-              subtitle: _color == null ? null : const Text('Event colour'),
+              subtitle: _color == null ? null : Text(context.l10n.eventColour),
               onTap: () async {
                 final picked = await pickCalendarAndColor(
                   context,
@@ -583,7 +583,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
                 ),
                 title: Text(reminderLabel(m, allDay: _allDay)),
                 trailing: IconButton(
-                  tooltip: 'Remove reminder',
+                  tooltip: context.l10n.removeReminder,
                   icon: const Icon(Icons.close),
                   onPressed: () => _set(() => _reminders = [..._reminders]..remove(m)),
                 ),
@@ -591,7 +591,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
             ListTile(
               leading: Icon(_reminders.isEmpty ? Icons.notifications_outlined : null),
               title: Text(
-                'Add reminder',
+                context.l10n.addReminder,
                 style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
               ),
               onTap: _addReminder,
@@ -602,9 +602,9 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
               child: TextField(
                 controller: _location,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   icon: Icon(Icons.place_outlined),
-                  hintText: 'Add location',
+                  hintText: context.l10n.addLocation,
                   border: InputBorder.none,
                 ),
               ),
@@ -615,9 +615,9 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
               child: TextField(
                 controller: _conference,
                 keyboardType: TextInputType.url,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   icon: Icon(Icons.videocam_outlined),
-                  hintText: 'Add video call link',
+                  hintText: context.l10n.addVideoCallLink,
                   border: InputBorder.none,
                 ),
               ),
@@ -626,7 +626,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
             ListTile(
               leading: const Icon(Icons.people_outline),
               title: Text(
-                _contactIds.isEmpty ? 'Add guests from ZT Contacts' : 'Guests',
+                _contactIds.isEmpty ? context.l10n.addGuestsFromZtContacts : context.l10n.guests,
                 style: _contactIds.isEmpty
                     ? TextStyle(color: theme.colorScheme.onSurfaceVariant)
                     : null,
@@ -638,30 +638,30 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
             ),
             for (final email in _guestEmails)
               ListTile(
-                contentPadding: const EdgeInsets.only(left: 72, right: 8),
+                contentPadding: const EdgeInsetsDirectional.only(start: 72, end: 8),
                 title: Text(email),
                 trailing: IconButton(
-                  tooltip: 'Remove guest',
+                  tooltip: context.l10n.removeGuest,
                   icon: const Icon(Icons.close),
                   onPressed: () => _set(() => _guestEmails = [..._guestEmails]..remove(email)),
                 ),
               ),
             ListTile(
-              contentPadding: const EdgeInsets.only(left: 72, right: 8),
+              contentPadding: const EdgeInsetsDirectional.only(start: 72, end: 8),
               title: Text(
-                'Add guest by email',
+                context.l10n.addGuestByEmail,
                 style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
               ),
               onTap: _addGuestEmail,
             ),
             for (final id in _contactIds)
               ListTile(
-                contentPadding: const EdgeInsets.only(left: 72, right: 8),
+                contentPadding: const EdgeInsetsDirectional.only(start: 72, end: 8),
                 title: Text(
-                  contacts.where((c) => c.id == id).firstOrNull?.name ?? 'Contact',
+                  contacts.where((c) => c.id == id).firstOrNull?.name ?? context.l10n.contact,
                 ),
                 trailing: IconButton(
-                  tooltip: 'Remove guest',
+                  tooltip: context.l10n.removeGuest,
                   icon: const Icon(Icons.close),
                   onPressed: () => _set(() => _contactIds = [..._contactIds]..remove(id)),
                 ),
@@ -670,7 +670,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
             ListTile(
               leading: const Icon(Icons.sticky_note_2_outlined),
               title: Text(
-                _noteIds.isEmpty ? 'Link a note from ZT Notes' : 'Notes',
+                _noteIds.isEmpty ? context.l10n.linkANoteFromZt : context.l10n.notes,
                 style: _noteIds.isEmpty
                     ? TextStyle(color: theme.colorScheme.onSurfaceVariant)
                     : null,
@@ -688,12 +688,12 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
             ),
             for (final id in _noteIds)
               ListTile(
-                contentPadding: const EdgeInsets.only(left: 72, right: 8),
+                contentPadding: const EdgeInsetsDirectional.only(start: 72, end: 8),
                 title: Text(
-                  notes.where((n) => n.id == id).firstOrNull?.displayTitle ?? 'Note',
+                  notes.where((n) => n.id == id).firstOrNull?.displayTitle ?? context.l10n.note,
                 ),
                 trailing: IconButton(
-                  tooltip: 'Unlink note',
+                  tooltip: context.l10n.unlinkNote,
                   icon: const Icon(Icons.close),
                   onPressed: () => _set(() => _noteIds = [..._noteIds]..remove(id)),
                 ),
@@ -707,11 +707,11 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
             ListTile(
               leading: Icon(_attachments.isEmpty ? Icons.attach_file : null),
               title: Text(
-                'Add attachment',
+                context.l10n.addAttachment,
                 style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
               ),
               subtitle: _attachments.isEmpty
-                  ? const Text('Encrypted on this phone before upload')
+                  ? Text(context.l10n.encryptedOnThisPhoneBefore)
                   : null,
               onTap: _addAttachment,
             ),
@@ -723,9 +723,9 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
                 minLines: 2,
                 maxLines: null,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   icon: Icon(Icons.notes),
-                  hintText: 'Add description',
+                  hintText: context.l10n.addDescription,
                   border: InputBorder.none,
                 ),
               ),
@@ -753,12 +753,12 @@ class _DateTimeRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 56, right: 8),
+      padding: const EdgeInsetsDirectional.only(start: 56, end: 8),
       child: Row(
         children: [
           Expanded(
             child: Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: TextButton(onPressed: onDate, child: Text(date)),
             ),
           ),

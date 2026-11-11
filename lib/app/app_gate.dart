@@ -25,6 +25,7 @@ import '../util/format.dart';
 import '../widget/up_next_widget.dart';
 import 'auth_providers.dart';
 import 'calendar_settings.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Routes between the shared account screens and the calendar.
 ///
@@ -307,7 +308,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
             ? addDays(dayOf(start), (e.duration.inHours / 24).round())
             : start.add(e.duration);
         final when = e.allDay
-            ? '${relativeDay(start, now: now)}, all day'
+            ? '${relativeDay(start, now: now)}, ${currentL10n.allDayLower}'
             : '${relativeDay(start, now: now)}, ${formatSpan(context, start, end, false)}';
         return when;
       },

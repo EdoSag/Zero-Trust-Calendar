@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../util/time_zones.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Picks an IANA time zone. Returns '' for "the phone's time zone", the
 /// zone id, or null when cancelled.
@@ -37,8 +38,8 @@ class _TimeZonePageState extends State<_TimeZonePage> {
       appBar: AppBar(
         title: TextField(
           autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Search city or region',
+          decoration: InputDecoration(
+            hintText: context.l10n.searchCityOrRegion,
             border: InputBorder.none,
           ),
           onChanged: (v) => setState(() => _query = v.trim()),
@@ -50,9 +51,9 @@ class _TimeZonePageState extends State<_TimeZonePage> {
           if (i == 0) {
             return ListTile(
               leading: const Icon(Icons.smartphone),
-              title: const Text('Phone\'s time zone'),
+              title: Text(context.l10n.phonesTimeZone),
               subtitle: Text(
-                'Follows the phone when you travel (${utcOffsetLabel(null, widget.at)})',
+                context.l10n.followsPhoneZone(utcOffsetLabel(null, widget.at)),
               ),
               selected: widget.current == null,
               onTap: () => Navigator.of(context).pop(''),

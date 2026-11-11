@@ -6,6 +6,7 @@ import '../model/calendar_event.dart';
 import '../model/linked_items.dart';
 import '../util/format.dart';
 import 'linked_app_launcher.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Calendar and optional event colour. Returns (calendar id, colour or null
 /// for the calendar's).
@@ -27,9 +28,9 @@ Future<(String, int?)?> pickCalendarAndColor(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.fromLTRB(24, 0, 24, 8),
-                child: Text('Calendar'),
+                child: Text(context.l10n.calendarDefaultName),
               ),
               for (final c in calendars)
                 ListTile(
@@ -38,9 +39,9 @@ Future<(String, int?)?> pickCalendarAndColor(
                   trailing: c.id == cal ? const Icon(Icons.check) : null,
                   onTap: () => setState(() => cal = c.id),
                 ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.fromLTRB(24, 16, 24, 8),
-                child: Text('Event colour'),
+                child: Text(context.l10n.eventColour),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -49,7 +50,7 @@ Future<(String, int?)?> pickCalendarAndColor(
                   runSpacing: 10,
                   children: [
                     ChoiceChip(
-                      label: const Text('Calendar colour'),
+                      label: Text(context.l10n.calendarColour),
                       selected: col == null,
                       onSelected: (_) => setState(() => col = null),
                     ),
@@ -65,10 +66,10 @@ Future<(String, int?)?> pickCalendarAndColor(
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Align(
-                  alignment: Alignment.centerRight,
+                  alignment: AlignmentDirectional.centerEnd,
                   child: FilledButton(
                     onPressed: () => Navigator.of(sheet).pop((cal, col)),
-                    child: const Text('Done'),
+                    child: Text(context.l10n.done),
                   ),
                 ),
               ),
@@ -90,7 +91,7 @@ class _ColorDot extends StatelessWidget {
   Widget build(BuildContext context) => Semantics(
     button: true,
     selected: selected,
-    label: 'Colour',
+    label: context.l10n.colour,
     child: InkWell(
       onTap: onTap,
       customBorder: const CircleBorder(),
@@ -141,11 +142,11 @@ class _ContactPickerPageState extends ConsumerState<_ContactPickerPage> {
     ];
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Guests'),
+        title: Text(context.l10n.guests),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(_selected),
-            child: const Text('Done'),
+            child: Text(context.l10n.done),
           ),
         ],
       ),
@@ -154,7 +155,7 @@ class _ContactPickerPageState extends ConsumerState<_ContactPickerPage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: SearchBar(
-              hintText: 'Search ZT Contacts',
+              hintText: context.l10n.searchZtContacts,
               leading: const Icon(Icons.search),
               elevation: const WidgetStatePropertyAll(0),
               onChanged: (v) => setState(() => _query = v.trim()),
@@ -165,7 +166,7 @@ class _ContactPickerPageState extends ConsumerState<_ContactPickerPage> {
                 ? _EmptyLinked(
                     loading: async.isLoading,
                     app: LinkedApp.contacts,
-                    text: 'Contacts you keep in ZT Contacts show here.',
+                    text: context.l10n.contactsYouKeepInZt,
                   )
                 : ListView(
                     children: [
@@ -208,7 +209,7 @@ class _EmptyLinked extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: () => openLinkedApp(app),
               icon: const Icon(Icons.open_in_new),
-              label: Text('Open ZT ${app.name[0].toUpperCase()}${app.name.substring(1)}'),
+              label: Text(context.l10n.openApp('ZT ${app.name[0].toUpperCase()}${app.name.substring(1)}')),
             ),
           ],
         ),
@@ -258,7 +259,7 @@ class _NotePickerPageState extends ConsumerState<_NotePickerPage> {
     setState(() => _creating = true);
     try {
       final mirror = await ref.read(linkedMirrorProvider(LinkedApp.notes).future);
-      final title = widget.eventTitle.isEmpty ? 'Event notes' : widget.eventTitle;
+      final title = widget.eventTitle.isEmpty ? currentL10n.eventNotes : widget.eventTitle;
       final id = await mirror.create(
         LinkedNote.newNoteJson(
           title: title,
@@ -271,7 +272,7 @@ class _NotePickerPageState extends ConsumerState<_NotePickerPage> {
       if (!mounted) return;
       setState(() => _creating = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not create the note: $e')),
+        SnackBar(content: Text(context.l10n.couldNotCreateNote('$e'))),
       );
     }
   }
@@ -290,22 +291,22 @@ class _NotePickerPageState extends ConsumerState<_NotePickerPage> {
           n,
     ];
     return Scaffold(
-      appBar: AppBar(title: const Text('Link a note')),
+      appBar: AppBar(title: Text(context.l10n.linkANote)),
       body: Column(
         children: [
           ListTile(
             leading: _creating
                 ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
                 : const Icon(Icons.note_add_outlined),
-            title: const Text('New note for this event'),
-            subtitle: const Text('Created in ZT Notes, encrypted like your other notes'),
+            title: Text(context.l10n.newNoteForThisEvent),
+            subtitle: Text(context.l10n.createdInZtNotesEncrypted),
             onTap: _creating ? null : _createNote,
           ),
           const Divider(),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: SearchBar(
-              hintText: 'Search ZT Notes',
+              hintText: context.l10n.searchZtNotes,
               leading: const Icon(Icons.search),
               elevation: const WidgetStatePropertyAll(0),
               onChanged: (v) => setState(() => _query = v.trim()),
@@ -316,7 +317,7 @@ class _NotePickerPageState extends ConsumerState<_NotePickerPage> {
                 ? _EmptyLinked(
                     loading: async.isLoading,
                     app: LinkedApp.notes,
-                    text: 'Your ZT Notes notes show here.',
+                    text: context.l10n.yourZtNotesNotesShow,
                   )
                 : ListView(
                     children: [
@@ -358,19 +359,19 @@ Future<void> showNoteSheet(BuildContext context, LinkedNote note) =>
           children: [
             Text(note.displayTitle, style: Theme.of(sheet).textTheme.titleLarge),
             const SizedBox(height: 12),
-            SelectableText(note.body.trim().isEmpty ? 'This note is empty.' : note.body),
+            SelectableText(note.body.trim().isEmpty ? context.l10n.thisNoteIsEmpty : note.body),
             const SizedBox(height: 20),
             Text(
-              'Edit it in ZT Notes.',
+              context.l10n.editItInZtNotes,
               style: Theme.of(sheet).textTheme.bodySmall,
             ),
             const SizedBox(height: 8),
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: FilledButton.tonalIcon(
                 onPressed: () => openLinkedApp(LinkedApp.notes),
                 icon: const Icon(Icons.open_in_new),
-                label: const Text('Open ZT Notes'),
+                label: Text(context.l10n.openZtNotes),
               ),
             ),
           ],

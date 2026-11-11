@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
@@ -8,6 +7,7 @@ import 'package:zerotrust_calendar/app/calendar_settings.dart';
 import 'package:zerotrust_calendar/data/calendar_store.dart';
 import 'package:zerotrust_calendar/data/linked_apps.dart';
 import 'package:zerotrust_calendar/data/subscriptions.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 import 'package:zerotrust_calendar/model/calendar_event.dart';
 import 'package:zerotrust_calendar/model/linked_items.dart';
 import 'package:zerotrust_calendar/reminders/reminders.dart';
@@ -19,7 +19,8 @@ import 'package:zerotrust_calendar/ui/quick_add_sheet.dart';
 import 'package:zerotrust_calendar/ui/schedule_view.dart';
 import 'package:zerotrust_calendar/ui/timeline_view.dart';
 
-Widget app(Widget home, List<CalendarEvent> events, {PreferencesStore? prefs}) {
+Widget app(Widget home, List<CalendarEvent> events,
+    {PreferencesStore? prefs, Locale? locale}) {
   return ProviderScope(
     overrides: [
       ztAppConfigProvider.overrideWithValue(calendarAppConfig),
@@ -38,12 +39,9 @@ Widget app(Widget home, List<CalendarEvent> events, {PreferencesStore? prefs}) {
       // The real app theme: its full-width buttons vanish inside a Row, which
       // a plain ThemeData would hide from these tests.
       theme: ZtTheme.light(accent: ZtTheme.accentFor(calendarAppConfig)),
-      localizationsDelegates: const [
-        ZtL10n.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      locale: locale,
+      supportedLocales: ZtLanguages.supported,
+      localizationsDelegates: const [AppL10n.delegate, ...ZtLanguages.delegates],
       home: home,
     ),
   );
@@ -180,6 +178,24 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expectTappableOnScreen(tester, 'Join video call');
+  });
+
+  testWidgets('in Hebrew the editor is in Hebrew and laid out right to left',
+      (tester) async {
+    usePhoneScreen(tester);
+    await tester.pumpWidget(
+        app(const EventEditorPage(), events, locale: ZtLanguages.hebrew));
+    await tester.pump();
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Add title'), findsNothing);
+    final repeat = find.text('לא חוזר');
+    expect(repeat, findsOneWidget);
+    // The row's icon sits to the right of its text, as Hebrew reads.
+    final row = find.ancestor(of: repeat, matching: find.byType(ListTile)).first;
+    final icon = find.descendant(of: row, matching: find.byType(Icon)).first;
+    expect(tester.getCenter(icon).dx, greaterThan(tester.getCenter(repeat).dx));
+    expect(Directionality.of(tester.element(repeat)), TextDirection.rtl);
   });
 
   test('settings round-trip through preferences', () {

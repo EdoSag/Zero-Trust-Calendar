@@ -3,6 +3,7 @@ import 'package:home_widget/home_widget.dart';
 
 import '../data/entries.dart';
 import '../util/format.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// One row of the "Up next" home-screen widget.
 @immutable
@@ -50,11 +51,11 @@ List<UpNextRow> upNextRows(
           final day = sameDay(start, now)
               ? ''
               : sameDay(start, addDays(today, 1))
-              ? 'Tomorrow '
+              ? '${currentL10n.tomorrow} '
               : '${relativeDay(start)} ';
-          return e.allDay ? '${day}all day'.trim() : '$day${formatTime(start)}'.trim();
+          return e.allDay ? '$day${currentL10n.allDayLower}'.trim() : '$day${formatTime(start)}'.trim();
         }(),
-        title: showTitles ? e.title : (e.kind == EntryKind.birthday ? 'Birthday' : 'Event'),
+        title: showTitles ? e.title : (e.kind == EntryKind.birthday ? currentL10n.birthday : currentL10n.event),
         color: hex(e.color),
       ),
   ];
@@ -67,9 +68,10 @@ Future<void> publishUpNext(List<UpNextRow> rows) async {
   if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
   try {
     await HomeWidget.saveWidgetData<bool>('upnext_locked', false);
-    await HomeWidget.saveWidgetData<String>('upnext_header', 'Up next');
+    await HomeWidget.saveWidgetData<String>('upnext_header', currentL10n.upNext);
     await HomeWidget.saveWidgetData<int>('upnext_count', rows.length);
-    await HomeWidget.saveWidgetData<String>('upnext_empty', 'Nothing coming up');
+    await HomeWidget.saveWidgetData<String>('upnext_empty', currentL10n.nothingComingUp);
+    await _saveCaptions();
     for (var i = 0; i < 5; i++) {
       final r = i < rows.length ? rows[i] : null;
       await HomeWidget.saveWidgetData<String>('upnext_${i}_time', r?.time);
@@ -92,9 +94,21 @@ Future<void> clearUpNext() async {
       await HomeWidget.saveWidgetData<String>('upnext_${i}_title', null);
       await HomeWidget.saveWidgetData<String>('upnext_${i}_time', null);
     }
-    await HomeWidget.saveWidgetData<String>('upnext_empty', 'Open ZT Calendar to see what\'s next');
+    await HomeWidget.saveWidgetData<String>('upnext_empty', currentL10n.openZtCalendarToSee);
+    await _saveCaptions();
     await HomeWidget.updateWidget(qualifiedAndroidName: _provider);
   } on Object {
     // Nothing to clear.
   }
+}
+
+/// The widget's own captions in the app's language. The widget fills in the
+/// numbers ({n}) because only it knows how many rows fit; it falls back to
+/// its built-in strings when these are missing.
+Future<void> _saveCaptions() async {
+  final l = currentL10n;
+  await HomeWidget.saveWidgetData<String>('upnext_text_signed_out', l.widgetSignedOut);
+  await HomeWidget.saveWidgetData<String>('upnext_text_more', l.widgetMore('{n}'));
+  await HomeWidget.saveWidgetData<String>('upnext_text_coming_one', l.widgetComingUp(1));
+  await HomeWidget.saveWidgetData<String>('upnext_text_coming_many', l.widgetComingUp(2).replaceFirst('2', '{n}'));
 }

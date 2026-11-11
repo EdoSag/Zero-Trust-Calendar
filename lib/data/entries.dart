@@ -7,6 +7,7 @@ import '../model/linked_items.dart';
 import 'calendar_store.dart';
 import 'linked_apps.dart';
 import 'subscriptions.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 enum EntryKind { event, task, birthday }
 
@@ -140,7 +141,7 @@ List<CalendarEntry> buildEntries({
           out.add(
             CalendarEntry(
               kind: EntryKind.birthday,
-              title: "${c.name}'s birthday",
+              title: currentL10n.birthdayOf(c.name),
               start: d,
               end: next,
               allDay: true,

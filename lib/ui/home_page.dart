@@ -14,13 +14,14 @@ import 'schedule_view.dart';
 import 'search_page.dart';
 import 'settings_page.dart';
 import 'timeline_view.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
-const _viewLabels = {
-  CalendarView.schedule: ('Schedule', Icons.view_agenda_outlined),
-  CalendarView.day: ('Day', Icons.view_day_outlined),
-  CalendarView.threeDay: ('3 days', Icons.view_column_outlined),
-  CalendarView.week: ('Week', Icons.view_week_outlined),
-  CalendarView.month: ('Month', Icons.calendar_view_month_outlined),
+Map<CalendarView, (String, IconData)> get _viewLabels => {
+  CalendarView.schedule: (currentL10n.schedule, Icons.view_agenda_outlined),
+  CalendarView.day: (currentL10n.day, Icons.view_day_outlined),
+  CalendarView.threeDay: (currentL10n.s3Days, Icons.view_column_outlined),
+  CalendarView.week: (currentL10n.week, Icons.view_week_outlined),
+  CalendarView.month: (currentL10n.month, Icons.calendar_view_month_outlined),
 };
 
 class HomePage extends ConsumerWidget {
@@ -82,19 +83,19 @@ class HomePage extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            tooltip: 'Search',
+            tooltip: context.l10n.search,
             icon: const Icon(Icons.search),
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(builder: (_) => const SearchPage()),
             ),
           ),
           IconButton(
-            tooltip: 'Today',
+            tooltip: context.l10n.today,
             onPressed: () => ref.read(focusedDayProvider.notifier).today(),
             icon: _TodayIcon(day: DateTime.now().day),
           ),
           PopupMenuButton<CalendarView>(
-            tooltip: 'Change view',
+            tooltip: context.l10n.changeView,
             icon: Icon(_viewLabels[view]!.$2),
             onSelected: (v) => _setView(ref, v),
             itemBuilder: (_) => [
@@ -116,14 +117,14 @@ class HomePage extends ConsumerWidget {
         children: [
           FloatingActionButton.small(
             heroTag: 'quick-add',
-            tooltip: 'Quick add event or task',
+            tooltip: context.l10n.quickAddEventOrTask,
             onPressed: () => showQuickAdd(context),
             child: const Icon(Icons.bolt),
           ),
           const SizedBox(height: 12),
           FloatingActionButton(
             heroTag: 'new-event',
-            tooltip: 'New event',
+            tooltip: context.l10n.newEvent,
             onPressed: () => createEvent(context),
             child: const Icon(Icons.add),
           ),
@@ -184,7 +185,7 @@ class _CalendarDrawer extends ConsumerWidget {
         const Divider(indent: 28, endIndent: 28),
         Padding(
           padding: const EdgeInsets.fromLTRB(28, 8, 16, 4),
-          child: Text('Calendars', style: theme.textTheme.titleSmall),
+          child: Text(context.l10n.calendars, style: theme.textTheme.titleSmall),
         ),
         for (final c in calendars)
           CheckboxListTile(
@@ -202,7 +203,7 @@ class _CalendarDrawer extends ConsumerWidget {
           contentPadding: const EdgeInsets.symmetric(horizontal: 20),
           controlAffinity: ListTileControlAffinity.leading,
           value: settings.showTasks,
-          title: const Text('Tasks from ZT Tasks'),
+          title: Text(context.l10n.tasksFromZtTasks),
           onChanged: (on) => ref
               .read(calendarSettingsProvider.notifier)
               .update((s) => s.copyWith(showTasks: on == true)),
@@ -211,7 +212,7 @@ class _CalendarDrawer extends ConsumerWidget {
           contentPadding: const EdgeInsets.symmetric(horizontal: 20),
           controlAffinity: ListTileControlAffinity.leading,
           value: settings.showBirthdays,
-          title: const Text('Birthdays from ZT Contacts'),
+          title: Text(context.l10n.birthdaysFromZtContacts),
           onChanged: (on) => ref
               .read(calendarSettingsProvider.notifier)
               .update((s) => s.copyWith(showBirthdays: on == true)),
@@ -219,14 +220,14 @@ class _CalendarDrawer extends ConsumerWidget {
         ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 28),
           leading: const Icon(Icons.edit_calendar_outlined),
-          title: const Text('Manage calendars'),
+          title: Text(context.l10n.manageCalendars),
           onTap: () => push(const CalendarsPage()),
         ),
         const Divider(indent: 28, endIndent: 28),
         ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 28),
           leading: const Icon(Icons.settings_outlined),
-          title: const Text('Settings'),
+          title: Text(context.l10n.settings),
           onTap: () => push(const CalendarSettingsPage()),
         ),
       ],
