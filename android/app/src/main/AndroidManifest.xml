@@ -43,13 +43,13 @@
             <intent-filter>
                 <action android:name="es.antonborri.home_widget.action.LAUNCH"/>
             </intent-filter>
-            <!-- Shared calendar invites: https://zerotrust.bz/join#zt1.calendar.…
+            <!-- Shared calendar invites: https://zerotrust.bz/join/calendar#zt1.calendar.…
                  (the fragment never reaches the website). -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="https" android:host="zerotrust.bz" android:pathPrefix="/join"/>
+                <data android:scheme="https" android:host="zerotrust.bz" android:pathPrefix="/join/calendar"/>
             </intent-filter>
             <!-- "Add to ZT Calendar": .ics files and invitations opened or
                  shared from mail, downloads and other apps. -->

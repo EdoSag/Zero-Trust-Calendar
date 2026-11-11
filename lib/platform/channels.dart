@@ -14,7 +14,7 @@ class IncomingFile {
   final String? name;
   final Uint8List? bytes;
 
-  /// A shared calendar invite link (https://zerotrust.bz/join#…).
+  /// A shared calendar invite link (https://zerotrust.bz/join/calendar#…).
   final String? invite;
 
   /// For a subscribe link: the https:// address of the calendar.
