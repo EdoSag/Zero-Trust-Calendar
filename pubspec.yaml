@@ -1,7 +1,7 @@
 name: zerotrust_calendar
 description: "Zero-Trust Calendar: an end-to-end encrypted calendar, linked with ZT Notes, Tasks and Contacts."
 publish_to: none
-version: 0.3.0+6
+version: 0.4.0+7
 
 environment:
   sdk: ^3.9.0
@@ -45,7 +45,9 @@ dependencies:
   qr_flutter: ^4.1.0
   qr_code_scanner_plus: ">=2.1.2 <2.2.0"
   basic_utils: ^5.8.2
+  pointycastle: ^4.0.0
   crypto: ^3.0.8
+  flutter_timezone: ^5.1.1
 
 dev_dependencies:
   flutter_test:
