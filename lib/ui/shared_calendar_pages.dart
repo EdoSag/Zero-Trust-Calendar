@@ -6,8 +6,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
-import '../app/calendar_settings.dart';
 import '../data/calendar_store.dart';
+import '../data/find_a_time.dart';
 import '../data/shared_calendars.dart';
 import '../model/calendar_event.dart' show ZtCalendarInfo, calendarPalette;
 import '../util/format.dart';
@@ -243,20 +243,10 @@ class SharedCalendarPage extends ConsumerWidget {
             secondary: const Icon(Icons.event_busy_outlined),
             title: Text(l.shareBusyTimes),
             subtitle: Text(l.shareBusyTimesHint),
-            value: ref
-                .watch(calendarSettingsProvider)
-                .busySharedSpaces
-                .contains(spaceId),
-            onChanged: (on) => ref
-                .read(calendarSettingsProvider.notifier)
-                .update(
-                  (x) => x.copyWith(
-                    busySharedSpaces: {
-                      ...x.busySharedSpaces.where((id) => id != spaceId),
-                      if (on) spaceId,
-                    },
-                  ),
-                ),
+            // The busy item in the space is the switch, so all of this
+            // account's phones agree on it.
+            value: shared.busy.any((b) => b.userId == me),
+            onChanged: (on) => _setSharingBusy(context, ref, shared, on),
           ),
           ListTile(
             leading: const Icon(Icons.manage_search),
@@ -384,6 +374,44 @@ class SharedCalendarPage extends ConsumerWidget {
         .saveMyChoice(_choice(mine, shared).copyWith(color: picked));
   }
 
+
+  Future<void> _setSharingBusy(
+    BuildContext context,
+    WidgetRef ref,
+    SharedCalendar shared,
+    bool on,
+  ) async {
+    final actions = ref.read(sharedCalendarActionsProvider);
+    final messenger = ScaffoldMessenger.of(context);
+    final l = context.l10n;
+    try {
+      if (on) {
+        await actions.publishBusy(
+          shared.spaceId,
+          busyBlocks(
+            events: [
+              ...?ref.read(eventsProvider).value,
+              ...ref.read(sharedEventsProvider),
+            ],
+            calendars:
+                ref.read(calendarsProvider).value ??
+                const [ZtCalendarInfo.personal],
+            from: dayOf(DateTime.now()),
+            exceptCalendarId: shared.id,
+          ),
+        );
+      } else {
+        await actions.withdrawBusy(shared.spaceId);
+      }
+    } on Object catch (e) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l.couldNotSave('$e')),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+  }
   Future<void> _rename(
     BuildContext context,
     WidgetRef ref,

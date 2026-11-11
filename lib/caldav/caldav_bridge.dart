@@ -332,33 +332,63 @@ final desktopBridgeProvider =
       DesktopBridgeController.new,
     );
 
-/// Runs the bridge while the vault is unlocked and the user has it on; it
-/// stops the moment the vault locks (the events are no longer readable).
+/// Runs the bridge while the vault is unlocked and the signed-in account
+/// has it on; it stops the moment the vault locks (the events are no longer
+/// readable). The switch belongs to the account that turned it on: another
+/// account unlocked on this phone finds it off, and turning it on there
+/// makes a new password, so a desktop set up for one account never reads
+/// another's calendars.
 class DesktopBridgeController extends Notifier<DesktopBridgeState> {
   static const _onKey = 'caldav_on';
   CalDavServer? _server;
+
+  /// The account that turned the bridge on, or null when it is off.
+  String? _owner;
+
+  /// Bumped by every stop, so a start that was still awaiting when the
+  /// vault locked knows to close what it opened.
+  int _generation = 0;
+  Future<void>? _starting;
 
   @override
   DesktopBridgeState build() {
     ref.listen(vaultControllerProvider, (_, VaultState next) {
       if (next is VaultUnlocked) {
-        if (state.enabled) _start();
+        state = DesktopBridgeState(
+          enabled: _mine,
+          credentials: state.credentials,
+        );
+        if (_mine) _start();
       } else {
         _stop();
       }
     });
-    ref.onDispose(() => _server?.stop());
+    ref.onDispose(() {
+      _generation++;
+      _server?.stop();
+    });
     _load();
     return const DesktopBridgeState();
   }
 
   PreferencesStore get _prefs => ref.read(ztPreferencesStoreProvider);
 
+  String? get _me => ref.read(accountServiceProvider).currentUserId;
+
+  bool get _mine => _owner != null && _owner == _me;
+
+  bool get _unlocked => ref.read(vaultControllerProvider) is VaultUnlocked;
+
   Future<void> _load() async {
     try {
-      if (await _prefs.read(_onKey) == 'true') {
-        state = const DesktopBridgeState(enabled: true);
-        if (ref.read(vaultControllerProvider) is VaultUnlocked) await _start();
+      final stored = await _prefs.read(_onKey);
+      _owner = stored == null || stored.isEmpty ? null : stored;
+      if (_unlocked && _mine) {
+        state = DesktopBridgeState(
+          enabled: true,
+          credentials: state.credentials,
+        );
+        await _start();
       }
     } on Object {
       // Stays off.
@@ -366,13 +396,22 @@ class DesktopBridgeController extends Notifier<DesktopBridgeState> {
   }
 
   Future<void> setEnabled(bool on) async {
-    await _prefs.write(_onKey, '$on');
+    final me = _me;
+    var credentials = state.credentials;
+    if (on && me != null && _owner != null && _owner != me) {
+      // Last turned on by another account: its desktop apps must not get in.
+      credentials =
+          await (credentials ?? await BridgeCredentials.loadOrCreate(_prefs))
+              .withNewPassword(_prefs);
+    }
+    _owner = on ? me : null;
+    await _prefs.write(_onKey, _owner ?? '');
     state = DesktopBridgeState(
-      enabled: on,
-      credentials: state.credentials,
+      enabled: on && me != null,
+      credentials: credentials,
       port: state.port,
     );
-    if (on) {
+    if (on && me != null) {
       await _start();
     } else {
       await _stop();
@@ -406,22 +445,49 @@ class DesktopBridgeController extends Notifier<DesktopBridgeState> {
     ];
   }
 
-  Future<void> _start() async {
-    if (_server != null) return;
+  Future<void> _start() {
+    if (_server != null) return Future.value();
+    return _starting ??= _startOnce().whenComplete(() {
+      _starting = null;
+      // A stop and a new start came while this one was awaiting: start
+      // again for the new state.
+      if (_server == null &&
+          state.error == null &&
+          _unlocked &&
+          _mine &&
+          state.enabled) {
+        _start();
+      }
+    });
+  }
+
+  Future<void> _startOnce() async {
+    final generation = _generation;
+    bool current() =>
+        generation == _generation && _unlocked && _mine && state.enabled;
     try {
       final creds =
           state.credentials ?? await BridgeCredentials.loadOrCreate(_prefs);
+      if (!current()) return;
       final server = CalDavServer(credentials: creds, snapshot: _snapshot);
       await server.start();
+      if (!current()) {
+        // Locked, signed out or switched off while starting.
+        await server.stop();
+        return;
+      }
       _server = server;
+      final address = await localNetworkAddress();
+      if (_server != server) return;
       state = DesktopBridgeState(
         enabled: true,
         running: true,
         credentials: creds,
-        address: await localNetworkAddress(),
+        address: address,
         port: server.boundPort ?? CalDavServer.defaultPort,
       );
     } on Object catch (e) {
+      if (generation != _generation) return;
       state = DesktopBridgeState(
         enabled: state.enabled,
         credentials: state.credentials,
@@ -431,6 +497,7 @@ class DesktopBridgeController extends Notifier<DesktopBridgeState> {
   }
 
   Future<void> _stop() async {
+    _generation++;
     final s = _server;
     _server = null;
     await s?.stop();

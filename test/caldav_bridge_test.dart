@@ -95,6 +95,33 @@ void main() {
     expect(ics, isNot(contains('EXDATE')));
   });
 
+  test('sync-collection: full list, then nothing, old tokens refused', () {
+    String sync(String token) =>
+        '<d:sync-collection xmlns:d="DAV:">'
+        '<d:sync-token>$token</d:sync-token><d:sync-level>1</d:sync-level>'
+        '<d:prop><d:getetag/></d:prop></d:sync-collection>';
+    final first = ask('REPORT', '/calendars/default/', body: sync(''));
+    expect(first.status, 207);
+    expect(first.body, contains('dentist.ics'));
+    final token = RegExp(
+      r'<d:sync-token>([^<]+)</',
+    ).firstMatch(first.body)!.group(1)!;
+    expect(token, startsWith('urn:'));
+    final same = ask('REPORT', '/calendars/default/', body: sync(token));
+    expect(same.status, 207);
+    expect(same.body, isNot(contains('dentist.ics')));
+    expect(same.body, contains(token));
+    // A token from before a change (e.g. an event deleted on the phone)
+    // makes the app start over, so it drops what is gone.
+    final stale = ask(
+      'REPORT',
+      '/calendars/default/',
+      body: sync('urn:zt-calendar:sync:old'),
+    );
+    expect(stale.status, 403);
+    expect(stale.body, contains('valid-sync-token'));
+  });
+
   test('multiget returns the asked events with data; etags are stable', () {
     final r = ask(
       'REPORT',

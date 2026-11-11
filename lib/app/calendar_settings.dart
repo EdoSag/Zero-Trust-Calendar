@@ -21,7 +21,6 @@ class CalendarSettings {
     this.phoneCalendarIds = const {},
     this.phoneCalendarOwner,
     this.showCompletedTasks = true,
-    this.busySharedSpaces = const {},
   });
 
   final CalendarView view;
@@ -65,10 +64,6 @@ class CalendarSettings {
   /// Ticked-off ZT Tasks tasks stay on the calendar, crossed out.
   final bool showCompletedTasks;
 
-  /// Shared calendars (space ids) this phone tells when the user is busy,
-  /// for "Find a time". Start and end times only, never titles.
-  final Set<String> busySharedSpaces;
-
   static const _unset = Object();
 
   CalendarSettings copyWith({
@@ -84,7 +79,6 @@ class CalendarSettings {
     Set<String>? phoneCalendarIds,
     String? phoneCalendarOwner,
     bool? showCompletedTasks,
-    Set<String>? busySharedSpaces,
   }) => CalendarSettings(
     view: view ?? this.view,
     showTasks: showTasks ?? this.showTasks,
@@ -102,7 +96,6 @@ class CalendarSettings {
     phoneCalendarIds: phoneCalendarIds ?? this.phoneCalendarIds,
     phoneCalendarOwner: phoneCalendarOwner ?? this.phoneCalendarOwner,
     showCompletedTasks: showCompletedTasks ?? this.showCompletedTasks,
-    busySharedSpaces: busySharedSpaces ?? this.busySharedSpaces,
   );
 
   Map<String, String> toPrefs() => {
@@ -118,7 +111,6 @@ class CalendarSettings {
     'phoneCalendars': (phoneCalendarIds.toList()..sort()).join(','),
     'phoneCalendarsOwner': phoneCalendarOwner ?? '',
     'showCompletedTasks': '$showCompletedTasks',
-    'busySharedSpaces': (busySharedSpaces.toList()..sort()).join(','),
   };
 
   static CalendarSettings fromPrefs(Map<String, String?> p) {
@@ -146,10 +138,6 @@ class CalendarSettings {
           if (id.isNotEmpty) id,
       },
       showCompletedTasks: b('showCompletedTasks', d.showCompletedTasks),
-      busySharedSpaces: {
-        for (final id in (p['busySharedSpaces'] ?? '').split(','))
-          if (id.isNotEmpty) id,
-      },
     );
   }
 }

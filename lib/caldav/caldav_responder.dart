@@ -206,6 +206,9 @@ class CalDavResponder {
   static String _digest(String text) =>
       hash.sha256.convert(utf8.encode(text)).toString().substring(0, 24);
 
+  /// RFC 6578 wants a URI.
+  String _syncToken(DavCalendar cal) => 'urn:zt-calendar:sync:${_ctag(cal)}';
+
   String _ctag(DavCalendar cal) => _digest(
     '${cal.info.name}|${cal.info.color}|'
     '${[for (final r in _resources(cal)) r.etag(cal)].join(',')}',
@@ -262,7 +265,7 @@ class CalDavResponder {
         '<d:displayname>${_esc(c.info.name)}</d:displayname>'
         '<ic:calendar-color>${_color(c.info.color)}</ic:calendar-color>'
         '<cs:getctag>${_ctag(c)}</cs:getctag>'
-        '<d:sync-token>${_ctag(c)}</d:sync-token>'
+        '<d:sync-token>${_esc(_syncToken(c))}</d:sync-token>'
         '<c:supported-calendar-component-set><c:comp name="VEVENT"/>'
         '</c:supported-calendar-component-set>'
         '<d:current-user-privilege-set><d:privilege><d:read/></d:privilege>'
@@ -298,15 +301,35 @@ class CalDavResponder {
       ]);
     }
     if (body.contains('sync-collection')) {
-      // No change history on the phone: answer with everything and the
-      // current token, which every app accepts as a full resync.
+      // No change history on the phone (RFC 6578): an empty token gets
+      // everything, the current token gets "nothing changed", and any older
+      // token is refused with valid-sync-token so the app does a full
+      // resync and drops events deleted on the phone.
+      final token =
+          RegExp(
+            r'<(?:[A-Za-z0-9_-]+:)?sync-token>([^<]*)</',
+          ).firstMatch(body)?.group(1)?.trim() ??
+          '';
+      final current = _syncToken(cal);
+      if (token.isNotEmpty && token != current) {
+        return const DavResponse(
+          403,
+          headers: {'Content-Type': _xml, 'DAV': _dav},
+          body:
+              '<?xml version="1.0" encoding="utf-8"?>'
+              '<d:error xmlns:d="DAV:"><d:valid-sync-token/></d:error>',
+        );
+      }
       return DavResponse(
         207,
         headers: const {'Content-Type': _xml, 'DAV': _dav},
-        body: _multistatus([for (final r in all) _resource(cal, r, false)]).body
-            .replaceFirst(
+        body:
+            _multistatus([
+              if (token.isEmpty)
+                for (final r in all) _resource(cal, r, false),
+            ]).body.replaceFirst(
               '</d:multistatus>',
-              '<d:sync-token>${_ctag(cal)}</d:sync-token></d:multistatus>',
+              '<d:sync-token>${_esc(current)}</d:sync-token></d:multistatus>',
             ),
       );
     }

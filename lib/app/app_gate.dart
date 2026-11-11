@@ -356,35 +356,37 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
         date: DateFormat.MMMMEEEEd(currentL10n.localeName).format(now),
       ),
     );
-        await _shareBusyTimes(events, calendars, settings, now);
+    await _shareBusyTimes(events, calendars, now);
     await _syncPhoneCalendar(events, calendars, settings, now);
   }
 
-  /// "Find a time": tells each shared calendar the user opted in for when
-  /// they are busy (times only), and takes it back from the others.
+  /// "Find a time": keeps this account's busy times (times only) up to
+  /// date in each shared calendar where it already shares them. Turning
+  /// sharing on or off is only done by the switch, so another phone of the
+  /// same account never undoes it.
   Future<void> _shareBusyTimes(
     List<CalendarEvent> events,
     List<ZtCalendarInfo> calendars,
-    CalendarSettings settings,
     DateTime now,
   ) async {
+    final me = ref.read(accountServiceProvider).currentUserId;
+    if (me == null) return;
     final actions = ref.read(sharedCalendarActionsProvider);
-    for (final c in ref.read(sharedCalendarsProvider).value ?? const <SharedCalendar>[]) {
-      if (c.waiting) continue;
+    for (final c
+        in ref.read(sharedCalendarsProvider).value ??
+            const <SharedCalendar>[]) {
+      if (c.waiting || !c.busy.any((b) => b.userId == me)) continue;
       try {
-        if (settings.busySharedSpaces.contains(c.spaceId)) {
-          await actions.publishBusy(
-            c.spaceId,
-            busyBlocks(
-              events: events,
-              calendars: calendars,
-              from: dayOf(now),
-              exceptCalendarId: c.id,
-            ),
-          );
-        } else {
-          await actions.withdrawBusy(c.spaceId);
-        }
+        await actions.publishBusy(
+          c.spaceId,
+          busyBlocks(
+            events: events,
+            calendars: calendars,
+            from: dayOf(now),
+            exceptCalendarId: c.id,
+          ),
+          onlyUpdate: true,
+        );
       } on Object {
         // Offline or locked: next time.
       }

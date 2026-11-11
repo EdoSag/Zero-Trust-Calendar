@@ -223,11 +223,13 @@ class SharedCalendarActions {
 
   /// Puts this account's busy times into [spaceId] for "Find a time", only
   /// when they changed (so an unchanged calendar doesn't sync every
-  /// minute).
+  /// minute). With [onlyUpdate] it does nothing unless they are already
+  /// there (sharing was turned off in the meantime, maybe on another phone).
   Future<void> publishBusy(
     String spaceId,
-    List<(DateTime, DateTime)> blocks,
-  ) async {
+    List<(DateTime, DateTime)> blocks, {
+    bool onlyUpdate = false,
+  }) async {
     final me = _ref.read(accountServiceProvider).currentUserId;
     final space = _ref.read(ztSpacesProvider)[spaceId]?.space;
     if (me == null || space == null) return;
@@ -240,6 +242,7 @@ class SharedCalendarActions {
     final before = item == null || item.deleted
         ? null
         : MemberBusy.fromJson(item.json);
+    if (before == null && onlyUpdate) return;
     if (before != null && before.sameBlocks(next)) return;
     await _spaces.save(spaceId, busyItemId(me), next.toJson());
     _changed();
