@@ -340,6 +340,7 @@ final desktopBridgeProvider =
 /// another's calendars.
 class DesktopBridgeController extends Notifier<DesktopBridgeState> {
   static const _onKey = 'caldav_on';
+  static const _passwordOwnerKey = 'caldav_password_owner';
   CalDavServer? _server;
 
   /// The account that turned the bridge on, or null when it is off.
@@ -398,11 +399,14 @@ class DesktopBridgeController extends Notifier<DesktopBridgeState> {
   Future<void> setEnabled(bool on) async {
     final me = _me;
     var credentials = state.credentials;
-    if (on && me != null && _owner != null && _owner != me) {
-      // Last turned on by another account: its desktop apps must not get in.
+    if (on && me != null && await _prefs.read(_passwordOwnerKey) != me) {
+      // The password was last used by another account (or by nobody we
+      // know of): its desktop apps must not get in. Kept apart from the
+      // on/off setting, which forgets the account when the bridge is off.
       credentials =
           await (credentials ?? await BridgeCredentials.loadOrCreate(_prefs))
               .withNewPassword(_prefs);
+      await _prefs.write(_passwordOwnerKey, me);
     }
     _owner = on ? me : null;
     await _prefs.write(_onKey, _owner ?? '');
