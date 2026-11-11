@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../data/calendar_store.dart';
+import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
 import '../util/format.dart';
+import 'shared_calendar_pages.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Add, rename, recolour, hide and delete calendars.
@@ -16,10 +18,17 @@ class CalendarsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final calendars = ref.watch(calendarsProvider).value ?? const [ZtCalendarInfo.personal];
     final events = ref.watch(allEventsProvider).value ?? const <CalendarEvent>[];
+    final shared = ref.watch(sharedCalendarsProvider).value ?? const <SharedCalendar>[];
+    final joins = ref.watch(pendingJoinsProvider).value ?? const [];
+    final waiting = [for (final s in shared) if (s.waiting) s];
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.calendars)),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _edit(context, ref, null, calendars.length),
+        onPressed: () => showNewCalendarChoices(
+          context,
+          ref,
+          newCalendar: () => _edit(context, ref, null, calendars.length),
+        ),
         icon: const Icon(Icons.add),
         label: Text(context.l10n.newCalendar),
       ),
@@ -27,16 +36,45 @@ class CalendarsPage extends ConsumerWidget {
         children: [
           for (final c in calendars)
             ListTile(
-              leading: Icon(c.isSubscription ? Icons.rss_feed : Icons.circle, color: Color(c.color)),
+              leading: Icon(
+                c.isSubscription
+                    ? Icons.rss_feed
+                    : c.isShared
+                    ? (shared.any((s) => s.id == c.id && s.family) ? Icons.family_restroom : Icons.group)
+                    : Icons.circle,
+                color: Color(c.color),
+              ),
               title: Text(c.name),
               subtitle: Text(() {
                 final n = events.where((e) => e.calendarId == c.id && e.seriesId == null).length;
+                final s = shared.where((s) => s.id == c.id).firstOrNull;
+                final asking = joins.where((j) => j.spaceId == s?.spaceId).length;
                 return '${context.l10n.nEvents(n)}'
+                    '${s != null ? ' · ${context.l10n.nMembers(s.members.length)}' : ''}'
+                    '${asking > 0 ? ' · ${context.l10n.nWaitingToJoin(asking)}' : ''}'
                     '${c.isSubscription ? ' · ${context.l10n.subscribedReadOnly}' : ''}'
                     '${c.hidden ? ' · ${context.l10n.hiddenLabel}' : ''}';
               }()),
-              trailing: const Icon(Icons.edit_outlined),
-              onTap: () => _edit(context, ref, c, calendars.length),
+              trailing: Icon(c.isShared ? Icons.chevron_right : Icons.edit_outlined),
+              onTap: () => c.isShared
+                  ? Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => SharedCalendarPage(spaceId: spaceIdOf(c.id)!),
+                      ),
+                    )
+                  : _edit(context, ref, c, calendars.length),
+            ),
+          for (final s in waiting)
+            ListTile(
+              leading: const Icon(Icons.hourglass_top),
+              title: Text(context.l10n.waitingToJoin),
+              subtitle: Text(context.l10n.waitingToJoinShort),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => SharedCalendarPage(spaceId: s.spaceId),
+                ),
+              ),
             ),
           Padding(
             padding: EdgeInsets.all(16),

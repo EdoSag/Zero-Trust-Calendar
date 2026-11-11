@@ -10,6 +10,7 @@ import '../ics/ics.dart';
 import '../ics/import_service.dart';
 import '../model/calendar_event.dart';
 import '../platform/channels.dart';
+import 'shared_calendar_pages.dart';
 import '../util/format.dart';
 import 'subscribe_page.dart';
 import 'inline_button_style.dart';
@@ -22,6 +23,14 @@ Future<void> handleIncomingFile(
   WidgetRef ref,
   IncomingFile file,
 ) async {
+  if (file.invite != null) {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => JoinCalendarPage(initialLink: file.invite),
+      ),
+    );
+    return;
+  }
   if (file.url != null) {
     await showSubscribeDialog(context, ref, url: file.url);
     return;

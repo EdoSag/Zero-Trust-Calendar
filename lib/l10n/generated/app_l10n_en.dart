@@ -564,7 +564,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get offTheUpNextWidget =>
-      'Off: the \"Up next\" widget shows only times. On: event titles are stored unencrypted on this phone for the home screen.';
+      'Off: the \"Up next\" and \"My day\" widgets show only times. On: event and task titles are stored unencrypted on this phone for the home screen.';
 
   @override
   String get showTasksFromZtTasks => 'Show tasks from ZT Tasks';
@@ -1363,4 +1363,429 @@ class AppL10nEn extends AppL10n {
     );
     return '$_temp0';
   }
+
+  @override
+  String get sharedCalendarUnnamed => 'Shared calendar';
+
+  @override
+  String get sharedNoAttachments =>
+      'Files can\'t be added to events in a shared calendar: the other members couldn\'t open them.';
+
+  @override
+  String get sharedAttachmentsDropped =>
+      'This event\'s files stay out of the shared calendar: the other members couldn\'t open them.';
+
+  @override
+  String get familyCalendarName => 'Family';
+
+  @override
+  String get newFamilyCalendar => 'New family calendar';
+
+  @override
+  String get newSharedCalendar => 'New shared calendar';
+
+  @override
+  String get sharedCalendarIntro =>
+      'Everyone you invite sees and edits its events. Everything is end-to-end encrypted: only your phones can read it.';
+
+  @override
+  String get requiredField => 'Required';
+
+  @override
+  String get yourName => 'Your name';
+
+  @override
+  String get yourNameHint => 'How the other members see you in this calendar.';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get needsInternet =>
+      'This needs an internet connection. Try again when you\'re online.';
+
+  @override
+  String get sharedCalendarGone => 'You\'re no longer in this calendar.';
+
+  @override
+  String joinRequest(String name) {
+    return '$name wants to join';
+  }
+
+  @override
+  String get joinRequestHint =>
+      'Check the code on their phone, then let them in';
+
+  @override
+  String get sharedYouAreAdmin => 'Shared · you\'re an admin';
+
+  @override
+  String get sharedYouAreMember => 'Shared · you\'re a member';
+
+  @override
+  String get myColour => 'My colour';
+
+  @override
+  String get myColourHint => 'Only on your devices';
+
+  @override
+  String get showInMyCalendar => 'Show in my calendar';
+
+  @override
+  String nMembers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '1 member',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nWaitingToJoin(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count asking to join',
+      one: '1 asking to join',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memberYou(String name) {
+    return '$name (you)';
+  }
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get roleMember => 'Member';
+
+  @override
+  String get roleAdminHint =>
+      'Admins also invite and remove people, and rename the calendar.';
+
+  @override
+  String get roleMemberHint => 'Members see, add and change events.';
+
+  @override
+  String get memberOptions => 'Member options';
+
+  @override
+  String get makeMember => 'Make a member';
+
+  @override
+  String get makeAdmin => 'Make an admin';
+
+  @override
+  String get invitePeople => 'Invite people';
+
+  @override
+  String get sharedPrivacyNote =>
+      'Events here are encrypted with a key only the members\' phones hold. The server sees that this calendar exists and who is in it, never its name or events. Files and linked notes stay private to whoever added them.';
+
+  @override
+  String get leaveCalendar => 'Leave calendar';
+
+  @override
+  String get deleteForEveryone => 'Delete for everyone';
+
+  @override
+  String get sharedRenameHint =>
+      'The name and colour change for every member, unless they picked their own colour.';
+
+  @override
+  String removeMemberTitle(String name) {
+    return 'Remove $name?';
+  }
+
+  @override
+  String get removeMemberBody =>
+      'They lose access, and the calendar moves to a new key so they can\'t read anything added from now on.';
+
+  @override
+  String leaveCalendarTitle(String name) {
+    return 'Leave $name?';
+  }
+
+  @override
+  String get leaveCalendarBody =>
+      'Its events disappear from your devices. Someone has to invite you again to come back.';
+
+  @override
+  String deleteForEveryoneTitle(String name) {
+    return 'Delete $name for everyone?';
+  }
+
+  @override
+  String get deleteForEveryoneBody =>
+      'The calendar and all its events are deleted for every member. This can\'t be undone.';
+
+  @override
+  String get waitingToJoin => 'Waiting to join';
+
+  @override
+  String get waitingToJoinShort => 'An admin still has to let you in';
+
+  @override
+  String get waitingToJoinBody =>
+      'Show this code to the person who invited you. Once they see the same code and let you in, the calendar appears here.';
+
+  @override
+  String get cancelJoin => 'Cancel joining';
+
+  @override
+  String confirmJoinTitle(String name, String calendar) {
+    return 'Let $name into $calendar?';
+  }
+
+  @override
+  String get confirmJoinBody =>
+      'Their phone shows a code. Let them in only if it\'s exactly this one:';
+
+  @override
+  String get codesDiffer => 'Codes differ';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get codesMatch => 'Codes match';
+
+  @override
+  String joinedCalendar(String name) {
+    return '$name joined';
+  }
+
+  @override
+  String inviteTo(String name) {
+    return 'Invite to $name';
+  }
+
+  @override
+  String get inviteIntro =>
+      'Make a one-time invite for one person. Send the link, or let them scan the code.';
+
+  @override
+  String get createInvite => 'Create invite';
+
+  @override
+  String get inviteReady =>
+      'Scan this with ZT Calendar on their phone, or send them the link.';
+
+  @override
+  String get inviteQr => 'Invite QR code';
+
+  @override
+  String get linkCopied => 'Link copied';
+
+  @override
+  String get copyLink => 'Copy link';
+
+  @override
+  String get shareLink => 'Share';
+
+  @override
+  String inviteMessage(String name, String link) {
+    return 'Join my calendar \"$name\" in ZT Calendar: $link';
+  }
+
+  @override
+  String get inviteNextSteps =>
+      'The link works once, for 7 days. When they open it, you\'ll both see a code: let them in only if the codes match.';
+
+  @override
+  String get checkForAnswers => 'Check for answers';
+
+  @override
+  String get inviteOtherApp => 'This invite is for another Zero-Trust app.';
+
+  @override
+  String get inviteInvalid => 'That isn\'t a Zero-Trust invite link.';
+
+  @override
+  String get inviteUsed =>
+      'This invite was already used, withdrawn or has expired. Ask for a new one.';
+
+  @override
+  String get joinSharedCalendar => 'Join a shared calendar';
+
+  @override
+  String get joinSharedCalendarHint => 'With an invite link or QR code';
+
+  @override
+  String get joinCodeTitle => 'Compare this code';
+
+  @override
+  String get joinCodeBody =>
+      'The person who invited you sees a code too. They let you in once both codes match.';
+
+  @override
+  String get joinIntro =>
+      'Paste the invite link you got, or scan the QR code on the other phone.';
+
+  @override
+  String get inviteLink => 'Invite link';
+
+  @override
+  String get scanQr => 'Scan QR code';
+
+  @override
+  String get join => 'Join';
+
+  @override
+  String get newCalendarHint => 'Only for you';
+
+  @override
+  String get newSharedCalendarHint => 'With friends, a team or a club';
+
+  @override
+  String get newFamilyCalendarHint => 'One calendar for the whole household';
+
+  @override
+  String get myDay => 'My day';
+
+  @override
+  String get myDayNext => 'Next';
+
+  @override
+  String get myDayNow => 'Now';
+
+  @override
+  String get myDayTask => 'Task';
+
+  @override
+  String get myDayNoTasks => 'No tasks due today';
+
+  @override
+  String myDayTasksDue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tasks due today',
+      one: '1 task due today',
+      zero: 'Tasks due today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String myDayOverdue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count overdue',
+      one: '+1 overdue',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String get desktopApps => 'Desktop calendar apps';
+
+  @override
+  String get desktopAppsSubtitleOff =>
+      'Off. Let Thunderbird, Apple Calendar or Evolution read your events over Wi-Fi';
+
+  @override
+  String get desktopAppsSubtitleOn => 'On while ZT Calendar is unlocked';
+
+  @override
+  String get desktopAppsIntro =>
+      'Your computer\'s calendar app can show your ZT Calendar events, read-only, over your home or office Wi-Fi. The phone serves them itself: nothing goes through a server, and it stops when the app locks.';
+
+  @override
+  String get desktopAppsSwitch => 'Share with computers on this Wi-Fi';
+
+  @override
+  String get desktopAppsRunning =>
+      'On. Computers with the password can read your visible calendars';
+
+  @override
+  String get desktopAppsStarting => 'Starts when ZT Calendar is unlocked';
+
+  @override
+  String get desktopAppsOff => 'Off';
+
+  @override
+  String get desktopAppsFailed => 'Couldn\'t start';
+
+  @override
+  String get desktopAppsServer => 'Server address (CalDAV)';
+
+  @override
+  String get desktopAppsNoWifi =>
+      'Connect the phone to Wi-Fi to see its address';
+
+  @override
+  String get desktopAppsUser => 'User name';
+
+  @override
+  String get desktopAppsPassword => 'Password';
+
+  @override
+  String get desktopAppsFingerprint => 'Certificate fingerprint (SHA-256)';
+
+  @override
+  String get desktopAppsHowTo =>
+      'In your calendar app, add a CalDAV account (Thunderbird: New Calendar, On the Network; Apple Calendar: Add Account, Other CalDAV, Manual) with this address, user name and password. The app warns that the certificate isn\'t trusted: check that its fingerprint matches the one above, then trust it. The computer and phone must be on the same Wi-Fi, and the computer refreshes while ZT Calendar is open and unlocked.';
+
+  @override
+  String get desktopAppsNewPassword => 'Make a new password';
+
+  @override
+  String get desktopAppsNewPasswordHint =>
+      'Computers using the old one lose access';
+
+  @override
+  String get desktopAppsPrivacy =>
+      'Only computers on a local network (home or office Wi-Fi) are answered, only with the password, and only to read. Traffic is encrypted with this phone\'s own certificate. A computer keeps the copy it last read, unencrypted, in its calendar app: turn this on only for computers you trust. Hidden calendars, tasks and birthdays are not shared.';
+
+  @override
+  String get shareBusyTimes => 'Share when I\'m busy';
+
+  @override
+  String get shareBusyTimesHint =>
+      'Members see when you\'re busy in your other calendars (times only, never titles), so Find a time works. Encrypted like the rest of this calendar.';
+
+  @override
+  String get findATime => 'Find a time';
+
+  @override
+  String findATimeSharing(int count, int total) {
+    return '$count of $total members share when they\'re busy';
+  }
+
+  @override
+  String findATimeLength(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get findATimeEvenings => 'Evenings';
+
+  @override
+  String get findATimeWeekends => 'Weekends';
+
+  @override
+  String get findATimeEveryone =>
+      'Free for everyone in the calendar, in the next two weeks. Tap a time to add the event.';
+
+  @override
+  String findATimeMissing(String names) {
+    return 'Not counting $names: they don\'t share when they\'re busy. Tap a time to add the event.';
+  }
+
+  @override
+  String get findATimeNone =>
+      'No time works for everyone in the next two weeks. Try a shorter length, evenings or weekends.';
 }

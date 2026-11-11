@@ -22,8 +22,9 @@ import java.io.File
  * Channels:
  * - `zt_calendar/apps` opens a sibling Zero-Trust app (or its store page)
  *   and hands an invitation file to the mail app.
- * - `zt_calendar/files` holds .ics files and webcal links other apps opened
- *   Calendar with, until the unlocked app takes them.
+ * - `zt_calendar/files` holds .ics files, webcal links and shared calendar
+ *   invites other apps opened Calendar with, until the unlocked app takes
+ *   them.
  * - `zt_calendar/phone_calendar` copies events into Android's calendar,
  *   only for calendars the user turned on (see PhoneCalendar).
  */
@@ -135,6 +136,12 @@ class MainActivity : FlutterFragmentActivity() {
         val scheme = uri.scheme?.lowercase()
         val item: Map<String, Any?>? = when (scheme) {
             "webcal", "webcals" -> mapOf("url" to "https://" + uri.toString().substringAfter("://"))
+            // A shared calendar invite; the app checks it once unlocked.
+            "https" -> if (uri.host == "zerotrust.bz" && (uri.path ?: "").startsWith("/join")) {
+                mapOf("invite" to uri.toString())
+            } else {
+                null
+            }
             "content", "file" -> try {
                 contentResolver.openInputStream(uri)?.use { input ->
                     // Calendar files are small; refuse anything huge.

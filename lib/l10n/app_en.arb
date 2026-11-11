@@ -176,7 +176,7 @@
   "eventTitlesInReminders": "Event titles in reminders",
   "offRemindersOnlySayEvent": "Off: reminders only say \"Event\". Titles are handed to the phone so they can show while Calendar is locked.",
   "showDetailsOnTheHome": "Show details on the home screen",
-  "offTheUpNextWidget": "Off: the \"Up next\" widget shows only times. On: event titles are stored unencrypted on this phone for the home screen.",
+  "offTheUpNextWidget": "Off: the \"Up next\" and \"My day\" widgets show only times. On: event and task titles are stored unencrypted on this phone for the home screen.",
   "showTasksFromZtTasks": "Show tasks from ZT Tasks",
   "tasksWithADueDate": "Tasks with a due date. Tick them off here",
   "showCompletedTasks": "Show completed tasks",
@@ -933,5 +933,239 @@
         "type": "int"
       }
     }
-  }
+  },
+  "sharedCalendarUnnamed": "Shared calendar",
+  "sharedNoAttachments": "Files can't be added to events in a shared calendar: the other members couldn't open them.",
+  "sharedAttachmentsDropped": "This event's files stay out of the shared calendar: the other members couldn't open them.",
+  "familyCalendarName": "Family",
+  "newFamilyCalendar": "New family calendar",
+  "newSharedCalendar": "New shared calendar",
+  "sharedCalendarIntro": "Everyone you invite sees and edits its events. Everything is end-to-end encrypted: only your phones can read it.",
+  "requiredField": "Required",
+  "yourName": "Your name",
+  "yourNameHint": "How the other members see you in this calendar.",
+  "create": "Create",
+  "needsInternet": "This needs an internet connection. Try again when you're online.",
+  "sharedCalendarGone": "You're no longer in this calendar.",
+  "joinRequest": "{name} wants to join",
+  "@joinRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "joinRequestHint": "Check the code on their phone, then let them in",
+  "sharedYouAreAdmin": "Shared · you're an admin",
+  "sharedYouAreMember": "Shared · you're a member",
+  "myColour": "My colour",
+  "myColourHint": "Only on your devices",
+  "showInMyCalendar": "Show in my calendar",
+  "nMembers": "{count, plural, =1{1 member} other{{count} members}}",
+  "@nMembers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nWaitingToJoin": "{count, plural, =1{1 asking to join} other{{count} asking to join}}",
+  "@nWaitingToJoin": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "memberYou": "{name} (you)",
+  "@memberYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "roleAdmin": "Admin",
+  "roleMember": "Member",
+  "roleAdminHint": "Admins also invite and remove people, and rename the calendar.",
+  "roleMemberHint": "Members see, add and change events.",
+  "memberOptions": "Member options",
+  "makeMember": "Make a member",
+  "makeAdmin": "Make an admin",
+  "invitePeople": "Invite people",
+  "sharedPrivacyNote": "Events here are encrypted with a key only the members' phones hold. The server sees that this calendar exists and who is in it, never its name or events. Files and linked notes stay private to whoever added them.",
+  "leaveCalendar": "Leave calendar",
+  "deleteForEveryone": "Delete for everyone",
+  "sharedRenameHint": "The name and colour change for every member, unless they picked their own colour.",
+  "removeMemberTitle": "Remove {name}?",
+  "@removeMemberTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "removeMemberBody": "They lose access, and the calendar moves to a new key so they can't read anything added from now on.",
+  "leaveCalendarTitle": "Leave {name}?",
+  "@leaveCalendarTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "leaveCalendarBody": "Its events disappear from your devices. Someone has to invite you again to come back.",
+  "deleteForEveryoneTitle": "Delete {name} for everyone?",
+  "@deleteForEveryoneTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteForEveryoneBody": "The calendar and all its events are deleted for every member. This can't be undone.",
+  "waitingToJoin": "Waiting to join",
+  "waitingToJoinShort": "An admin still has to let you in",
+  "waitingToJoinBody": "Show this code to the person who invited you. Once they see the same code and let you in, the calendar appears here.",
+  "cancelJoin": "Cancel joining",
+  "confirmJoinTitle": "Let {name} into {calendar}?",
+  "@confirmJoinTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "calendar": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmJoinBody": "Their phone shows a code. Let them in only if it's exactly this one:",
+  "codesDiffer": "Codes differ",
+  "later": "Later",
+  "codesMatch": "Codes match",
+  "joinedCalendar": "{name} joined",
+  "@joinedCalendar": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteTo": "Invite to {name}",
+  "@inviteTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteIntro": "Make a one-time invite for one person. Send the link, or let them scan the code.",
+  "createInvite": "Create invite",
+  "inviteReady": "Scan this with ZT Calendar on their phone, or send them the link.",
+  "inviteQr": "Invite QR code",
+  "linkCopied": "Link copied",
+  "copyLink": "Copy link",
+  "shareLink": "Share",
+  "inviteMessage": "Join my calendar \"{name}\" in ZT Calendar: {link}",
+  "@inviteMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteNextSteps": "The link works once, for 7 days. When they open it, you'll both see a code: let them in only if the codes match.",
+  "checkForAnswers": "Check for answers",
+  "inviteOtherApp": "This invite is for another Zero-Trust app.",
+  "inviteInvalid": "That isn't a Zero-Trust invite link.",
+  "inviteUsed": "This invite was already used, withdrawn or has expired. Ask for a new one.",
+  "joinSharedCalendar": "Join a shared calendar",
+  "joinSharedCalendarHint": "With an invite link or QR code",
+  "joinCodeTitle": "Compare this code",
+  "joinCodeBody": "The person who invited you sees a code too. They let you in once both codes match.",
+  "joinIntro": "Paste the invite link you got, or scan the QR code on the other phone.",
+  "inviteLink": "Invite link",
+  "scanQr": "Scan QR code",
+  "join": "Join",
+  "newCalendarHint": "Only for you",
+  "newSharedCalendarHint": "With friends, a team or a club",
+  "newFamilyCalendarHint": "One calendar for the whole household",
+  "myDay": "My day",
+  "myDayNext": "Next",
+  "myDayNow": "Now",
+  "myDayTask": "Task",
+  "myDayNoTasks": "No tasks due today",
+  "myDayTasksDue": "{count, plural, =0{Tasks due today} =1{1 task due today} other{{count} tasks due today}}",
+  "@myDayTasksDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "myDayOverdue": "{count, plural, =1{+1 overdue} other{+{count} overdue}}",
+  "@myDayOverdue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "copy": "Copy",
+  "copied": "Copied",
+  "desktopApps": "Desktop calendar apps",
+  "desktopAppsSubtitleOff": "Off. Let Thunderbird, Apple Calendar or Evolution read your events over Wi-Fi",
+  "desktopAppsSubtitleOn": "On while ZT Calendar is unlocked",
+  "desktopAppsIntro": "Your computer's calendar app can show your ZT Calendar events, read-only, over your home or office Wi-Fi. The phone serves them itself: nothing goes through a server, and it stops when the app locks.",
+  "desktopAppsSwitch": "Share with computers on this Wi-Fi",
+  "desktopAppsRunning": "On. Computers with the password can read your visible calendars",
+  "desktopAppsStarting": "Starts when ZT Calendar is unlocked",
+  "desktopAppsOff": "Off",
+  "desktopAppsFailed": "Couldn't start",
+  "desktopAppsServer": "Server address (CalDAV)",
+  "desktopAppsNoWifi": "Connect the phone to Wi-Fi to see its address",
+  "desktopAppsUser": "User name",
+  "desktopAppsPassword": "Password",
+  "desktopAppsFingerprint": "Certificate fingerprint (SHA-256)",
+  "desktopAppsHowTo": "In your calendar app, add a CalDAV account (Thunderbird: New Calendar, On the Network; Apple Calendar: Add Account, Other CalDAV, Manual) with this address, user name and password. The app warns that the certificate isn't trusted: check that its fingerprint matches the one above, then trust it. The computer and phone must be on the same Wi-Fi, and the computer refreshes while ZT Calendar is open and unlocked.",
+  "desktopAppsNewPassword": "Make a new password",
+  "desktopAppsNewPasswordHint": "Computers using the old one lose access",
+  "desktopAppsPrivacy": "Only computers on a local network (home or office Wi-Fi) are answered, only with the password, and only to read. Traffic is encrypted with this phone's own certificate. A computer keeps the copy it last read, unencrypted, in its calendar app: turn this on only for computers you trust. Hidden calendars, tasks and birthdays are not shared.",
+  "shareBusyTimes": "Share when I'm busy",
+  "shareBusyTimesHint": "Members see when you're busy in your other calendars (times only, never titles), so Find a time works. Encrypted like the rest of this calendar.",
+  "findATime": "Find a time",
+  "findATimeSharing": "{count} of {total} members share when they're busy",
+  "@findATimeSharing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "findATimeLength": "{minutes} min",
+  "@findATimeLength": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "findATimeEvenings": "Evenings",
+  "findATimeWeekends": "Weekends",
+  "findATimeEveryone": "Free for everyone in the calendar, in the next two weeks. Tap a time to add the event.",
+  "findATimeMissing": "Not counting {names}: they don't share when they're busy. Tap a time to add the event.",
+  "@findATimeMissing": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "findATimeNone": "No time works for everyone in the next two weeks. Try a shorter length, evenings or weekends."
 }

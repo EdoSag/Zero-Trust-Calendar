@@ -556,7 +556,7 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get offTheUpNextWidget =>
-      'כבוי: הווידג׳ט \"הבא בתור\" מציג רק שעות. פועל: כותרות האירועים נשמרות בלי הצפנה בטלפון הזה בשביל מסך הבית.';
+      'כבוי: הווידג׳טים \"הבא בתור\" ו\"היום שלי\" מציגים רק שעות. פועל: כותרות האירועים והמשימות נשמרות בלי הצפנה בטלפון הזה בשביל מסך הבית.';
 
   @override
   String get showTasksFromZtTasks => 'הצגת משימות מ-ZT Tasks';
@@ -1361,4 +1361,426 @@ class AppL10nHe extends AppL10n {
     );
     return '$_temp0';
   }
+
+  @override
+  String get sharedCalendarUnnamed => 'יומן משותף';
+
+  @override
+  String get sharedNoAttachments =>
+      'אי אפשר לצרף קבצים לאירועים ביומן משותף: שאר החברים לא יוכלו לפתוח אותם.';
+
+  @override
+  String get sharedAttachmentsDropped =>
+      'הקבצים של האירוע לא יעברו ליומן המשותף: שאר החברים לא יוכלו לפתוח אותם.';
+
+  @override
+  String get familyCalendarName => 'משפחה';
+
+  @override
+  String get newFamilyCalendar => 'יומן משפחתי חדש';
+
+  @override
+  String get newSharedCalendar => 'יומן משותף חדש';
+
+  @override
+  String get sharedCalendarIntro =>
+      'כל מי שתזמינו יראה ויערוך את האירועים. הכול מוצפן מקצה לקצה: רק הטלפונים שלכם יכולים לקרוא אותו.';
+
+  @override
+  String get requiredField => 'שדה חובה';
+
+  @override
+  String get yourName => 'השם שלך';
+
+  @override
+  String get yourNameHint => 'כך שאר החברים יראו אותך ביומן הזה.';
+
+  @override
+  String get create => 'יצירה';
+
+  @override
+  String get needsInternet => 'צריך חיבור לאינטרנט. כדאי לנסות שוב כשיש חיבור.';
+
+  @override
+  String get sharedCalendarGone => 'כבר אינך חבר/ה ביומן הזה.';
+
+  @override
+  String joinRequest(String name) {
+    return '$name רוצה להצטרף';
+  }
+
+  @override
+  String get joinRequestHint => 'יש לבדוק את הקוד בטלפון שלהם ואז לאשר';
+
+  @override
+  String get sharedYouAreAdmin => 'משותף · את/ה מנהל/ת';
+
+  @override
+  String get sharedYouAreMember => 'משותף · את/ה חבר/ה';
+
+  @override
+  String get myColour => 'הצבע שלי';
+
+  @override
+  String get myColourHint => 'רק במכשירים שלך';
+
+  @override
+  String get showInMyCalendar => 'הצגה ביומן שלי';
+
+  @override
+  String nMembers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count חברים',
+      one: 'חבר אחד',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nWaitingToJoin(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count בקשות הצטרפות',
+      one: 'בקשת הצטרפות אחת',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String memberYou(String name) {
+    return '$name (את/ה)';
+  }
+
+  @override
+  String get roleAdmin => 'מנהל/ת';
+
+  @override
+  String get roleMember => 'חבר/ה';
+
+  @override
+  String get roleAdminHint =>
+      'מנהלים גם מזמינים ומסירים אנשים ומשנים את שם היומן.';
+
+  @override
+  String get roleMemberHint => 'חברים רואים, מוסיפים ומשנים אירועים.';
+
+  @override
+  String get memberOptions => 'אפשרויות חבר/ה';
+
+  @override
+  String get makeMember => 'הפיכה לחבר/ה';
+
+  @override
+  String get makeAdmin => 'הפיכה למנהל/ת';
+
+  @override
+  String get invitePeople => 'הזמנת אנשים';
+
+  @override
+  String get sharedPrivacyNote =>
+      'האירועים כאן מוצפנים במפתח שרק לטלפונים של החברים יש. השרת יודע שהיומן קיים ומי חבר בו, אבל לא את שמו או את האירועים. קבצים ופתקים מקושרים נשארים פרטיים למי שהוסיף אותם.';
+
+  @override
+  String get leaveCalendar => 'יציאה מהיומן';
+
+  @override
+  String get deleteForEveryone => 'מחיקה לכולם';
+
+  @override
+  String get sharedRenameHint =>
+      'השם והצבע משתנים לכל החברים, אלא אם בחרו צבע משלהם.';
+
+  @override
+  String removeMemberTitle(String name) {
+    return 'להסיר את $name?';
+  }
+
+  @override
+  String get removeMemberBody =>
+      'הגישה שלהם תוסר, והיומן יעבור למפתח חדש כך שלא יוכלו לקרוא שום דבר שיתווסף מעכשיו.';
+
+  @override
+  String leaveCalendarTitle(String name) {
+    return 'לצאת מ$name?';
+  }
+
+  @override
+  String get leaveCalendarBody =>
+      'האירועים שלו ייעלמו מהמכשירים שלך. כדי לחזור מישהו יצטרך להזמין אותך שוב.';
+
+  @override
+  String deleteForEveryoneTitle(String name) {
+    return 'למחוק את $name לכולם?';
+  }
+
+  @override
+  String get deleteForEveryoneBody =>
+      'היומן וכל האירועים שלו יימחקו לכל החברים. אי אפשר לבטל את זה.';
+
+  @override
+  String get waitingToJoin => 'ממתין להצטרפות';
+
+  @override
+  String get waitingToJoinShort => 'מנהל/ת עדיין צריך/ה לאשר אותך';
+
+  @override
+  String get waitingToJoinBody =>
+      'יש להראות את הקוד הזה למי שהזמין/ה אותך. אחרי שיראו אותו קוד ויאשרו, היומן יופיע כאן.';
+
+  @override
+  String get cancelJoin => 'ביטול ההצטרפות';
+
+  @override
+  String confirmJoinTitle(String name, String calendar) {
+    return 'לאשר את $name ב$calendar?';
+  }
+
+  @override
+  String get confirmJoinBody =>
+      'בטלפון שלהם מופיע קוד. יש לאשר רק אם הוא בדיוק זה:';
+
+  @override
+  String get codesDiffer => 'הקודים שונים';
+
+  @override
+  String get later => 'אחר כך';
+
+  @override
+  String get codesMatch => 'הקודים זהים';
+
+  @override
+  String joinedCalendar(String name) {
+    return '$name הצטרף/ה';
+  }
+
+  @override
+  String inviteTo(String name) {
+    return 'הזמנה ל$name';
+  }
+
+  @override
+  String get inviteIntro =>
+      'יצירת הזמנה חד־פעמית לאדם אחד. אפשר לשלוח את הקישור או לתת לסרוק את הקוד.';
+
+  @override
+  String get createInvite => 'יצירת הזמנה';
+
+  @override
+  String get inviteReady =>
+      'יש לסרוק את זה עם ZT Calendar בטלפון שלהם, או לשלוח להם את הקישור.';
+
+  @override
+  String get inviteQr => 'קוד QR להזמנה';
+
+  @override
+  String get linkCopied => 'הקישור הועתק';
+
+  @override
+  String get copyLink => 'העתקת קישור';
+
+  @override
+  String get shareLink => 'שיתוף';
+
+  @override
+  String inviteMessage(String name, String link) {
+    return 'הצטרפו ליומן שלי \"$name\" ב־ZT Calendar: $link';
+  }
+
+  @override
+  String get inviteNextSteps =>
+      'הקישור עובד פעם אחת, במשך 7 ימים. כשיפתחו אותו, שניכם תראו קוד: יש לאשר רק אם הקודים זהים.';
+
+  @override
+  String get checkForAnswers => 'בדיקת תשובות';
+
+  @override
+  String get inviteOtherApp => 'ההזמנה הזו מיועדת לאפליקציית Zero-Trust אחרת.';
+
+  @override
+  String get inviteInvalid => 'זה לא קישור הזמנה של Zero-Trust.';
+
+  @override
+  String get inviteUsed =>
+      'ההזמנה הזו כבר נוצלה, בוטלה או פגה. כדאי לבקש חדשה.';
+
+  @override
+  String get joinSharedCalendar => 'הצטרפות ליומן משותף';
+
+  @override
+  String get joinSharedCalendarHint => 'עם קישור הזמנה או קוד QR';
+
+  @override
+  String get joinCodeTitle => 'השוואת הקוד';
+
+  @override
+  String get joinCodeBody =>
+      'גם מי שהזמין/ה אותך רואה קוד. הם יאשרו אותך כשהקודים יהיו זהים.';
+
+  @override
+  String get joinIntro =>
+      'יש להדביק את קישור ההזמנה שקיבלת, או לסרוק את קוד ה־QR בטלפון השני.';
+
+  @override
+  String get inviteLink => 'קישור הזמנה';
+
+  @override
+  String get scanQr => 'סריקת קוד QR';
+
+  @override
+  String get join => 'הצטרפות';
+
+  @override
+  String get newCalendarHint => 'רק בשבילך';
+
+  @override
+  String get newSharedCalendarHint => 'עם חברים, צוות או חוג';
+
+  @override
+  String get newFamilyCalendarHint => 'יומן אחד לכל הבית';
+
+  @override
+  String get myDay => 'היום שלי';
+
+  @override
+  String get myDayNext => 'הבא';
+
+  @override
+  String get myDayNow => 'עכשיו';
+
+  @override
+  String get myDayTask => 'משימה';
+
+  @override
+  String get myDayNoTasks => 'אין משימות להיום';
+
+  @override
+  String myDayTasksDue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count משימות להיום',
+      one: 'משימה אחת להיום',
+      zero: 'משימות להיום',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String myDayOverdue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count באיחור',
+      one: '+1 באיחור',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get copy => 'העתקה';
+
+  @override
+  String get copied => 'הועתק';
+
+  @override
+  String get desktopApps => 'אפליקציות יומן במחשב';
+
+  @override
+  String get desktopAppsSubtitleOff =>
+      'כבוי. מאפשר ל־Thunderbird, ליומן של Apple או ל־Evolution לקרוא את האירועים דרך Wi-Fi';
+
+  @override
+  String get desktopAppsSubtitleOn => 'פועל כל עוד ZT Calendar פתוח';
+
+  @override
+  String get desktopAppsIntro =>
+      'אפליקציית היומן במחשב יכולה להציג את האירועים של ZT Calendar, לקריאה בלבד, דרך ה־Wi-Fi בבית או במשרד. הטלפון מגיש אותם בעצמו: שום דבר לא עובר דרך שרת, והגישה נעצרת כשהאפליקציה ננעלת.';
+
+  @override
+  String get desktopAppsSwitch => 'שיתוף עם מחשבים ב־Wi-Fi הזה';
+
+  @override
+  String get desktopAppsRunning =>
+      'פועל. מחשבים עם הסיסמה יכולים לקרוא את היומנים המוצגים';
+
+  @override
+  String get desktopAppsStarting => 'יתחיל כש־ZT Calendar ייפתח';
+
+  @override
+  String get desktopAppsOff => 'כבוי';
+
+  @override
+  String get desktopAppsFailed => 'לא הצליח להתחיל';
+
+  @override
+  String get desktopAppsServer => 'כתובת השרת (CalDAV)';
+
+  @override
+  String get desktopAppsNoWifi =>
+      'יש לחבר את הטלפון ל־Wi-Fi כדי לראות את הכתובת שלו';
+
+  @override
+  String get desktopAppsUser => 'שם משתמש';
+
+  @override
+  String get desktopAppsPassword => 'סיסמה';
+
+  @override
+  String get desktopAppsFingerprint => 'טביעת האצבע של האישור (SHA-256)';
+
+  @override
+  String get desktopAppsHowTo =>
+      'באפליקציית היומן יש להוסיף חשבון CalDAV (ב־Thunderbird: יומן חדש, ברשת; ביומן של Apple: הוספת חשבון, CalDAV אחר, ידני) עם הכתובת, שם המשתמש והסיסמה האלה. האפליקציה תזהיר שהאישור לא מהימן: יש לבדוק שטביעת האצבע זהה לזו שלמעלה ואז לאשר. המחשב והטלפון צריכים להיות באותה רשת Wi-Fi, והמחשב מתעדכן כל עוד ZT Calendar פתוח ולא נעול.';
+
+  @override
+  String get desktopAppsNewPassword => 'יצירת סיסמה חדשה';
+
+  @override
+  String get desktopAppsNewPasswordHint => 'מחשבים עם הסיסמה הישנה יאבדו גישה';
+
+  @override
+  String get desktopAppsPrivacy =>
+      'רק מחשבים ברשת מקומית (Wi-Fi בבית או במשרד) מקבלים תשובה, רק עם הסיסמה, ורק לקריאה. התעבורה מוצפנת עם אישור של הטלפון הזה. מחשב שומר את העותק האחרון שקרא, בלי הצפנה, באפליקציית היומן שלו: כדאי להפעיל רק למחשבים שסומכים עליהם. יומנים מוסתרים, משימות וימי הולדת לא משותפים.';
+
+  @override
+  String get shareBusyTimes => 'שיתוף הזמנים שבהם אני עסוק/ה';
+
+  @override
+  String get shareBusyTimesHint =>
+      'החברים רואים מתי את/ה עסוק/ה ביומנים האחרים שלך (רק שעות, אף פעם לא כותרות), כדי ש\"מציאת זמן\" תעבוד. מוצפן כמו כל היומן הזה.';
+
+  @override
+  String get findATime => 'מציאת זמן';
+
+  @override
+  String findATimeSharing(int count, int total) {
+    return '$count מתוך $total חברים משתפים מתי הם עסוקים';
+  }
+
+  @override
+  String findATimeLength(int minutes) {
+    return '$minutes דק׳';
+  }
+
+  @override
+  String get findATimeEvenings => 'ערבים';
+
+  @override
+  String get findATimeWeekends => 'סופי שבוע';
+
+  @override
+  String get findATimeEveryone =>
+      'פנוי לכל החברים ביומן, בשבועיים הקרובים. יש להקיש על שעה כדי להוסיף אירוע.';
+
+  @override
+  String findATimeMissing(String names) {
+    return 'בלי $names: הם לא משתפים מתי הם עסוקים. יש להקיש על שעה כדי להוסיף אירוע.';
+  }
+
+  @override
+  String get findATimeNone =>
+      'אין זמן שמתאים לכולם בשבועיים הקרובים. אפשר לנסות משך קצר יותר, ערבים או סופי שבוע.';
 }

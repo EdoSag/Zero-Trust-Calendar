@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 import 'package:zerotrust_calendar/app/calendar_config.dart';
@@ -20,9 +21,10 @@ import 'package:zerotrust_calendar/ui/schedule_view.dart';
 import 'package:zerotrust_calendar/ui/timeline_view.dart';
 
 Widget app(Widget home, List<CalendarEvent> events,
-    {PreferencesStore? prefs, Locale? locale}) {
+    {PreferencesStore? prefs, Locale? locale, List<Override> overrides = const []}) {
   return ProviderScope(
     overrides: [
+      ...overrides,
       ztAppConfigProvider.overrideWithValue(calendarAppConfig),
       ztPreferencesStoreProvider.overrideWithValue(prefs ?? InMemoryPreferencesStore()),
       reminderSchedulerProvider.overrideWithValue(NoopReminderScheduler()),

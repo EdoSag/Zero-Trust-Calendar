@@ -13,4 +13,15 @@
     <string name="up_next_preview_lunch">Lunch with Dana</string>
     <string name="up_next_preview_dentist">Dentist</string>
     <string name="up_next_preview_tomorrow">Tomorrow 09:00</string>
+    <string name="my_day_widget_description">Your next event and today\'s tasks from ZT Tasks</string>
+    <string name="my_day_header">My day</string>
+    <string name="my_day_next">Next</string>
+    <string name="my_day_tasks">Tasks due today</string>
+    <string name="my_day_no_tasks">No tasks due today</string>
+    <string name="my_day_open_app">Open ZT Calendar to see your day</string>
+    <string name="my_day_signed_out">Signed out</string>
+    <string name="my_day_preview_date">Wednesday, 11 November</string>
+    <string name="my_day_preview_task1">Send the slides</string>
+    <string name="my_day_preview_task2">Buy milk</string>
+    <string name="my_day_preview_overdue">+1 overdue</string>
 </resources>
