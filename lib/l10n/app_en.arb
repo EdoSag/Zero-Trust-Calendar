@@ -1113,5 +1113,25 @@
         "type": "int"
       }
     }
-  }
+  },
+  "copy": "Copy",
+  "copied": "Copied",
+  "desktopApps": "Desktop calendar apps",
+  "desktopAppsSubtitleOff": "Off. Let Thunderbird, Apple Calendar or Evolution read your events over Wi-Fi",
+  "desktopAppsSubtitleOn": "On while ZT Calendar is unlocked",
+  "desktopAppsIntro": "Your computer's calendar app can show your ZT Calendar events, read-only, over your home or office Wi-Fi. The phone serves them itself: nothing goes through a server, and it stops when the app locks.",
+  "desktopAppsSwitch": "Share with computers on this Wi-Fi",
+  "desktopAppsRunning": "On. Computers with the password can read your visible calendars",
+  "desktopAppsStarting": "Starts when ZT Calendar is unlocked",
+  "desktopAppsOff": "Off",
+  "desktopAppsFailed": "Couldn't start",
+  "desktopAppsServer": "Server address (CalDAV)",
+  "desktopAppsNoWifi": "Connect the phone to Wi-Fi to see its address",
+  "desktopAppsUser": "User name",
+  "desktopAppsPassword": "Password",
+  "desktopAppsFingerprint": "Certificate fingerprint (SHA-256)",
+  "desktopAppsHowTo": "In your calendar app, add a CalDAV account (Thunderbird: New Calendar, On the Network; Apple Calendar: Add Account, Other CalDAV, Manual) with this address, user name and password. The app warns that the certificate isn't trusted: check that its fingerprint matches the one above, then trust it. The computer and phone must be on the same Wi-Fi, and the computer refreshes while ZT Calendar is open and unlocked.",
+  "desktopAppsNewPassword": "Make a new password",
+  "desktopAppsNewPasswordHint": "Computers using the old one lose access",
+  "desktopAppsPrivacy": "Only computers on a local network (home or office Wi-Fi) are answered, only with the password, and only to read. Traffic is encrypted with this phone's own certificate. A computer keeps the copy it last read, unencrypted, in its calendar app: turn this on only for computers you trust. Hidden calendars, tasks and birthdays are not shared."
 }

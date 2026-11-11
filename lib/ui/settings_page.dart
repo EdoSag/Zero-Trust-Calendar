@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../app/calendar_settings.dart';
+import '../caldav/caldav_bridge.dart';
 import '../data/calendar_store.dart';
 import '../data/linked_apps.dart';
 import '../ics/ics.dart';
@@ -18,6 +19,7 @@ import '../ics/import_service.dart';
 import '../reminders/reminders.dart';
 import '../util/format.dart';
 import 'calendars_page.dart';
+import 'desktop_bridge_page.dart';
 import 'phone_calendar_page.dart';
 import 'subscribe_page.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
@@ -56,6 +58,18 @@ class CalendarSettingsPage extends ConsumerWidget {
           subtitle: Text(context.l10n.publicHolidaysSchoolOrTeam),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const HolidaysPage()),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.computer),
+          title: Text(context.l10n.desktopApps),
+          subtitle: Text(
+            ref.watch(desktopBridgeProvider).enabled
+                ? context.l10n.desktopAppsSubtitleOn
+                : context.l10n.desktopAppsSubtitleOff,
+          ),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const DesktopBridgePage()),
           ),
         ),
         ListTile(

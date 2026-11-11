@@ -7,6 +7,7 @@ import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
+import '../caldav/caldav_bridge.dart';
 import '../data/calendar_store.dart';
 import '../data/entries.dart';
 import '../data/linked_apps.dart';
@@ -395,6 +396,8 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     ref.watch(ztSyncControllerProvider);
     // And for every shared calendar (on unlock, live, every 5 minutes).
     ref.watch(ztSpacesProvider);
+    // The desktop calendar bridge, when the user turned it on (K16).
+    ref.watch(desktopBridgeProvider);
     ref.listen(eventsProvider, (_, _) => _schedule());
     ref.listen(sharedEventsProvider, (_, _) => _schedule());
     ref.listen(linkedTasksProvider, (_, _) => _schedule());

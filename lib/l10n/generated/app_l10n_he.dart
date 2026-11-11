@@ -1678,4 +1678,70 @@ class AppL10nHe extends AppL10n {
     );
     return '$_temp0';
   }
+
+  @override
+  String get copy => 'העתקה';
+
+  @override
+  String get copied => 'הועתק';
+
+  @override
+  String get desktopApps => 'אפליקציות יומן במחשב';
+
+  @override
+  String get desktopAppsSubtitleOff =>
+      'כבוי. מאפשר ל־Thunderbird, ליומן של Apple או ל־Evolution לקרוא את האירועים דרך Wi-Fi';
+
+  @override
+  String get desktopAppsSubtitleOn => 'פועל כל עוד ZT Calendar פתוח';
+
+  @override
+  String get desktopAppsIntro =>
+      'אפליקציית היומן במחשב יכולה להציג את האירועים של ZT Calendar, לקריאה בלבד, דרך ה־Wi-Fi בבית או במשרד. הטלפון מגיש אותם בעצמו: שום דבר לא עובר דרך שרת, והגישה נעצרת כשהאפליקציה ננעלת.';
+
+  @override
+  String get desktopAppsSwitch => 'שיתוף עם מחשבים ב־Wi-Fi הזה';
+
+  @override
+  String get desktopAppsRunning =>
+      'פועל. מחשבים עם הסיסמה יכולים לקרוא את היומנים המוצגים';
+
+  @override
+  String get desktopAppsStarting => 'יתחיל כש־ZT Calendar ייפתח';
+
+  @override
+  String get desktopAppsOff => 'כבוי';
+
+  @override
+  String get desktopAppsFailed => 'לא הצליח להתחיל';
+
+  @override
+  String get desktopAppsServer => 'כתובת השרת (CalDAV)';
+
+  @override
+  String get desktopAppsNoWifi =>
+      'יש לחבר את הטלפון ל־Wi-Fi כדי לראות את הכתובת שלו';
+
+  @override
+  String get desktopAppsUser => 'שם משתמש';
+
+  @override
+  String get desktopAppsPassword => 'סיסמה';
+
+  @override
+  String get desktopAppsFingerprint => 'טביעת האצבע של האישור (SHA-256)';
+
+  @override
+  String get desktopAppsHowTo =>
+      'באפליקציית היומן יש להוסיף חשבון CalDAV (ב־Thunderbird: יומן חדש, ברשת; ביומן של Apple: הוספת חשבון, CalDAV אחר, ידני) עם הכתובת, שם המשתמש והסיסמה האלה. האפליקציה תזהיר שהאישור לא מהימן: יש לבדוק שטביעת האצבע זהה לזו שלמעלה ואז לאשר. המחשב והטלפון צריכים להיות באותה רשת Wi-Fi, והמחשב מתעדכן כל עוד ZT Calendar פתוח ולא נעול.';
+
+  @override
+  String get desktopAppsNewPassword => 'יצירת סיסמה חדשה';
+
+  @override
+  String get desktopAppsNewPasswordHint => 'מחשבים עם הסיסמה הישנה יאבדו גישה';
+
+  @override
+  String get desktopAppsPrivacy =>
+      'רק מחשבים ברשת מקומית (Wi-Fi בבית או במשרד) מקבלים תשובה, רק עם הסיסמה, ורק לקריאה. התעבורה מוצפנת עם אישור של הטלפון הזה. מחשב שומר את העותק האחרון שקרא, בלי הצפנה, באפליקציית היומן שלו: כדאי להפעיל רק למחשבים שסומכים עליהם. יומנים מוסתרים, משימות וימי הולדת לא משותפים.';
 }

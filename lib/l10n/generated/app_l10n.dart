@@ -2622,6 +2622,126 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'{count, plural, =1{+1 overdue} other{+{count} overdue}}'**
   String myDayOverdue(int count);
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copied;
+
+  /// No description provided for @desktopApps.
+  ///
+  /// In en, this message translates to:
+  /// **'Desktop calendar apps'**
+  String get desktopApps;
+
+  /// No description provided for @desktopAppsSubtitleOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off. Let Thunderbird, Apple Calendar or Evolution read your events over Wi-Fi'**
+  String get desktopAppsSubtitleOff;
+
+  /// No description provided for @desktopAppsSubtitleOn.
+  ///
+  /// In en, this message translates to:
+  /// **'On while ZT Calendar is unlocked'**
+  String get desktopAppsSubtitleOn;
+
+  /// No description provided for @desktopAppsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Your computer\'s calendar app can show your ZT Calendar events, read-only, over your home or office Wi-Fi. The phone serves them itself: nothing goes through a server, and it stops when the app locks.'**
+  String get desktopAppsIntro;
+
+  /// No description provided for @desktopAppsSwitch.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with computers on this Wi-Fi'**
+  String get desktopAppsSwitch;
+
+  /// No description provided for @desktopAppsRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'On. Computers with the password can read your visible calendars'**
+  String get desktopAppsRunning;
+
+  /// No description provided for @desktopAppsStarting.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts when ZT Calendar is unlocked'**
+  String get desktopAppsStarting;
+
+  /// No description provided for @desktopAppsOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get desktopAppsOff;
+
+  /// No description provided for @desktopAppsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t start'**
+  String get desktopAppsFailed;
+
+  /// No description provided for @desktopAppsServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Server address (CalDAV)'**
+  String get desktopAppsServer;
+
+  /// No description provided for @desktopAppsNoWifi.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect the phone to Wi-Fi to see its address'**
+  String get desktopAppsNoWifi;
+
+  /// No description provided for @desktopAppsUser.
+  ///
+  /// In en, this message translates to:
+  /// **'User name'**
+  String get desktopAppsUser;
+
+  /// No description provided for @desktopAppsPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get desktopAppsPassword;
+
+  /// No description provided for @desktopAppsFingerprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate fingerprint (SHA-256)'**
+  String get desktopAppsFingerprint;
+
+  /// No description provided for @desktopAppsHowTo.
+  ///
+  /// In en, this message translates to:
+  /// **'In your calendar app, add a CalDAV account (Thunderbird: New Calendar, On the Network; Apple Calendar: Add Account, Other CalDAV, Manual) with this address, user name and password. The app warns that the certificate isn\'t trusted: check that its fingerprint matches the one above, then trust it. The computer and phone must be on the same Wi-Fi, and the computer refreshes while ZT Calendar is open and unlocked.'**
+  String get desktopAppsHowTo;
+
+  /// No description provided for @desktopAppsNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a new password'**
+  String get desktopAppsNewPassword;
+
+  /// No description provided for @desktopAppsNewPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Computers using the old one lose access'**
+  String get desktopAppsNewPasswordHint;
+
+  /// No description provided for @desktopAppsPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Only computers on a local network (home or office Wi-Fi) are answered, only with the password, and only to read. Traffic is encrypted with this phone\'s own certificate. A computer keeps the copy it last read, unencrypted, in its calendar app: turn this on only for computers you trust. Hidden calendars, tasks and birthdays are not shared.'**
+  String get desktopAppsPrivacy;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
