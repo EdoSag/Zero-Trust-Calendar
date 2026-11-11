@@ -564,7 +564,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get offTheUpNextWidget =>
-      'Off: the \"Up next\" widget shows only times. On: event titles are stored unencrypted on this phone for the home screen.';
+      'Off: the \"Up next\" and \"My day\" widgets show only times. On: event and task titles are stored unencrypted on this phone for the home screen.';
 
   @override
   String get showTasksFromZtTasks => 'Show tasks from ZT Tasks';
@@ -1644,4 +1644,42 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get newFamilyCalendarHint => 'One calendar for the whole household';
+
+  @override
+  String get myDay => 'My day';
+
+  @override
+  String get myDayNext => 'Next';
+
+  @override
+  String get myDayNow => 'Now';
+
+  @override
+  String get myDayTask => 'Task';
+
+  @override
+  String get myDayNoTasks => 'No tasks due today';
+
+  @override
+  String myDayTasksDue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tasks due today',
+      one: '1 task due today',
+      zero: 'Tasks due today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String myDayOverdue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count overdue',
+      one: '+1 overdue',
+    );
+    return '$_temp0';
+  }
 }

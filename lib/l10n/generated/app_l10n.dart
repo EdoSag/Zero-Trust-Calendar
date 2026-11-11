@@ -1156,7 +1156,7 @@ abstract class AppL10n {
   /// No description provided for @offTheUpNextWidget.
   ///
   /// In en, this message translates to:
-  /// **'Off: the \"Up next\" widget shows only times. On: event titles are stored unencrypted on this phone for the home screen.'**
+  /// **'Off: the \"Up next\" and \"My day\" widgets show only times. On: event and task titles are stored unencrypted on this phone for the home screen.'**
   String get offTheUpNextWidget;
 
   /// No description provided for @showTasksFromZtTasks.
@@ -2580,6 +2580,48 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'One calendar for the whole household'**
   String get newFamilyCalendarHint;
+
+  /// No description provided for @myDay.
+  ///
+  /// In en, this message translates to:
+  /// **'My day'**
+  String get myDay;
+
+  /// No description provided for @myDayNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get myDayNext;
+
+  /// No description provided for @myDayNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get myDayNow;
+
+  /// No description provided for @myDayTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Task'**
+  String get myDayTask;
+
+  /// No description provided for @myDayNoTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks due today'**
+  String get myDayNoTasks;
+
+  /// No description provided for @myDayTasksDue.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Tasks due today} =1{1 task due today} other{{count} tasks due today}}'**
+  String myDayTasksDue(int count);
+
+  /// No description provided for @myDayOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{+1 overdue} other{+{count} overdue}}'**
+  String myDayOverdue(int count);
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

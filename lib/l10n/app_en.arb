@@ -176,7 +176,7 @@
   "eventTitlesInReminders": "Event titles in reminders",
   "offRemindersOnlySayEvent": "Off: reminders only say \"Event\". Titles are handed to the phone so they can show while Calendar is locked.",
   "showDetailsOnTheHome": "Show details on the home screen",
-  "offTheUpNextWidget": "Off: the \"Up next\" widget shows only times. On: event titles are stored unencrypted on this phone for the home screen.",
+  "offTheUpNextWidget": "Off: the \"Up next\" and \"My day\" widgets show only times. On: event and task titles are stored unencrypted on this phone for the home screen.",
   "showTasksFromZtTasks": "Show tasks from ZT Tasks",
   "tasksWithADueDate": "Tasks with a due date. Tick them off here",
   "showCompletedTasks": "Show completed tasks",
@@ -1092,5 +1092,26 @@
   "join": "Join",
   "newCalendarHint": "Only for you",
   "newSharedCalendarHint": "With friends, a team or a club",
-  "newFamilyCalendarHint": "One calendar for the whole household"
+  "newFamilyCalendarHint": "One calendar for the whole household",
+  "myDay": "My day",
+  "myDayNext": "Next",
+  "myDayNow": "Now",
+  "myDayTask": "Task",
+  "myDayNoTasks": "No tasks due today",
+  "myDayTasksDue": "{count, plural, =0{Tasks due today} =1{1 task due today} other{{count} tasks due today}}",
+  "@myDayTasksDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "myDayOverdue": "{count, plural, =1{+1 overdue} other{+{count} overdue}}",
+  "@myDayOverdue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

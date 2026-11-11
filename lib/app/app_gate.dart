@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:intl/intl.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../data/calendar_store.dart';
@@ -23,6 +24,7 @@ import '../ui/event_details_page.dart';
 import '../ui/home_page.dart';
 import '../ui/navigation.dart';
 import '../util/format.dart';
+import '../widget/my_day_widget.dart';
 import '../widget/up_next_widget.dart';
 import 'auth_providers.dart';
 import 'calendar_settings.dart';
@@ -129,6 +131,7 @@ class _AppGateState extends ConsumerState<AppGate> with WidgetsBindingObserver {
         ref.read(vaultControllerProvider.notifier).lock();
         ref.read(reminderSchedulerProvider).cancelAll().ignore();
         clearUpNext().ignore();
+        clearMyDay().ignore();
         setState(() => _signingIn = true);
       }
     });
@@ -221,13 +224,16 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     });
   }
 
-  /// "Up next" opens today; its + opens a new event. Each tap is taken once.
+  /// "Up next" and "My day" open today; their + opens a new event. Each tap
+  /// is taken once.
   void _takeWidgetTap() {
     final uri = pendingWidgetTap.value;
     if (uri == null || !mounted) return;
     pendingWidgetTap.value = null;
     ref.read(focusedDayProvider.notifier).today();
     if (uri.host == 'new-event') createEvent(context);
+    // "My day": its task list opens ZT Tasks.
+    if (uri.host == 'tasks') openLinkedApp(LinkedApp.tasks).ignore();
   }
 
   @override
@@ -337,7 +343,18 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
         formatTime: (t) => formatTime(context, t),
       ),
     );
-    await _syncPhoneCalendar(events, calendars, settings, now);
+    if (!mounted) return;
+    await publishMyDay(
+      myDay(
+        entries: entries,
+        tasks: ref.read(linkedTasksProvider).value ?? const [],
+        now: now,
+        showTitles: settings.widgetTitles,
+        formatTime: (t) => formatTime(context, t),
+        date: DateFormat.MMMMEEEEd(currentL10n.localeName).format(now),
+      ),
+    );
+        await _syncPhoneCalendar(events, calendars, settings, now);
   }
 
   /// "Show on this phone": copies the chosen calendars into Android's

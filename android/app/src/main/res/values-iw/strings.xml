@@ -13,4 +13,15 @@
     <string name="up_next_preview_lunch">ארוחת צהריים עם דנה</string>
     <string name="up_next_preview_dentist">רופא שיניים</string>
     <string name="up_next_preview_tomorrow">מחר 09:00</string>
+    <string name="my_day_widget_description">האירוע הבא שלך והמשימות של היום מ־ZT Tasks</string>
+    <string name="my_day_header">היום שלי</string>
+    <string name="my_day_next">הבא</string>
+    <string name="my_day_tasks">משימות להיום</string>
+    <string name="my_day_no_tasks">אין משימות להיום</string>
+    <string name="my_day_open_app">יש לפתוח את ZT Calendar כדי לראות את היום שלך</string>
+    <string name="my_day_signed_out">מנותק מהחשבון</string>
+    <string name="my_day_preview_date">יום רביעי, 11 בנובמבר</string>
+    <string name="my_day_preview_task1">לשלוח את המצגת</string>
+    <string name="my_day_preview_task2">לקנות חלב</string>
+    <string name="my_day_preview_overdue">+1 באיחור</string>
 </resources>

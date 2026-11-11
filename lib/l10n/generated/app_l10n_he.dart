@@ -556,7 +556,7 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get offTheUpNextWidget =>
-      'כבוי: הווידג׳ט \"הבא בתור\" מציג רק שעות. פועל: כותרות האירועים נשמרות בלי הצפנה בטלפון הזה בשביל מסך הבית.';
+      'כבוי: הווידג׳טים \"הבא בתור\" ו\"היום שלי\" מציגים רק שעות. פועל: כותרות האירועים והמשימות נשמרות בלי הצפנה בטלפון הזה בשביל מסך הבית.';
 
   @override
   String get showTasksFromZtTasks => 'הצגת משימות מ-ZT Tasks';
@@ -1640,4 +1640,42 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get newFamilyCalendarHint => 'יומן אחד לכל הבית';
+
+  @override
+  String get myDay => 'היום שלי';
+
+  @override
+  String get myDayNext => 'הבא';
+
+  @override
+  String get myDayNow => 'עכשיו';
+
+  @override
+  String get myDayTask => 'משימה';
+
+  @override
+  String get myDayNoTasks => 'אין משימות להיום';
+
+  @override
+  String myDayTasksDue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count משימות להיום',
+      one: 'משימה אחת להיום',
+      zero: 'משימות להיום',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String myDayOverdue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count באיחור',
+      one: '+1 באיחור',
+    );
+    return '$_temp0';
+  }
 }

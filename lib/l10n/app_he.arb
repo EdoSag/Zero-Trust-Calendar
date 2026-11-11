@@ -176,7 +176,7 @@
   "eventTitlesInReminders": "כותרות אירועים בתזכורות",
   "offRemindersOnlySayEvent": "כבוי: בתזכורות כתוב רק \"אירוע\". הכותרות נמסרות לטלפון כדי שיוצגו גם כשהיומן נעול.",
   "showDetailsOnTheHome": "הצגת פרטים במסך הבית",
-  "offTheUpNextWidget": "כבוי: הווידג׳ט \"הבא בתור\" מציג רק שעות. פועל: כותרות האירועים נשמרות בלי הצפנה בטלפון הזה בשביל מסך הבית.",
+  "offTheUpNextWidget": "כבוי: הווידג׳טים \"הבא בתור\" ו\"היום שלי\" מציגים רק שעות. פועל: כותרות האירועים והמשימות נשמרות בלי הצפנה בטלפון הזה בשביל מסך הבית.",
   "showTasksFromZtTasks": "הצגת משימות מ-ZT Tasks",
   "tasksWithADueDate": "משימות עם תאריך יעד. אפשר לסמן אותן כאן",
   "showCompletedTasks": "הצגת משימות שהושלמו",
@@ -413,5 +413,12 @@
   "join": "הצטרפות",
   "newCalendarHint": "רק בשבילך",
   "newSharedCalendarHint": "עם חברים, צוות או חוג",
-  "newFamilyCalendarHint": "יומן אחד לכל הבית"
+  "newFamilyCalendarHint": "יומן אחד לכל הבית",
+  "myDay": "היום שלי",
+  "myDayNext": "הבא",
+  "myDayNow": "עכשיו",
+  "myDayTask": "משימה",
+  "myDayNoTasks": "אין משימות להיום",
+  "myDayTasksDue": "{count, plural, =0{משימות להיום} =1{משימה אחת להיום} other{{count} משימות להיום}}",
+  "myDayOverdue": "{count, plural, =1{+1 באיחור} other{+{count} באיחור}}"
 }
