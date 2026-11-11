@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
+import 'data/shared_calendars.dart';
 import 'app/app_gate.dart';
 import 'app/calendar_config.dart';
 import 'l10n/l10n.dart';
@@ -19,7 +20,11 @@ Future<void> main() async {
   await ZtLanguageController.preload();
   runApp(
     ProviderScope(
-      overrides: [ztAppConfigProvider.overrideWithValue(calendarAppConfig)],
+      overrides: [
+        ztAppConfigProvider.overrideWithValue(calendarAppConfig),
+        // Only admins rename or recolour a shared calendar for everyone.
+        ztSpacePolicyProvider.overrideWithValue(calendarSpacePolicy),
+      ],
       child: const ZeroTrustCalendarApp(),
     ),
   );

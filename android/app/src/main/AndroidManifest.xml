@@ -13,6 +13,10 @@
     <uses-permission android:name="android.permission.READ_CALENDAR"/>
     <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
 
+    <!-- Shared calendar invite QR codes are scanned with the camera, only
+         when the user taps "Scan QR code". -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <application
         android:label="ZT Calendar"
         android:supportsRtl="true"
@@ -38,6 +42,14 @@
             <!-- Taps on the "Up next" home-screen widget (home_widget). -->
             <intent-filter>
                 <action android:name="es.antonborri.home_widget.action.LAUNCH"/>
+            </intent-filter>
+            <!-- Shared calendar invites: https://zerotrust.bz/join#zt1.calendar.…
+                 (the fragment never reaches the website). -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https" android:host="zerotrust.bz" android:pathPrefix="/join"/>
             </intent-filter>
             <!-- "Add to ZT Calendar": .ics files and invitations opened or
                  shared from mail, downloads and other apps. -->

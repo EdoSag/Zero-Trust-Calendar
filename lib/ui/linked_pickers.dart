@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/linked_apps.dart';
+import '../data/shared_calendars.dart';
 import '../model/calendar_event.dart';
 import '../model/linked_items.dart';
 import '../util/format.dart';
@@ -34,7 +35,10 @@ Future<(String, int?)?> pickCalendarAndColor(
               ),
               for (final c in calendars)
                 ListTile(
-                  leading: Icon(Icons.circle, color: Color(c.color)),
+                  leading: Icon(
+                    c.isShared ? Icons.group : Icons.circle,
+                    color: Color(c.color),
+                  ),
                   title: Text(c.name),
                   trailing: c.id == cal ? const Icon(Icons.check) : null,
                   onTap: () => setState(() => cal = c.id),

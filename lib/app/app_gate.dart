@@ -10,6 +10,7 @@ import '../data/calendar_store.dart';
 import '../data/entries.dart';
 import '../data/linked_apps.dart';
 import '../data/phone_calendar_sync.dart';
+import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
 import '../platform/channels.dart';
@@ -253,9 +254,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
 
   Future<void> _onReminder(ReminderTap tap) async {
     if (!mounted) return;
-    final event = (await ref.read(eventsProvider.future))
-        .where((e) => e.id == tap.eventId)
-        .firstOrNull;
+    final event = await ref.read(calendarRepositoryProvider).event(tap.eventId);
     if (!mounted) return;
     if (tap.occurrence != null) ref.read(focusedDayProvider.notifier).set(tap.occurrence!);
     switch (tap.action) {
@@ -293,8 +292,11 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
 
   Future<void> _apply() async {
     if (!mounted) return;
-    final events = ref.read(eventsProvider).value;
-    if (events == null) return;
+    final own = ref.read(eventsProvider).value;
+    if (own == null) return;
+    // Reminders, the widgets and the phone's calendar cover shared
+    // calendars too.
+    final events = [...own, ...ref.read(sharedEventsProvider)];
     final settings = ref.read(calendarSettingsProvider);
     final calendars = ref.read(calendarsProvider).value ?? const [ZtCalendarInfo.personal];
     final now = DateTime.now();
@@ -374,7 +376,11 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
   Widget build(BuildContext context) {
     // Runs sync for the unlocked vault (push, pull, live changes).
     ref.watch(ztSyncControllerProvider);
+    // And for every shared calendar (on unlock, live, every 5 minutes).
+    ref.watch(ztSpacesProvider);
     ref.listen(eventsProvider, (_, _) => _schedule());
+    ref.listen(sharedEventsProvider, (_, _) => _schedule());
+    ref.listen(linkedTasksProvider, (_, _) => _schedule());
     ref.listen(calendarsProvider, (_, _) => _schedule());
     ref.listen(feedsProvider, (_, _) => _schedule());
     ref.listen(calendarSettingsProvider, (_, _) => _schedule());

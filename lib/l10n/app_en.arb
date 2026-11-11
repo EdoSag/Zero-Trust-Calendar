@@ -933,5 +933,164 @@
         "type": "int"
       }
     }
-  }
+  },
+  "sharedCalendarUnnamed": "Shared calendar",
+  "sharedNoAttachments": "Files can't be added to events in a shared calendar: the other members couldn't open them.",
+  "sharedAttachmentsDropped": "This event's files stay out of the shared calendar: the other members couldn't open them.",
+  "familyCalendarName": "Family",
+  "newFamilyCalendar": "New family calendar",
+  "newSharedCalendar": "New shared calendar",
+  "sharedCalendarIntro": "Everyone you invite sees and edits its events. Everything is end-to-end encrypted: only your phones can read it.",
+  "requiredField": "Required",
+  "yourName": "Your name",
+  "yourNameHint": "How the other members see you in this calendar.",
+  "create": "Create",
+  "needsInternet": "This needs an internet connection. Try again when you're online.",
+  "sharedCalendarGone": "You're no longer in this calendar.",
+  "joinRequest": "{name} wants to join",
+  "@joinRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "joinRequestHint": "Check the code on their phone, then let them in",
+  "sharedYouAreAdmin": "Shared · you're an admin",
+  "sharedYouAreMember": "Shared · you're a member",
+  "myColour": "My colour",
+  "myColourHint": "Only on your devices",
+  "showInMyCalendar": "Show in my calendar",
+  "nMembers": "{count, plural, =1{1 member} other{{count} members}}",
+  "@nMembers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nWaitingToJoin": "{count, plural, =1{1 asking to join} other{{count} asking to join}}",
+  "@nWaitingToJoin": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "memberYou": "{name} (you)",
+  "@memberYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "roleAdmin": "Admin",
+  "roleMember": "Member",
+  "roleAdminHint": "Admins also invite and remove people, and rename the calendar.",
+  "roleMemberHint": "Members see, add and change events.",
+  "memberOptions": "Member options",
+  "makeMember": "Make a member",
+  "makeAdmin": "Make an admin",
+  "invitePeople": "Invite people",
+  "sharedPrivacyNote": "Events here are encrypted with a key only the members' phones hold. The server sees that this calendar exists and who is in it, never its name or events. Files and linked notes stay private to whoever added them.",
+  "leaveCalendar": "Leave calendar",
+  "deleteForEveryone": "Delete for everyone",
+  "sharedRenameHint": "The name and colour change for every member, unless they picked their own colour.",
+  "removeMemberTitle": "Remove {name}?",
+  "@removeMemberTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "removeMemberBody": "They lose access, and the calendar moves to a new key so they can't read anything added from now on.",
+  "leaveCalendarTitle": "Leave {name}?",
+  "@leaveCalendarTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "leaveCalendarBody": "Its events disappear from your devices. Someone has to invite you again to come back.",
+  "deleteForEveryoneTitle": "Delete {name} for everyone?",
+  "@deleteForEveryoneTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteForEveryoneBody": "The calendar and all its events are deleted for every member. This can't be undone.",
+  "waitingToJoin": "Waiting to join",
+  "waitingToJoinShort": "An admin still has to let you in",
+  "waitingToJoinBody": "Show this code to the person who invited you. Once they see the same code and let you in, the calendar appears here.",
+  "cancelJoin": "Cancel joining",
+  "confirmJoinTitle": "Let {name} into {calendar}?",
+  "@confirmJoinTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "calendar": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmJoinBody": "Their phone shows a code. Let them in only if it's exactly this one:",
+  "codesDiffer": "Codes differ",
+  "later": "Later",
+  "codesMatch": "Codes match",
+  "joinedCalendar": "{name} joined",
+  "@joinedCalendar": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteTo": "Invite to {name}",
+  "@inviteTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteIntro": "Make a one-time invite for one person. Send the link, or let them scan the code.",
+  "createInvite": "Create invite",
+  "inviteReady": "Scan this with ZT Calendar on their phone, or send them the link.",
+  "inviteQr": "Invite QR code",
+  "linkCopied": "Link copied",
+  "copyLink": "Copy link",
+  "shareLink": "Share",
+  "inviteMessage": "Join my calendar \"{name}\" in ZT Calendar: {link}",
+  "@inviteMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteNextSteps": "The link works once, for 7 days. When they open it, you'll both see a code: let them in only if the codes match.",
+  "checkForAnswers": "Check for answers",
+  "inviteOtherApp": "This invite is for another Zero-Trust app.",
+  "inviteInvalid": "That isn't a Zero-Trust invite link.",
+  "inviteUsed": "This invite was already used, withdrawn or has expired. Ask for a new one.",
+  "joinSharedCalendar": "Join a shared calendar",
+  "joinSharedCalendarHint": "With an invite link or QR code",
+  "joinCodeTitle": "Compare this code",
+  "joinCodeBody": "The person who invited you sees a code too. They let you in once both codes match.",
+  "joinIntro": "Paste the invite link you got, or scan the QR code on the other phone.",
+  "inviteLink": "Invite link",
+  "scanQr": "Scan QR code",
+  "join": "Join",
+  "newCalendarHint": "Only for you",
+  "newSharedCalendarHint": "With friends, a team or a club",
+  "newFamilyCalendarHint": "One calendar for the whole household"
 }

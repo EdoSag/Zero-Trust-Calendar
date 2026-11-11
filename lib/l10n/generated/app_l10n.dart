@@ -2124,6 +2124,462 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 event coming up} other{{count} events coming up}}'**
   String widgetComingUp(int count);
+
+  /// No description provided for @sharedCalendarUnnamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared calendar'**
+  String get sharedCalendarUnnamed;
+
+  /// No description provided for @sharedNoAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Files can\'t be added to events in a shared calendar: the other members couldn\'t open them.'**
+  String get sharedNoAttachments;
+
+  /// No description provided for @sharedAttachmentsDropped.
+  ///
+  /// In en, this message translates to:
+  /// **'This event\'s files stay out of the shared calendar: the other members couldn\'t open them.'**
+  String get sharedAttachmentsDropped;
+
+  /// No description provided for @familyCalendarName.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get familyCalendarName;
+
+  /// No description provided for @newFamilyCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'New family calendar'**
+  String get newFamilyCalendar;
+
+  /// No description provided for @newSharedCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'New shared calendar'**
+  String get newSharedCalendar;
+
+  /// No description provided for @sharedCalendarIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone you invite sees and edits its events. Everything is end-to-end encrypted: only your phones can read it.'**
+  String get sharedCalendarIntro;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get requiredField;
+
+  /// No description provided for @yourName.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get yourName;
+
+  /// No description provided for @yourNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'How the other members see you in this calendar.'**
+  String get yourNameHint;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @needsInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'This needs an internet connection. Try again when you\'re online.'**
+  String get needsInternet;
+
+  /// No description provided for @sharedCalendarGone.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re no longer in this calendar.'**
+  String get sharedCalendarGone;
+
+  /// No description provided for @joinRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} wants to join'**
+  String joinRequest(String name);
+
+  /// No description provided for @joinRequestHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the code on their phone, then let them in'**
+  String get joinRequestHint;
+
+  /// No description provided for @sharedYouAreAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared · you\'re an admin'**
+  String get sharedYouAreAdmin;
+
+  /// No description provided for @sharedYouAreMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared · you\'re a member'**
+  String get sharedYouAreMember;
+
+  /// No description provided for @myColour.
+  ///
+  /// In en, this message translates to:
+  /// **'My colour'**
+  String get myColour;
+
+  /// No description provided for @myColourHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only on your devices'**
+  String get myColourHint;
+
+  /// No description provided for @showInMyCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Show in my calendar'**
+  String get showInMyCalendar;
+
+  /// No description provided for @nMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 member} other{{count} members}}'**
+  String nMembers(int count);
+
+  /// No description provided for @nWaitingToJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 asking to join} other{{count} asking to join}}'**
+  String nWaitingToJoin(int count);
+
+  /// No description provided for @memberYou.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} (you)'**
+  String memberYou(String name);
+
+  /// No description provided for @roleAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get roleAdmin;
+
+  /// No description provided for @roleMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get roleMember;
+
+  /// No description provided for @roleAdminHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins also invite and remove people, and rename the calendar.'**
+  String get roleAdminHint;
+
+  /// No description provided for @roleMemberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Members see, add and change events.'**
+  String get roleMemberHint;
+
+  /// No description provided for @memberOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Member options'**
+  String get memberOptions;
+
+  /// No description provided for @makeMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a member'**
+  String get makeMember;
+
+  /// No description provided for @makeAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Make an admin'**
+  String get makeAdmin;
+
+  /// No description provided for @invitePeople.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite people'**
+  String get invitePeople;
+
+  /// No description provided for @sharedPrivacyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Events here are encrypted with a key only the members\' phones hold. The server sees that this calendar exists and who is in it, never its name or events. Files and linked notes stay private to whoever added them.'**
+  String get sharedPrivacyNote;
+
+  /// No description provided for @leaveCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave calendar'**
+  String get leaveCalendar;
+
+  /// No description provided for @deleteForEveryone.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete for everyone'**
+  String get deleteForEveryone;
+
+  /// No description provided for @sharedRenameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The name and colour change for every member, unless they picked their own colour.'**
+  String get sharedRenameHint;
+
+  /// No description provided for @removeMemberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name}?'**
+  String removeMemberTitle(String name);
+
+  /// No description provided for @removeMemberBody.
+  ///
+  /// In en, this message translates to:
+  /// **'They lose access, and the calendar moves to a new key so they can\'t read anything added from now on.'**
+  String get removeMemberBody;
+
+  /// No description provided for @leaveCalendarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave {name}?'**
+  String leaveCalendarTitle(String name);
+
+  /// No description provided for @leaveCalendarBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Its events disappear from your devices. Someone has to invite you again to come back.'**
+  String get leaveCalendarBody;
+
+  /// No description provided for @deleteForEveryoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {name} for everyone?'**
+  String deleteForEveryoneTitle(String name);
+
+  /// No description provided for @deleteForEveryoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The calendar and all its events are deleted for every member. This can\'t be undone.'**
+  String get deleteForEveryoneBody;
+
+  /// No description provided for @waitingToJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting to join'**
+  String get waitingToJoin;
+
+  /// No description provided for @waitingToJoinShort.
+  ///
+  /// In en, this message translates to:
+  /// **'An admin still has to let you in'**
+  String get waitingToJoinShort;
+
+  /// No description provided for @waitingToJoinBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this code to the person who invited you. Once they see the same code and let you in, the calendar appears here.'**
+  String get waitingToJoinBody;
+
+  /// No description provided for @cancelJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel joining'**
+  String get cancelJoin;
+
+  /// No description provided for @confirmJoinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Let {name} into {calendar}?'**
+  String confirmJoinTitle(String name, String calendar);
+
+  /// No description provided for @confirmJoinBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Their phone shows a code. Let them in only if it\'s exactly this one:'**
+  String get confirmJoinBody;
+
+  /// No description provided for @codesDiffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Codes differ'**
+  String get codesDiffer;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
+
+  /// No description provided for @codesMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Codes match'**
+  String get codesMatch;
+
+  /// No description provided for @joinedCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} joined'**
+  String joinedCalendar(String name);
+
+  /// No description provided for @inviteTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite to {name}'**
+  String inviteTo(String name);
+
+  /// No description provided for @inviteIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a one-time invite for one person. Send the link, or let them scan the code.'**
+  String get inviteIntro;
+
+  /// No description provided for @createInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Create invite'**
+  String get createInvite;
+
+  /// No description provided for @inviteReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan this with ZT Calendar on their phone, or send them the link.'**
+  String get inviteReady;
+
+  /// No description provided for @inviteQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite QR code'**
+  String get inviteQr;
+
+  /// No description provided for @linkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get linkCopied;
+
+  /// No description provided for @copyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get copyLink;
+
+  /// No description provided for @shareLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get shareLink;
+
+  /// No description provided for @inviteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Join my calendar \"{name}\" in ZT Calendar: {link}'**
+  String inviteMessage(String name, String link);
+
+  /// No description provided for @inviteNextSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'The link works once, for 7 days. When they open it, you\'ll both see a code: let them in only if the codes match.'**
+  String get inviteNextSteps;
+
+  /// No description provided for @checkForAnswers.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for answers'**
+  String get checkForAnswers;
+
+  /// No description provided for @inviteOtherApp.
+  ///
+  /// In en, this message translates to:
+  /// **'This invite is for another Zero-Trust app.'**
+  String get inviteOtherApp;
+
+  /// No description provided for @inviteInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'That isn\'t a Zero-Trust invite link.'**
+  String get inviteInvalid;
+
+  /// No description provided for @inviteUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'This invite was already used, withdrawn or has expired. Ask for a new one.'**
+  String get inviteUsed;
+
+  /// No description provided for @joinSharedCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Join a shared calendar'**
+  String get joinSharedCalendar;
+
+  /// No description provided for @joinSharedCalendarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'With an invite link or QR code'**
+  String get joinSharedCalendarHint;
+
+  /// No description provided for @joinCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare this code'**
+  String get joinCodeTitle;
+
+  /// No description provided for @joinCodeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The person who invited you sees a code too. They let you in once both codes match.'**
+  String get joinCodeBody;
+
+  /// No description provided for @joinIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the invite link you got, or scan the QR code on the other phone.'**
+  String get joinIntro;
+
+  /// No description provided for @inviteLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite link'**
+  String get inviteLink;
+
+  /// No description provided for @scanQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code'**
+  String get scanQr;
+
+  /// No description provided for @join.
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get join;
+
+  /// No description provided for @newCalendarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only for you'**
+  String get newCalendarHint;
+
+  /// No description provided for @newSharedCalendarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'With friends, a team or a club'**
+  String get newSharedCalendarHint;
+
+  /// No description provided for @newFamilyCalendarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'One calendar for the whole household'**
+  String get newFamilyCalendarHint;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

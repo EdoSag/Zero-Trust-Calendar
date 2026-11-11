@@ -16,6 +16,7 @@ import '../reminders/reminders.dart';
 import '../util/format.dart';
 import '../util/time_zones.dart';
 import 'attachments.dart';
+import '../data/shared_calendars.dart';
 import 'linked_pickers.dart';
 import 'navigation.dart';
 import 'recurrence_picker.dart';
@@ -699,22 +700,38 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
                 ),
               ),
             const Divider(),
-            for (final a in _attachments)
-              AttachmentTile(
-                attachment: a,
-                onRemove: () => _set(() => _attachments = [..._attachments]..remove(a)),
+            // Files are sealed with this account's own key, so events in a
+            // shared calendar can't carry them (the others couldn't open
+            // them).
+            if (calendar.isShared)
+              ListTile(
+                leading: const Icon(Icons.attach_file),
+                enabled: false,
+                title: Text(context.l10n.addAttachment),
+                subtitle: Text(
+                  _attachments.isEmpty
+                      ? context.l10n.sharedNoAttachments
+                      : context.l10n.sharedAttachmentsDropped,
+                ),
+              )
+            else ...[
+              for (final a in _attachments)
+                AttachmentTile(
+                  attachment: a,
+                  onRemove: () => _set(() => _attachments = [..._attachments]..remove(a)),
+                ),
+              ListTile(
+                leading: Icon(_attachments.isEmpty ? Icons.attach_file : null),
+                title: Text(
+                  context.l10n.addAttachment,
+                  style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                ),
+                subtitle: _attachments.isEmpty
+                    ? Text(context.l10n.encryptedOnThisPhoneBefore)
+                    : null,
+                onTap: _addAttachment,
               ),
-            ListTile(
-              leading: Icon(_attachments.isEmpty ? Icons.attach_file : null),
-              title: Text(
-                context.l10n.addAttachment,
-                style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-              ),
-              subtitle: _attachments.isEmpty
-                  ? Text(context.l10n.encryptedOnThisPhoneBefore)
-                  : null,
-              onTap: _addAttachment,
-            ),
+            ],
             const Divider(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
