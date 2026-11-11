@@ -1749,4 +1749,43 @@ class AppL10nEn extends AppL10n {
   @override
   String get desktopAppsPrivacy =>
       'Only computers on a local network (home or office Wi-Fi) are answered, only with the password, and only to read. Traffic is encrypted with this phone\'s own certificate. A computer keeps the copy it last read, unencrypted, in its calendar app: turn this on only for computers you trust. Hidden calendars, tasks and birthdays are not shared.';
+
+  @override
+  String get shareBusyTimes => 'Share when I\'m busy';
+
+  @override
+  String get shareBusyTimesHint =>
+      'Members see when you\'re busy in your other calendars (times only, never titles), so Find a time works. Encrypted like the rest of this calendar.';
+
+  @override
+  String get findATime => 'Find a time';
+
+  @override
+  String findATimeSharing(int count, int total) {
+    return '$count of $total members share when they\'re busy';
+  }
+
+  @override
+  String findATimeLength(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get findATimeEvenings => 'Evenings';
+
+  @override
+  String get findATimeWeekends => 'Weekends';
+
+  @override
+  String get findATimeEveryone =>
+      'Free for everyone in the calendar, in the next two weeks. Tap a time to add the event.';
+
+  @override
+  String findATimeMissing(String names) {
+    return 'Not counting $names: they don\'t share when they\'re busy. Tap a time to add the event.';
+  }
+
+  @override
+  String get findATimeNone =>
+      'No time works for everyone in the next two weeks. Try a shorter length, evenings or weekends.';
 }

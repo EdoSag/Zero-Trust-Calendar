@@ -2742,6 +2742,66 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Only computers on a local network (home or office Wi-Fi) are answered, only with the password, and only to read. Traffic is encrypted with this phone\'s own certificate. A computer keeps the copy it last read, unencrypted, in its calendar app: turn this on only for computers you trust. Hidden calendars, tasks and birthdays are not shared.'**
   String get desktopAppsPrivacy;
+
+  /// No description provided for @shareBusyTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Share when I\'m busy'**
+  String get shareBusyTimes;
+
+  /// No description provided for @shareBusyTimesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Members see when you\'re busy in your other calendars (times only, never titles), so Find a time works. Encrypted like the rest of this calendar.'**
+  String get shareBusyTimesHint;
+
+  /// No description provided for @findATime.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a time'**
+  String get findATime;
+
+  /// No description provided for @findATimeSharing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} members share when they\'re busy'**
+  String findATimeSharing(int count, int total);
+
+  /// No description provided for @findATimeLength.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String findATimeLength(int minutes);
+
+  /// No description provided for @findATimeEvenings.
+  ///
+  /// In en, this message translates to:
+  /// **'Evenings'**
+  String get findATimeEvenings;
+
+  /// No description provided for @findATimeWeekends.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekends'**
+  String get findATimeWeekends;
+
+  /// No description provided for @findATimeEveryone.
+  ///
+  /// In en, this message translates to:
+  /// **'Free for everyone in the calendar, in the next two weeks. Tap a time to add the event.'**
+  String get findATimeEveryone;
+
+  /// No description provided for @findATimeMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Not counting {names}: they don\'t share when they\'re busy. Tap a time to add the event.'**
+  String findATimeMissing(String names);
+
+  /// No description provided for @findATimeNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No time works for everyone in the next two weeks. Try a shorter length, evenings or weekends.'**
+  String get findATimeNone;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

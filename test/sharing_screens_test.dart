@@ -5,6 +5,8 @@ import 'package:zerotrust_calendar/caldav/caldav_bridge.dart';
 import 'package:zerotrust_calendar/data/shared_calendars.dart';
 import 'package:zerotrust_calendar/ui/calendars_page.dart';
 import 'package:zerotrust_calendar/ui/desktop_bridge_page.dart';
+import 'package:zerotrust_calendar/ui/find_a_time_page.dart';
+import 'package:zerotrust_calendar/model/calendar_event.dart';
 import 'package:zerotrust_calendar/ui/shared_calendar_pages.dart';
 
 import 'home_page_test.dart' show app, expectTappableOnScreen, usePhoneScreen;
@@ -134,6 +136,57 @@ void main() {
       // The password stays left-to-right inside Hebrew.
       final pw = tester.widget<Text>(find.text('abcd-efgh-jkmn-pqrs-tuvw'));
       expect(pw.textDirection, TextDirection.ltr);
+    });
+  }
+
+  for (final locale in const [Locale('en'), Locale('he')]) {
+    testWidgets('find a time lists free slots as chips ($locale)', (
+      tester,
+    ) async {
+      usePhoneScreen(tester);
+      const info = SpaceInfo(
+        id: 's1',
+        app: 'calendar',
+        keyEpoch: 1,
+        myRole: SpaceRole.admin,
+      );
+      await tester.pumpWidget(
+        app(
+          const FindATimePage(spaceId: 's1'),
+          const [],
+          locale: locale,
+          overrides: [
+            sharedCalendarsProvider.overrideWith(
+              (ref) async => [
+                SharedCalendar(
+                  entry: const SpaceEntry(info: info),
+                  info: const ZtCalendarInfo(
+                    id: 'shared:s1',
+                    name: 'Family',
+                    color: 1,
+                  ),
+                  events: const [],
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+      final chips = find.byType(ActionChip);
+      expect(chips, findsWidgets);
+      final first = tester.getRect(chips.first);
+      final width =
+          tester.view.physicalSize.width / tester.view.devicePixelRatio;
+      // First slot starts the row: left in English, right in Hebrew.
+      if (locale.languageCode == 'he') {
+        expect(first.center.dx, greaterThan(width / 2));
+      } else {
+        expect(first.center.dx, lessThan(width / 2));
+      }
+      expect(chips.first.hitTestable(), findsOneWidget);
+      await tester.tap(find.byType(FilterChip).first);
+      await tester.pumpAndSettle();
     });
   }
 }

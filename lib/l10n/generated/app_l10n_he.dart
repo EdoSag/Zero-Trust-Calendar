@@ -1744,4 +1744,43 @@ class AppL10nHe extends AppL10n {
   @override
   String get desktopAppsPrivacy =>
       'רק מחשבים ברשת מקומית (Wi-Fi בבית או במשרד) מקבלים תשובה, רק עם הסיסמה, ורק לקריאה. התעבורה מוצפנת עם אישור של הטלפון הזה. מחשב שומר את העותק האחרון שקרא, בלי הצפנה, באפליקציית היומן שלו: כדאי להפעיל רק למחשבים שסומכים עליהם. יומנים מוסתרים, משימות וימי הולדת לא משותפים.';
+
+  @override
+  String get shareBusyTimes => 'שיתוף הזמנים שבהם אני עסוק/ה';
+
+  @override
+  String get shareBusyTimesHint =>
+      'החברים רואים מתי את/ה עסוק/ה ביומנים האחרים שלך (רק שעות, אף פעם לא כותרות), כדי ש\"מציאת זמן\" תעבוד. מוצפן כמו כל היומן הזה.';
+
+  @override
+  String get findATime => 'מציאת זמן';
+
+  @override
+  String findATimeSharing(int count, int total) {
+    return '$count מתוך $total חברים משתפים מתי הם עסוקים';
+  }
+
+  @override
+  String findATimeLength(int minutes) {
+    return '$minutes דק׳';
+  }
+
+  @override
+  String get findATimeEvenings => 'ערבים';
+
+  @override
+  String get findATimeWeekends => 'סופי שבוע';
+
+  @override
+  String get findATimeEveryone =>
+      'פנוי לכל החברים ביומן, בשבועיים הקרובים. יש להקיש על שעה כדי להוסיף אירוע.';
+
+  @override
+  String findATimeMissing(String names) {
+    return 'בלי $names: הם לא משתפים מתי הם עסוקים. יש להקיש על שעה כדי להוסיף אירוע.';
+  }
+
+  @override
+  String get findATimeNone =>
+      'אין זמן שמתאים לכולם בשבועיים הקרובים. אפשר לנסות משך קצר יותר, ערבים או סופי שבוע.';
 }

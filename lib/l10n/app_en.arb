@@ -1133,5 +1133,39 @@
   "desktopAppsHowTo": "In your calendar app, add a CalDAV account (Thunderbird: New Calendar, On the Network; Apple Calendar: Add Account, Other CalDAV, Manual) with this address, user name and password. The app warns that the certificate isn't trusted: check that its fingerprint matches the one above, then trust it. The computer and phone must be on the same Wi-Fi, and the computer refreshes while ZT Calendar is open and unlocked.",
   "desktopAppsNewPassword": "Make a new password",
   "desktopAppsNewPasswordHint": "Computers using the old one lose access",
-  "desktopAppsPrivacy": "Only computers on a local network (home or office Wi-Fi) are answered, only with the password, and only to read. Traffic is encrypted with this phone's own certificate. A computer keeps the copy it last read, unencrypted, in its calendar app: turn this on only for computers you trust. Hidden calendars, tasks and birthdays are not shared."
+  "desktopAppsPrivacy": "Only computers on a local network (home or office Wi-Fi) are answered, only with the password, and only to read. Traffic is encrypted with this phone's own certificate. A computer keeps the copy it last read, unencrypted, in its calendar app: turn this on only for computers you trust. Hidden calendars, tasks and birthdays are not shared.",
+  "shareBusyTimes": "Share when I'm busy",
+  "shareBusyTimesHint": "Members see when you're busy in your other calendars (times only, never titles), so Find a time works. Encrypted like the rest of this calendar.",
+  "findATime": "Find a time",
+  "findATimeSharing": "{count} of {total} members share when they're busy",
+  "@findATimeSharing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "findATimeLength": "{minutes} min",
+  "@findATimeLength": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "findATimeEvenings": "Evenings",
+  "findATimeWeekends": "Weekends",
+  "findATimeEveryone": "Free for everyone in the calendar, in the next two weeks. Tap a time to add the event.",
+  "findATimeMissing": "Not counting {names}: they don't share when they're busy. Tap a time to add the event.",
+  "@findATimeMissing": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "findATimeNone": "No time works for everyone in the next two weeks. Try a shorter length, evenings or weekends."
 }

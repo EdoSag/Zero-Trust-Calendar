@@ -6,10 +6,12 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
+import '../app/calendar_settings.dart';
 import '../data/calendar_store.dart';
 import '../data/shared_calendars.dart';
 import '../model/calendar_event.dart' show ZtCalendarInfo, calendarPalette;
 import '../util/format.dart';
+import 'find_a_time_page.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 void _snack(BuildContext context, String text) {
@@ -236,6 +238,43 @@ class SharedCalendarPage extends ConsumerWidget {
             onChanged: (show) => ref
                 .read(sharedCalendarActionsProvider)
                 .saveMyChoice(_choice(mine, shared).copyWith(hidden: !show)),
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.event_busy_outlined),
+            title: Text(l.shareBusyTimes),
+            subtitle: Text(l.shareBusyTimesHint),
+            value: ref
+                .watch(calendarSettingsProvider)
+                .busySharedSpaces
+                .contains(spaceId),
+            onChanged: (on) => ref
+                .read(calendarSettingsProvider.notifier)
+                .update(
+                  (x) => x.copyWith(
+                    busySharedSpaces: {
+                      ...x.busySharedSpaces.where((id) => id != spaceId),
+                      if (on) spaceId,
+                    },
+                  ),
+                ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.manage_search),
+            title: Text(l.findATime),
+            subtitle: Text(
+              l.findATimeSharing(
+                shared.busy
+                    .where((b) => members.any((m) => m.userId == b.userId))
+                    .length,
+                members.length,
+              ),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => FindATimePage(spaceId: spaceId),
+              ),
+            ),
           ),
           const Divider(),
           Padding(

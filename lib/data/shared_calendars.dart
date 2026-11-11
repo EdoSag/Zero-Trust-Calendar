@@ -4,6 +4,7 @@ import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../model/calendar_event.dart';
 import 'calendar_store.dart';
+import 'find_a_time.dart';
 
 /// Shared and family calendars (K14), built on the core's shared spaces
 /// (Z24): each shared calendar is one space of the app `calendar`.
@@ -58,6 +59,7 @@ class SharedCalendar {
     required this.info,
     required this.events,
     this.family = false,
+    this.busy = const [],
   });
 
   final SpaceEntry entry;
@@ -67,6 +69,9 @@ class SharedCalendar {
   final ZtCalendarInfo info;
   final List<CalendarEvent> events;
   final bool family;
+
+  /// Busy times of the members who share them (for "Find a time").
+  final List<MemberBusy> busy;
 
   String get spaceId => entry.info.id;
   String get id => sharedCalendarId(spaceId);
@@ -91,6 +96,7 @@ SharedCalendar readSharedCalendar(SpaceEntry entry, List<LocalItem> items) {
   );
   var family = false;
   final events = <CalendarEvent>[];
+  final busy = <MemberBusy>[];
   for (final item in items) {
     if (item.deleted || item.json == null) continue;
     if (item.itemId == sharedInfoItemId) {
@@ -99,6 +105,11 @@ SharedCalendar readSharedCalendar(SpaceEntry entry, List<LocalItem> items) {
         info = ZtCalendarInfo(id: id, name: c.name, color: c.color);
         family = item.json!['family'] == true;
       }
+      continue;
+    }
+    if (MemberBusy.fromJson(item.json) case final b?) {
+      // Only a member's own busy item counts (its id names them).
+      if (item.itemId == busyItemId(b.userId)) busy.add(b);
       continue;
     }
     final e = eventsCollection.decode(item);
@@ -110,6 +121,7 @@ SharedCalendar readSharedCalendar(SpaceEntry entry, List<LocalItem> items) {
     info: info,
     events: events,
     family: family,
+    busy: busy,
   );
 }
 
@@ -208,6 +220,41 @@ class SharedCalendarActions {
   /// This member's own colour and hidden choice (kept in their own store).
   Future<void> saveMyChoice(ZtCalendarInfo calendar) =>
       _ref.read(calendarRepositoryProvider).saveCalendar(calendar);
+
+  /// Puts this account's busy times into [spaceId] for "Find a time", only
+  /// when they changed (so an unchanged calendar doesn't sync every
+  /// minute).
+  Future<void> publishBusy(
+    String spaceId,
+    List<(DateTime, DateTime)> blocks,
+  ) async {
+    final me = _ref.read(accountServiceProvider).currentUserId;
+    final space = _ref.read(ztSpacesProvider)[spaceId]?.space;
+    if (me == null || space == null) return;
+    final next = MemberBusy(
+      userId: me,
+      blocks: mergeBlocks(blocks),
+      updated: DateTime.now(),
+    );
+    final item = await space.store.get(busyItemId(me));
+    final before = item == null || item.deleted
+        ? null
+        : MemberBusy.fromJson(item.json);
+    if (before != null && before.sameBlocks(next)) return;
+    await _spaces.save(spaceId, busyItemId(me), next.toJson());
+    _changed();
+  }
+
+  /// Takes this account's busy times out of [spaceId].
+  Future<void> withdrawBusy(String spaceId) async {
+    final me = _ref.read(accountServiceProvider).currentUserId;
+    final space = _ref.read(ztSpacesProvider)[spaceId]?.space;
+    if (me == null || space == null) return;
+    final item = await space.store.get(busyItemId(me));
+    if (item == null || item.deleted) return;
+    await _spaces.delete(spaceId, busyItemId(me));
+    _changed();
+  }
 
   Future<void> leave(String spaceId) async {
     await _spaces.leave(spaceId);

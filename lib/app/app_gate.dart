@@ -10,6 +10,7 @@ import 'package:zero_trust_core/zero_trust_core.dart';
 import '../caldav/caldav_bridge.dart';
 import '../data/calendar_store.dart';
 import '../data/entries.dart';
+import '../data/find_a_time.dart';
 import '../data/linked_apps.dart';
 import '../data/phone_calendar_sync.dart';
 import '../data/shared_calendars.dart';
@@ -355,7 +356,39 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
         date: DateFormat.MMMMEEEEd(currentL10n.localeName).format(now),
       ),
     );
-        await _syncPhoneCalendar(events, calendars, settings, now);
+        await _shareBusyTimes(events, calendars, settings, now);
+    await _syncPhoneCalendar(events, calendars, settings, now);
+  }
+
+  /// "Find a time": tells each shared calendar the user opted in for when
+  /// they are busy (times only), and takes it back from the others.
+  Future<void> _shareBusyTimes(
+    List<CalendarEvent> events,
+    List<ZtCalendarInfo> calendars,
+    CalendarSettings settings,
+    DateTime now,
+  ) async {
+    final actions = ref.read(sharedCalendarActionsProvider);
+    for (final c in ref.read(sharedCalendarsProvider).value ?? const <SharedCalendar>[]) {
+      if (c.waiting) continue;
+      try {
+        if (settings.busySharedSpaces.contains(c.spaceId)) {
+          await actions.publishBusy(
+            c.spaceId,
+            busyBlocks(
+              events: events,
+              calendars: calendars,
+              from: dayOf(now),
+              exceptCalendarId: c.id,
+            ),
+          );
+        } else {
+          await actions.withdrawBusy(c.spaceId);
+        }
+      } on Object {
+        // Offline or locked: next time.
+      }
+    }
   }
 
   /// "Show on this phone": copies the chosen calendars into Android's
