@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../app/calendar_settings.dart';
 import '../model/calendar_event.dart';
@@ -91,7 +92,9 @@ List<CalendarEntry> buildEntries({
   required List<ZtCalendarInfo> calendars,
   List<LinkedTask> tasks = const [],
   List<LinkedContact> contacts = const [],
+  AppL10n? l10n,
 }) {
+  final l = l10n ?? currentL10n;
   final byId = {for (final c in calendars) c.id: c};
   final out = <CalendarEntry>[];
   for (final e in events) {
@@ -141,7 +144,7 @@ List<CalendarEntry> buildEntries({
           out.add(
             CalendarEntry(
               kind: EntryKind.birthday,
-              title: currentL10n.birthdayOf(c.name),
+              title: l.birthdayOf(c.name),
               start: d,
               end: next,
               allDay: true,
@@ -165,6 +168,8 @@ final entriesProvider = Provider.family<AsyncValue<List<CalendarEntry>>, DateRan
   final events = ref.watch(allEventsProvider);
   final calendars = ref.watch(calendarsProvider);
   final settings = ref.watch(calendarSettingsProvider);
+  // Birthday titles are built in the app's language.
+  final l10n = appL10nFor(ref.watch(ztLanguageProvider));
   final tasks = settings.showTasks
       ? ref.watch(linkedTasksProvider).value ?? const <LinkedTask>[]
       : const <LinkedTask>[];
@@ -183,6 +188,7 @@ final entriesProvider = Provider.family<AsyncValue<List<CalendarEntry>>, DateRan
           ? tasks
           : tasks.where((t) => !t.completed).toList(),
       contacts: contacts,
+      l10n: l10n,
     ),
   );
 });

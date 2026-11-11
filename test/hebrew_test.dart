@@ -7,6 +7,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
+import 'package:zerotrust_calendar/data/entries.dart';
+import 'package:zerotrust_calendar/model/calendar_event.dart';
+import 'package:zerotrust_calendar/model/linked_items.dart';
 import 'package:zerotrust_calendar/model/recurrence.dart';
 import 'package:zerotrust_calendar/util/format.dart';
 
@@ -70,5 +73,23 @@ void main() {
     expect(describeRule(const RecurrenceRule(frequency: Frequency.weekly, interval: 2), monday),
         'Every 2 weeks on Monday');
     expect(reminderLabel(60), '1 hour before');
+  });
+
+  test('birthdays follow the language picked, before the app rebuilds', () {
+    final ada = LinkedContact.fromItem('c', {
+      'kind': 'contact',
+      'displayName': 'Ada',
+      'birthdays': ['1990-11-20'],
+    })!;
+    List<String> titles(Locale picked) => buildEntries(
+          range: DateRange(DateTime(2026, 11, 1), DateTime(2026, 12, 1)),
+          events: const [],
+          calendars: const [ZtCalendarInfo.personal],
+          contacts: [ada],
+          l10n: appL10nFor(picked),
+        ).map((e) => e.title).toList();
+    expect(titles(const Locale('en')), ["Ada's birthday"]);
+    expect(titles(const Locale('he')).single, isNot("Ada's birthday"));
+    expect(titles(const Locale('he')).single, contains('Ada'));
   });
 }

@@ -379,6 +379,9 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     ref.listen(feedsProvider, (_, _) => _schedule());
     ref.listen(calendarSettingsProvider, (_, _) => _schedule());
     ref.listen(linkedContactsProvider, (_, _) => _schedule());
+    // Reminders and the widget carry text in the app's language. The
+    // debounce lets the new language load first.
+    ref.listen(ztLanguageProvider, (_, _) => _schedule());
     return const HomePage();
   }
 }

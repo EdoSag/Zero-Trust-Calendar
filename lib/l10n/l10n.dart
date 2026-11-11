@@ -23,6 +23,18 @@ AppL10n get currentL10n {
   );
 }
 
+/// The strings for the language picked in Settings ([ztLanguageProvider]'s
+/// value; null follows the phone). Unlike [currentL10n] this is right the
+/// moment the setting changes, before the app has rebuilt in it.
+AppL10n appL10nFor(Locale? picked) {
+  final code = (picked ?? WidgetsBinding.instance.platformDispatcher.locale).languageCode;
+  return lookupAppL10n(
+    AppL10n.supportedLocales.any((l) => l.languageCode == code)
+        ? Locale(code)
+        : const Locale('en'),
+  );
+}
+
 /// Keeps [text] left-to-right inside Hebrew (numbers with units, emails).
 String ltr(String text) => text.isEmpty ? text : '\u2066$text\u2069';
 
