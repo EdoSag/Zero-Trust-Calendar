@@ -44,20 +44,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Up next"/>
+                android:text="@string/up_next_header"/>
             <TextView
                 android:id="@+id/summary"
                 style="@style/ZtWidget.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Today"/>
+                android:text="@string/up_next_preview_today"/>
         </LinearLayout>
         <ImageView
             android:id="@+id/add_button"
             style="@style/ZtWidget.Action"
             android:layout_marginStart="8dp"
             android:src="@drawable/ic_zt_widget_add"
-            android:contentDescription="New event"/>
+            android:contentDescription="@string/up_next_new_event"/>
     </LinearLayout>
 
     <LinearLayout
@@ -87,7 +87,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Team stand-up"/>
+            android:text="@string/up_next_preview_standup"/>
         <TextView
             android:id="@+id/time0"
             style="@style/ZtWidget.Caption"
@@ -118,7 +118,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Lunch with Dana"/>
+            android:text="@string/up_next_preview_lunch"/>
         <TextView
             android:id="@+id/time1"
             style="@style/ZtWidget.Caption"
@@ -149,14 +149,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Dentist"/>
+            android:text="@string/up_next_preview_dentist"/>
         <TextView
             android:id="@+id/time2"
             style="@style/ZtWidget.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Tomorrow 09:00"/>
+            android:text="@string/up_next_preview_tomorrow"/>
     </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import '../model/calendar_event.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// One reminder the OS should show at [at], for one occurrence of an event.
 @immutable
@@ -97,11 +98,11 @@ abstract final class ReminderAction {
   static const note = 'note';
   static const late = 'late';
 
-  static const labels = {
-    snooze: 'Snooze 10 min',
-    map: 'Map',
-    note: 'Note',
-    late: 'Running late',
+  static Map<String, String> get labels => {
+    snooze: currentL10n.snooze10Min,
+    map: currentL10n.map,
+    note: currentL10n.note,
+    late: currentL10n.runningLate,
   };
 
   static const snoozeFor = Duration(minutes: 10);
@@ -148,7 +149,7 @@ class ReminderPayload {
         return ReminderPayload(
           eventId: id,
           occurrence: DateTime.tryParse((m['o'] as String?) ?? '')?.toLocal(),
-          title: (m['t'] as String?) ?? 'Event',
+          title: (m['t'] as String?) ?? currentL10n.event,
           body: (m['b'] as String?) ?? '',
           actions: [
             for (final a in ((m['a'] as String?) ?? '').split(','))
@@ -210,7 +211,7 @@ List<ScheduledReminder> remindersFor(
               eventId: e.id,
               occurrence: s,
               at: at,
-              title: showTitles && title.isNotEmpty ? title : 'Event',
+              title: showTitles && title.isNotEmpty ? title : currentL10n.event,
               body: bodyFor(e, s),
               hasPlace: e.location.trim().isNotEmpty,
               hasNote: e.noteIds.isNotEmpty,
@@ -269,10 +270,10 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
   ReminderTap? _launch;
   Future<void>? _ready;
 
-  static const _channel = AndroidNotificationDetails(
+  static AndroidNotificationDetails get _channel => AndroidNotificationDetails(
     'event_reminders',
-    'Event reminders',
-    channelDescription: 'Reminders before your events',
+    currentL10n.eventReminders,
+    channelDescription: currentL10n.remindersBeforeYourEvents,
     importance: Importance.high,
     priority: Priority.high,
     category: AndroidNotificationCategory.event,

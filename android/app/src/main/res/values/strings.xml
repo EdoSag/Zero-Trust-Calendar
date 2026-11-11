@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="up_next_widget_description">Your next events, and + for a new one</string>
+    <string name="up_next_header">Up next</string>
+    <string name="up_next_open_app">Open ZT Calendar to see what\'s next</string>
+    <string name="up_next_new_event">New event</string>
+    <string name="up_next_signed_out">Signed out</string>
+    <string name="up_next_more">+{n} more</string>
+    <string name="up_next_coming_one">1 event coming up</string>
+    <string name="up_next_coming_many">{n} events coming up</string>
+    <string name="up_next_preview_today">Today</string>
+    <string name="up_next_preview_standup">Team stand-up</string>
+    <string name="up_next_preview_lunch">Lunch with Dana</string>
+    <string name="up_next_preview_dentist">Dentist</string>
+    <string name="up_next_preview_tomorrow">Tomorrow 09:00</string>
 </resources>

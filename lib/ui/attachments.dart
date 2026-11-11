@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// A MIME type from a file name, for the common kinds people attach.
 String? mimeTypeFor(String name) {
@@ -51,10 +52,10 @@ class AttachmentTile extends ConsumerWidget {
     } on Object {
       parsed = null;
     }
-    final name = parsed?.name ?? 'Attachment';
+    final name = parsed?.name ?? context.l10n.attachment;
     final isImage = (parsed?.mimeType ?? '').startsWith('image/');
     return ListTile(
-      contentPadding: const EdgeInsets.only(left: 16, right: 8),
+      contentPadding: const EdgeInsetsDirectional.only(start: 16, end: 8),
       leading: Icon(isImage ? Icons.image_outlined : Icons.insert_drive_file_outlined),
       title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: parsed == null ? null : Text(formatBytes(parsed.size)),
@@ -62,7 +63,7 @@ class AttachmentTile extends ConsumerWidget {
       trailing: onRemove == null
           ? null
           : IconButton(
-              tooltip: 'Remove attachment',
+              tooltip: context.l10n.removeAttachment,
               icon: const Icon(Icons.close),
               onPressed: onRemove,
             ),
@@ -86,7 +87,7 @@ Future<void> openAttachment(
       await navigator.push(
         MaterialPageRoute<void>(
           builder: (_) => Scaffold(
-            appBar: AppBar(title: Text(attachment.name ?? 'Image')),
+            appBar: AppBar(title: Text(attachment.name ?? context.l10n.image)),
             body: InteractiveViewer(child: Center(child: Image.memory(bytes))),
           ),
         ),
@@ -101,13 +102,13 @@ Future<void> openAttachment(
     );
   } on AttachmentNotFound {
     messenger.showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Text(
-          'This file hasn\'t finished uploading from the phone that added it.',
+          currentL10n.thisFileHasntFinishedUploading,
         ),
       ),
     );
   } on Object catch (e) {
-    messenger.showSnackBar(SnackBar(content: Text('Could not open the file: $e')));
+    messenger.showSnackBar(SnackBar(content: Text(currentL10n.couldNotOpenFile('$e'))));
   }
 }

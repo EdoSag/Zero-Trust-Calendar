@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data/entries.dart';
 import '../util/format.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 IconData? entryIcon(CalendarEntry e) => switch (e.kind) {
   EntryKind.task => Icons.task_alt,
@@ -42,7 +43,7 @@ class EntryChip extends StatelessWidget {
     final icon = entryIcon(entry);
     return Semantics(
       button: onTap != null,
-      label: '${entry.title}, ${entry.allDay ? 'all day' : formatTime(context, entry.start)}',
+      label: '${entry.title}, ${entry.allDay ? context.l10n.allDayLower : formatTime(context, entry.start)}',
       excludeSemantics: true,
       child: InkWell(
         onTap: onTap,
@@ -60,12 +61,12 @@ class EntryChip extends StatelessWidget {
                 Container(
                   width: 6,
                   height: 6,
-                  margin: const EdgeInsets.only(right: 3),
+                  margin: const EdgeInsetsDirectional.only(end: 3),
                   decoration: BoxDecoration(color: color, shape: BoxShape.circle),
                 ),
               if (icon != null)
                 Padding(
-                  padding: const EdgeInsets.only(right: 2),
+                  padding: const EdgeInsetsDirectional.only(end: 2),
                   child: Icon(icon, size: dense ? 10 : 13, color: fg),
                 ),
               Expanded(
@@ -101,12 +102,12 @@ class EntryTile extends StatelessWidget {
     final color = eventColor(entry.color);
     String when;
     if (entry.allDay) {
-      when = 'All day';
+      when = context.l10n.allDay;
     } else if (day != null && !sameDay(entry.start, day!) ) {
-      when = sameDay(entry.end, day!) ? 'Until ${formatTime(context, entry.end)}' : 'All day';
+      when = sameDay(entry.end, day!) ? context.l10n.untilTime(formatTime(context, entry.end)) : context.l10n.allDay;
     } else {
       when = entry.kind == EntryKind.task
-          ? 'Due ${formatTime(context, entry.start)}'
+          ? context.l10n.dueAt(formatTime(context, entry.start))
           : formatSpan(context, entry.start, entry.end, false);
     }
     final location = entry.event?.location ?? '';
@@ -120,7 +121,7 @@ class EntryTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.14),
             borderRadius: BorderRadius.circular(12),
-            border: Border(left: BorderSide(color: color, width: 4)),
+            border: BorderDirectional(start: BorderSide(color: color, width: 4)),
           ),
           child: Row(
             children: [
@@ -150,7 +151,7 @@ class EntryTile extends StatelessWidget {
                 Icon(Icons.repeat, size: 16, color: theme.colorScheme.onSurfaceVariant),
               if (icon != null)
                 Padding(
-                  padding: const EdgeInsets.only(left: 6),
+                  padding: const EdgeInsetsDirectional.only(start: 6),
                   child: Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),
                 ),
             ],

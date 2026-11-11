@@ -12,6 +12,7 @@ import '../util/format.dart';
 import 'event_details_page.dart';
 import 'event_editor_page.dart';
 import 'linked_app_launcher.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// The day the calendar is showing (the first day of the visible range).
 final focusedDayProvider = NotifierProvider<FocusedDay, DateTime>(FocusedDay.new);
@@ -66,13 +67,13 @@ Future<void> openEntry(BuildContext context, WidgetRef ref, CalendarEntry entry)
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Due ${relativeDay(entry.start)}'
-                  '${entry.allDay ? '' : ', ${formatTime(sheet, entry.start)}'}',
+                  context.l10n.dueAt('${relativeDay(entry.start)}'
+                      '${entry.allDay ? '' : ', ${formatTime(sheet, entry.start)}'}'),
                 ),
                 const SizedBox(height: 8),
                 if (entry.task!.repeats)
                   Text(
-                    'A repeating task: tick it off in ZT Tasks, which moves it to its next date.',
+                    context.l10n.aRepeatingTaskTickIt,
                     style: Theme.of(sheet).textTheme.bodySmall,
                   )
                 else
@@ -84,7 +85,7 @@ Future<void> openEntry(BuildContext context, WidgetRef ref, CalendarEntry entry)
                     openLinkedApp(LinkedApp.tasks);
                   },
                   icon: const Icon(Icons.open_in_new),
-                  label: const Text('Open ZT Tasks'),
+                  label: Text(context.l10n.openZtTasks),
                 ),
               ],
             ),
@@ -123,7 +124,7 @@ Future<void> openEntry(BuildContext context, WidgetRef ref, CalendarEntry entry)
                 Text(
                   [
                     formatLongDay(entry.start),
-                    if (year != null) 'turns ${entry.start.year - year}',
+                    if (year != null) context.l10n.turnsAge(entry.start.year - year),
                   ].join(', '),
                 ),
                 const SizedBox(height: 16),
@@ -137,7 +138,7 @@ Future<void> openEntry(BuildContext context, WidgetRef ref, CalendarEntry entry)
                           Uri(scheme: 'tel', path: contact.phones.first),
                         ),
                         icon: const Icon(Icons.call_outlined),
-                        label: const Text('Call'),
+                        label: Text(context.l10n.call),
                       ),
                     if (contact.phones.isNotEmpty)
                       FilledButton.tonalIcon(
@@ -145,7 +146,7 @@ Future<void> openEntry(BuildContext context, WidgetRef ref, CalendarEntry entry)
                           Uri(scheme: 'sms', path: contact.phones.first),
                         ),
                         icon: const Icon(Icons.sms_outlined),
-                        label: const Text('Message'),
+                        label: Text(context.l10n.message),
                       ),
                     OutlinedButton.icon(
                       onPressed: () {
@@ -183,8 +184,8 @@ class _TaskDoneTileState extends ConsumerState<_TaskDoneTile> {
     contentPadding: EdgeInsets.zero,
     controlAffinity: ListTileControlAffinity.leading,
     value: _done,
-    title: const Text('Done'),
-    subtitle: const Text('Saved in ZT Tasks on all your devices'),
+    title: Text(context.l10n.done),
+    subtitle: Text(context.l10n.savedInZtTasksOn),
     onChanged: _busy
         ? null
         : (v) async {
@@ -198,7 +199,7 @@ class _TaskDoneTileState extends ConsumerState<_TaskDoneTile> {
               await mirror.setTaskCompleted(widget.task.id, v == true);
             } on Object catch (e) {
               setState(() => _done = widget.task.completed);
-              messenger.showSnackBar(SnackBar(content: Text('Could not update the task: $e')));
+              messenger.showSnackBar(SnackBar(content: Text(currentL10n.couldNotUpdateTask('$e'))));
             } finally {
               if (mounted) setState(() => _busy = false);
             }
@@ -221,7 +222,7 @@ Future<void> moveEntry(
   final messenger = ScaffoldMessenger.of(context);
   try {
     if (event.repeats) {
-      final scope = await askSeriesScope(context, action: 'Move');
+      final scope = await askSeriesScope(context, action: context.l10n.move);
       if (scope == null) return;
       await repo.apply(
         SeriesEdits.edit(
@@ -238,17 +239,17 @@ Future<void> moveEntry(
     if (!context.mounted) return;
     messenger.showSnackBar(
       SnackBar(
-        content: Text('Moved to ${formatDay(start)}, ${formatTime(context, start)}'),
+        content: Text(context.l10n.movedTo('${formatDay(start)}, ${formatTime(context, start)}')),
         // Flutter keeps a snackbar with an action open until it is tapped.
         persist: false,
         action: SnackBarAction(
-          label: 'Undo',
+          label: context.l10n.undo,
           onPressed: () => repo.saveEvent(event).ignore(),
         ),
       ),
     );
   } on Object catch (e) {
-    messenger.showSnackBar(SnackBar(content: Text('Could not move it: $e')));
+    messenger.showSnackBar(SnackBar(content: Text(context.l10n.couldNotMove('$e'))));
   }
 }
 

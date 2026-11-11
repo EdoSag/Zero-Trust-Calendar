@@ -6,6 +6,7 @@ import '../app/calendar_settings.dart';
 import '../data/calendar_store.dart';
 import '../model/calendar_event.dart';
 import '../platform/channels.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// "Show on this phone": per calendar, copy its events into Android's
 /// calendar so the clock, Wear OS, Android Auto and other apps show them.
@@ -30,7 +31,7 @@ class PhoneCalendarPage extends ConsumerWidget {
           final ok = await showDialog<bool>(
             context: context,
             builder: (d) => AlertDialog(
-              title: const Text('Show on this phone?'),
+              title: Text(context.l10n.showOnThisPhone),
               content: const Text(
                 'Events in this calendar are copied, unencrypted, into '
                 'Android\'s calendar on this phone: title, time and place, '
@@ -41,8 +42,8 @@ class PhoneCalendarPage extends ConsumerWidget {
                 'guests, notes and attachments are never copied.',
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.of(d).pop(false), child: const Text('Cancel')),
-                FilledButton(onPressed: () => Navigator.of(d).pop(true), child: const Text('Turn on')),
+                TextButton(onPressed: () => Navigator.of(d).pop(false), child: Text(context.l10n.cancel)),
+                FilledButton(onPressed: () => Navigator.of(d).pop(true), child: Text(context.l10n.turnOn)),
               ],
             ),
           );
@@ -50,7 +51,7 @@ class PhoneCalendarPage extends ConsumerWidget {
         }
         if (!await bridge.requestPermission()) {
           messenger.showSnackBar(
-            const SnackBar(content: Text('Calendar permission is needed for this.')),
+            SnackBar(content: Text(currentL10n.calendarPermissionIsNeededFor)),
           );
           return;
         }
@@ -67,22 +68,20 @@ class PhoneCalendarPage extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Show on this phone')),
+      appBar: AppBar(title: Text(context.l10n.showOnThisPhoneX)),
       body: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: Text(
-              'Lets Wear OS, Android Auto, the clock\'s alarm screen and other '
-              'calendar apps show these events. They are copied without '
-              'encryption into a calendar on this phone only.',
+              context.l10n.letsWearOsAndroidAuto,
               style: theme.textTheme.bodyMedium,
             ),
           ),
           if (userId == null)
-            const ListTile(title: Text('Sign in first.'))
+            ListTile(title: Text(context.l10n.signInFirst))
           else if (!bridge.supported)
-            const ListTile(title: Text('Only available on Android.'))
+            ListTile(title: Text(context.l10n.onlyAvailableOnAndroid))
           else
             for (final c in calendars)
               SwitchListTile(

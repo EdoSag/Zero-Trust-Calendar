@@ -9,6 +9,7 @@ import '../model/calendar_event.dart';
 import '../model/linked_items.dart';
 import '../platform/channels.dart';
 import '../util/format.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// One guest: a ZT Contacts contact, or an email address.
 @immutable
@@ -21,7 +22,7 @@ class Guest {
   final String? email;
   final String? phone;
 
-  String get label => name ?? email ?? 'Guest';
+  String get label => name ?? email ?? currentL10n.guest;
 }
 
 List<Guest> guestsOf(CalendarEvent event, List<LinkedContact> contacts) => [
@@ -36,10 +37,10 @@ List<Guest> guestsOf(CalendarEvent event, List<LinkedContact> contacts) => [
   for (final email in event.guestEmails) Guest(key: email, email: email),
 ];
 
-const rsvpLabels = {
-  'accepted': ('Going', Icons.check_circle_outline),
-  'tentative': ('Maybe', Icons.help_outline),
-  'declined': ('Not going', Icons.cancel_outlined),
+Map<String, (String, IconData)> get rsvpLabels => {
+  'accepted': (currentL10n.going, Icons.check_circle_outline),
+  'tentative': (currentL10n.maybe, Icons.help_outline),
+  'declined': (currentL10n.notGoing, Icons.cancel_outlined),
 };
 
 /// "Running late": picks how late, then opens a text message (or email) to
@@ -54,48 +55,48 @@ Future<void> sendRunningLate(
   final messenger = ScaffoldMessenger.of(context);
   if (phones.isEmpty && emails.isEmpty) {
     messenger.showSnackBar(
-      const SnackBar(content: Text('No phone numbers or email addresses for the guests.')),
+      SnackBar(content: Text(context.l10n.noPhoneNumbersOrEmail)),
     );
     return;
   }
   final minutes = await showDialog<int>(
     context: context,
     builder: (d) => SimpleDialog(
-      title: const Text('Running late'),
+      title: Text(context.l10n.runningLate),
       children: [
         for (final m in const [5, 10, 15, 30])
           SimpleDialogOption(
             onPressed: () => Navigator.of(d).pop(m),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
-              child: Text('About $m minutes'),
+              child: Text(context.l10n.aboutMinutes(m)),
             ),
           ),
       ],
     ),
   );
   if (minutes == null || !context.mounted) return;
-  final title = event.title.trim().isEmpty ? 'our meeting' : '"${event.title.trim()}"';
-  final text = 'Running about $minutes minutes late for $title. Sorry!';
+  final title = event.title.trim().isEmpty ? context.l10n.ourMeeting : '"${event.title.trim()}"';
+  final text = context.l10n.runningLateText(minutes, title);
   var useSms = phones.isNotEmpty;
   if (phones.isNotEmpty && emails.isNotEmpty) {
     final pick = await showDialog<bool>(
       context: context,
       builder: (d) => SimpleDialog(
-        title: const Text('Send by'),
+        title: Text(context.l10n.sendBy),
         children: [
           SimpleDialogOption(
             onPressed: () => Navigator.of(d).pop(true),
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.symmetric(vertical: 6),
-              child: Text('Text message'),
+              child: Text(context.l10n.textMessage),
             ),
           ),
           SimpleDialogOption(
             onPressed: () => Navigator.of(d).pop(false),
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.symmetric(vertical: 6),
-              child: Text('Email'),
+              child: Text(context.l10n.email),
             ),
           ),
         ],
@@ -113,7 +114,7 @@ Future<void> sendRunningLate(
               '&body=${Uri.encodeComponent(text)}',
         );
   if (!await launchUrl(uri)) {
-    messenger.showSnackBar(const SnackBar(content: Text('No app to send it with.')));
+    messenger.showSnackBar(SnackBar(content: Text(currentL10n.noAppToSendIt)));
   }
 }
 
@@ -129,22 +130,20 @@ Future<void> emailInvitation(
   final invited = [for (final g in guests) if (g.email != null) g];
   if (invited.isEmpty) {
     messenger.showSnackBar(
-      const SnackBar(content: Text('Add a guest with an email address first.')),
+      SnackBar(content: Text(context.l10n.addAGuestWithAn)),
     );
     return;
   }
   final ok = await showDialog<bool>(
     context: context,
     builder: (d) => AlertDialog(
-      title: Text(event.inviteSequence == 0 ? 'Email invitation?' : 'Email updated invitation?'),
+      title: Text(event.inviteSequence == 0 ? context.l10n.emailInvitationX : context.l10n.emailUpdatedInvitation),
       content: Text(
-        'Your mail app opens with an invitation to ${invited.map((g) => g.label).join(', ')}. '
-        'Email isn\'t end-to-end encrypted: the event\'s title, time, place '
-        'and description go in it. Attachments and linked notes don\'t.',
+        context.l10n.inviteEmailWarning(invited.map((g) => g.label).join(', ')),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(d).pop(false), child: const Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.of(d).pop(true), child: const Text('Continue')),
+        TextButton(onPressed: () => Navigator.of(d).pop(false), child: Text(context.l10n.cancel)),
+        FilledButton(onPressed: () => Navigator.of(d).pop(true), child: Text(context.l10n.continueLabel)),
       ],
     ),
   );
@@ -163,18 +162,18 @@ Future<void> emailInvitation(
   final sent = await sendInvitation(
     ics: ics,
     emails: [for (final g in invited) g.email!],
-    subject: 'Invitation: ${event.title.trim().isEmpty ? 'Event' : event.title.trim()} ($when)',
+    subject: context.l10n.inviteSubject(event.title.trim().isEmpty ? context.l10n.event : event.title.trim(), when),
     text: [
-      'You\'re invited: ${event.title.trim()}',
-      'When: $when',
-      if (event.location.isNotEmpty) 'Where: ${event.location}',
-      if (event.conferenceUrl != null) 'Join: ${event.conferenceUrl}',
+      context.l10n.inviteYoureInvited(event.title.trim()),
+      context.l10n.inviteWhen(when),
+      if (event.location.isNotEmpty) context.l10n.inviteWhere(event.location),
+      if (event.conferenceUrl != null) context.l10n.inviteJoin(event.conferenceUrl!),
       '',
-      'Open the attached invite.ics to add it to your calendar.',
+      context.l10n.openTheAttachedInviteIcs,
     ].join('\n'),
   );
   if (!sent) {
-    messenger.showSnackBar(const SnackBar(content: Text('Not supported on this device.')));
+    messenger.showSnackBar(SnackBar(content: Text(currentL10n.notSupportedOnThisDevice)));
     return;
   }
   // The next invitation for this event replaces this one in guests' calendars.

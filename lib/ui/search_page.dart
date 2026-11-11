@@ -8,6 +8,7 @@ import '../model/calendar_event.dart';
 import '../util/format.dart';
 import 'entry_widgets.dart';
 import 'navigation.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Searches titles, places and descriptions, on this device only.
 class SearchPage extends ConsumerStatefulWidget {
@@ -43,7 +44,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         results.add(
           CalendarEntry(
             kind: EntryKind.event,
-            title: e.title.isEmpty ? '(No title)' : e.title,
+            title: e.title.isEmpty ? context.l10n.noTitle : e.title,
             start: start,
             end: end,
             allDay: e.allDay,
@@ -64,8 +65,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       appBar: AppBar(
         title: TextField(
           autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Search events',
+          decoration: InputDecoration(
+            hintText: context.l10n.searchEvents,
             border: InputBorder.none,
           ),
           onChanged: (v) => setState(() => _query = v.trim()),
@@ -74,7 +75,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       body: q.isEmpty
           ? const SizedBox.shrink()
           : results.isEmpty
-          ? const Center(child: Text('No events found'))
+          ? Center(child: Text(context.l10n.noEventsFound))
           : ListView.builder(
               itemCount: results.length,
               itemBuilder: (context, i) {

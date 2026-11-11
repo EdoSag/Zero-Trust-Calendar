@@ -205,7 +205,7 @@ void main() {
         occurrence: DateTime(2026, 11, 12, 10),
         title: 'Planning',
         body: '10:00',
-        actions: const [ReminderAction.snooze, ReminderAction.map],
+        actions: [ReminderAction.snooze, ReminderAction.map],
       );
       final back = ReminderPayload.parse(p.encode())!;
       expect(back.eventId, 'e1');

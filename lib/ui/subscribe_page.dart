@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/calendar_store.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Subscribe to a calendar by link (a school, team or sports .ics, or a
 /// webcal:// link another app opened Calendar with).
@@ -18,7 +19,7 @@ Future<void> showSubscribeDialog(
   final ok = await showDialog<bool>(
     context: context,
     builder: (d) => AlertDialog(
-      title: const Text('Subscribe to a calendar'),
+      title: Text(context.l10n.subscribeToACalendar),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -27,29 +28,26 @@ Future<void> showSubscribeDialog(
               controller: link,
               autofocus: url == null,
               keyboardType: TextInputType.url,
-              decoration: const InputDecoration(
-                labelText: 'Link',
+              decoration: InputDecoration(
+                labelText: context.l10n.link,
                 hintText: 'https://example.com/calendar.ics',
               ),
             ),
             TextField(
               controller: title,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(labelText: 'Name'),
+              decoration: InputDecoration(labelText: context.l10n.name),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Calendar downloads it from that address (the site sees a '
-              'download from your phone, nothing about your account) and keeps '
-              'an encrypted copy, refreshed twice a day. Its events are '
-              'read-only.',
+            Text(
+              context.l10n.calendarDownloadsItFromThat,
             ),
           ],
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(d).pop(false), child: const Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.of(d).pop(true), child: const Text('Subscribe')),
+        TextButton(onPressed: () => Navigator.of(d).pop(false), child: Text(context.l10n.cancel)),
+        FilledButton(onPressed: () => Navigator.of(d).pop(true), child: Text(context.l10n.subscribe)),
       ],
     ),
   );
@@ -77,7 +75,7 @@ Future<void> _subscribe(
 ) async {
   final messenger = ScaffoldMessenger.of(context);
   final count = (await ref.read(calendarsProvider.future)).length;
-  messenger.showSnackBar(SnackBar(content: Text('Downloading $name…')));
+  messenger.showSnackBar(SnackBar(content: Text(currentL10n.downloadingName(name))));
   try {
     await ref.read(subscriptionServiceProvider).subscribe(
       name: name,
@@ -86,11 +84,11 @@ Future<void> _subscribe(
     );
     messenger
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text('Subscribed to $name')));
+      ..showSnackBar(SnackBar(content: Text(currentL10n.subscribedTo(name))));
   } on Object catch (e) {
     messenger
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text('Could not subscribe: $e')));
+      ..showSnackBar(SnackBar(content: Text(currentL10n.couldNotSubscribe('$e'))));
   }
 }
 
@@ -106,25 +104,23 @@ class HolidaysPage extends ConsumerWidget {
       for (final f in ref.watch(feedsProvider).value ?? const <CalendarFeed>[]) f.calendarId: f,
     };
     return Scaffold(
-      appBar: AppBar(title: const Text('Holidays and subscriptions')),
+      appBar: AppBar(title: Text(context.l10n.holidaysAndSubscriptions)),
       body: ListView(
         children: [
           ListTile(
             leading: const Icon(Icons.link),
-            title: const Text('Subscribe by link'),
-            subtitle: const Text('Any .ics or webcal link: school, team, sports'),
+            title: Text(context.l10n.subscribeByLink),
+            subtitle: Text(context.l10n.anyIcsOrWebcalLink),
             onTap: () => showSubscribeDialog(context, ref),
           ),
           for (final c in calendars)
             if (c.isSubscription && !holidayCalendars.any((h) => h.url == c.url))
               _SubscriptionTile(calendar: c, feed: feeds[c.id]),
           const Divider(),
-          const Padding(
+          Padding(
             padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: Text(
-              'Public holidays come from Google\'s public holiday calendars, '
-              'downloaded like any web page: no Google account is used and '
-              'nothing about you is sent.',
+              context.l10n.publicHolidaysComeFromGoogles,
             ),
           ),
           for (final h in holidayCalendars)
@@ -133,9 +129,9 @@ class HolidaysPage extends ConsumerWidget {
             else
               ListTile(
                 leading: const Icon(Icons.flag_outlined),
-                title: Text(h.name),
+                title: Text(holidayRegionName(h.name)),
                 trailing: const Icon(Icons.add),
-                onTap: () => _subscribe(context, ref, '${h.name} holidays', h.url),
+                onTap: () => _subscribe(context, ref, context.l10n.holidaysOf(holidayRegionName(h.name)), h.url),
               ),
         ],
       ),
@@ -156,10 +152,10 @@ class _SubscriptionTile extends ConsumerWidget {
       title: Text(calendar.name),
       subtitle: Text(
         f == null
-            ? 'Downloading…'
+            ? context.l10n.downloading
             : f.error != null
-            ? 'Last refresh failed: ${f.error}'
-            : '${f.events.length} events',
+            ? context.l10n.lastRefreshFailed('${f.error}')
+            : context.l10n.nEvents(f.events.length),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
@@ -172,9 +168,9 @@ class _SubscriptionTile extends ConsumerWidget {
               await ref.read(calendarRepositoryProvider).deleteCalendar(calendar.id);
           }
         },
-        itemBuilder: (_) => const [
-          PopupMenuItem(value: 'refresh', child: Text('Refresh now')),
-          PopupMenuItem(value: 'remove', child: Text('Unsubscribe')),
+        itemBuilder: (_) => [
+          PopupMenuItem(value: 'refresh', child: Text(context.l10n.refreshNow)),
+          PopupMenuItem(value: 'remove', child: Text(context.l10n.unsubscribe)),
         ],
       ),
     );
