@@ -28,6 +28,7 @@ import '../ui/navigation.dart';
 import '../util/format.dart';
 import '../booking/booking_pages.dart';
 import '../booking/booking_sync.dart';
+import '../widget/month_agenda_widgets.dart';
 import '../widget/my_day_widget.dart';
 import '../widget/up_next_widget.dart';
 import 'auth_providers.dart';
@@ -136,6 +137,7 @@ class _AppGateState extends ConsumerState<AppGate> with WidgetsBindingObserver {
         ref.read(reminderSchedulerProvider).cancelAll().ignore();
         clearUpNext().ignore();
         clearMyDay().ignore();
+        clearMonthAndAgenda().ignore();
         setState(() => _signingIn = true);
       }
     });
@@ -245,6 +247,20 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     if (uri == null || !mounted) return;
     pendingWidgetTap.value = null;
     ref.read(focusedDayProvider.notifier).today();
+    // Month grid: a day; agenda: an event (its occurrence for a series).
+    final day = DateTime.tryParse(uri.queryParameters['date'] ?? '');
+    if (uri.host == 'day' && day != null) ref.read(focusedDayProvider.notifier).set(day);
+    final eventId = uri.queryParameters['id'];
+    if (uri.host == 'event' && eventId != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => EventDetailsPage(
+            eventId: eventId,
+            occurrenceStart: DateTime.tryParse(uri.queryParameters['start'] ?? ''),
+          ),
+        ),
+      );
+    }
     if (uri.host == 'new-event') createEvent(context);
     // "My day": its task list opens ZT Tasks.
     if (uri.host == 'tasks') openLinkedApp(LinkedApp.tasks).ignore();
@@ -369,9 +385,42 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
         date: DateFormat.MMMMEEEEd(currentL10n.localeName).format(now),
       ),
     );
+    if (!mounted) return;
+    await _publishMonthAndAgenda(events, calendars, settings, entries, now);
     await _shareBusyTimes(events, calendars, now);
     await _syncBookings(events, calendars, now);
     await _syncPhoneCalendar(events, calendars, settings, now);
+  }
+
+  /// Month grid dots for the previous month to two months ahead, and the
+  /// agenda's rows for today and tomorrow (W9).
+  Future<void> _publishMonthAndAgenda(
+    List<CalendarEvent> events,
+    List<ZtCalendarInfo> calendars,
+    CalendarSettings settings,
+    List<CalendarEntry> nextTwoWeeks,
+    DateTime now,
+  ) async {
+    final range = monthWidgetRange(now);
+    final monthEntries = buildEntries(
+      range: range,
+      events: [...events, ...ref.read(feedEventsProvider)],
+      calendars: calendars,
+      contacts: settings.showBirthdays ? ref.read(linkedContactsProvider).value ?? const [] : const [],
+    );
+    final today = dayOf(now);
+    final tomorrow = addDays(today, 1);
+    List<AgendaRow> rows(DateTime day) => agendaRows(
+      nextTwoWeeks,
+      day: day,
+      showTitles: settings.widgetTitles,
+      formatTime: (t) => formatTime(context, t),
+    );
+    await publishMonthAndAgenda(
+      dots: monthDots(monthEntries, range),
+      agenda: {dayKey(today): rows(today), dayKey(tomorrow): rows(tomorrow)},
+      weekStart: weekStartOf(context, settings),
+    );
   }
 
   /// Booking pages: new bookings into the calendar, cancelled ones out,

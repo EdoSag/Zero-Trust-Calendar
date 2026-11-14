@@ -556,7 +556,7 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get offTheUpNextWidget =>
-      'כבוי: הווידג׳טים \"הבא בתור\" ו\"היום שלי\" מציגים רק שעות. פועל: כותרות האירועים והמשימות נשמרות בלי הצפנה בטלפון הזה בשביל מסך הבית.';
+      'כבוי: הווידג׳טים מציגים רק שעות, ובאילו ימים יש אירועים. פועל: כותרות האירועים והמשימות נשמרות בלי הצפנה בטלפון הזה בשביל מסך הבית.';
 
   @override
   String get showTasksFromZtTasks => 'הצגת משימות מ-ZT Tasks';
@@ -1931,4 +1931,13 @@ class AppL10nHe extends AppL10n {
   String bookingShareText(String link) {
     return 'אפשר לקבוע איתי זמן כאן: $link';
   }
+
+  @override
+  String get widgetNothingElseToday => 'אין עוד אירועים היום';
+
+  @override
+  String get widgetPreviousMonth => 'החודש הקודם';
+
+  @override
+  String get widgetNextMonth => 'החודש הבא';
 }

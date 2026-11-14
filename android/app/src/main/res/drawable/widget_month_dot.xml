@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A day's event dot in the month grid, tinted with the calendar's colour. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <solid android:color="#FFFFFFFF"/>
+    <size android:width="5dp" android:height="5dp"/>
+</shape>

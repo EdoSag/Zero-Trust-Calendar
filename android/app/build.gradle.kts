@@ -84,4 +84,6 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     // FileProvider, for emailing invitation files.
     implementation("androidx.core:core:1.19.0")
+    // Scrolling home screen widget lists (RemoteCollectionItems before Android 12).
+    implementation("androidx.core:core-remoteviews:1.1.0")
 }

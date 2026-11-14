@@ -1,7 +1,7 @@
 name: zerotrust_calendar
 description: "Zero-Trust Calendar: an end-to-end encrypted calendar, linked with ZT Notes, Tasks and Contacts."
 publish_to: none
-version: 0.4.0+7
+version: 0.5.0+8
 
 environment:
   sdk: ^3.9.0

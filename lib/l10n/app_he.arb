@@ -176,7 +176,7 @@
   "eventTitlesInReminders": "כותרות אירועים בתזכורות",
   "offRemindersOnlySayEvent": "כבוי: בתזכורות כתוב רק \"אירוע\". הכותרות נמסרות לטלפון כדי שיוצגו גם כשהיומן נעול.",
   "showDetailsOnTheHome": "הצגת פרטים במסך הבית",
-  "offTheUpNextWidget": "כבוי: הווידג׳טים \"הבא בתור\" ו\"היום שלי\" מציגים רק שעות. פועל: כותרות האירועים והמשימות נשמרות בלי הצפנה בטלפון הזה בשביל מסך הבית.",
+  "offTheUpNextWidget": "כבוי: הווידג׳טים מציגים רק שעות, ובאילו ימים יש אירועים. פועל: כותרות האירועים והמשימות נשמרות בלי הצפנה בטלפון הזה בשביל מסך הבית.",
   "showTasksFromZtTasks": "הצגת משימות מ-ZT Tasks",
   "tasksWithADueDate": "משימות עם תאריך יעד. אפשר לסמן אותן כאן",
   "showCompletedTasks": "הצגת משימות שהושלמו",
@@ -489,5 +489,8 @@
   "bookingNeedsHours": "יש לבחור לפחות יום אחד עם שעות.",
   "bookingEventTitle": "{name} ({page})",
   "bookingEventFooter": "נקבע דרך דף קביעת הפגישות „{page}”.",
-  "bookingShareText": "אפשר לקבוע איתי זמן כאן: {link}"
+  "bookingShareText": "אפשר לקבוע איתי זמן כאן: {link}",
+  "widgetNothingElseToday": "אין עוד אירועים היום",
+  "widgetPreviousMonth": "החודש הקודם",
+  "widgetNextMonth": "החודש הבא"
 }

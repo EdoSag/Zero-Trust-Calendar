@@ -564,7 +564,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get offTheUpNextWidget =>
-      'Off: the \"Up next\" and \"My day\" widgets show only times. On: event and task titles are stored unencrypted on this phone for the home screen.';
+      'Off: the widgets show only times, and which days have events. On: event and task titles are stored unencrypted on this phone for the home screen.';
 
   @override
   String get showTasksFromZtTasks => 'Show tasks from ZT Tasks';
@@ -1934,4 +1934,13 @@ class AppL10nEn extends AppL10n {
   String bookingShareText(String link) {
     return 'Book a time with me: $link';
   }
+
+  @override
+  String get widgetNothingElseToday => 'Nothing else today';
+
+  @override
+  String get widgetPreviousMonth => 'Previous month';
+
+  @override
+  String get widgetNextMonth => 'Next month';
 }
