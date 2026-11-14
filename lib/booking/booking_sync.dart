@@ -146,9 +146,19 @@ Future<({List<CalendarEvent> added, List<String> changed})> takeBookings({
   final added = <CalendarEvent>[];
   final changed = <String>[];
   for (final b in await backend.bookings(
-    statuses: const {'new', 'cancel_requested'},
+    statuses: const {'new', 'cancel_requested', 'cancelled'},
   )) {
     final eventId = bookingEventId(b.id);
+    if (b.status == 'cancelled') {
+      // Another phone of this account took the cancel before this
+      // booking's event had synced to it, so the event can still turn up
+      // here later: remove it whenever it does.
+      if (await eventExists(eventId)) {
+        await deleteEvent(eventId);
+        changed.add(eventId);
+      }
+      continue;
+    }
     if (b.status == 'cancel_requested') {
       if (await eventExists(eventId)) await deleteEvent(eventId);
       await backend.setStatus(b.id, 'cancelled');
