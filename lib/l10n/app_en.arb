@@ -176,7 +176,7 @@
   "eventTitlesInReminders": "Event titles in reminders",
   "offRemindersOnlySayEvent": "Off: reminders only say \"Event\". Titles are handed to the phone so they can show while Calendar is locked.",
   "showDetailsOnTheHome": "Show details on the home screen",
-  "offTheUpNextWidget": "Off: the \"Up next\" and \"My day\" widgets show only times. On: event and task titles are stored unencrypted on this phone for the home screen.",
+  "offTheUpNextWidget": "Off: the widgets show only times, and which days have events. On: event and task titles are stored unencrypted on this phone for the home screen.",
   "showTasksFromZtTasks": "Show tasks from ZT Tasks",
   "tasksWithADueDate": "Tasks with a due date. Tick them off here",
   "showCompletedTasks": "Show completed tasks",
@@ -1167,5 +1167,99 @@
       }
     }
   },
-  "findATimeNone": "No time works for everyone in the next two weeks. Try a shorter length, evenings or weekends."
+  "findATimeNone": "No time works for everyone in the next two weeks. Try a shorter length, evenings or weekends.",
+  "bookingPages": "Booking pages",
+  "bookingPagesHint": "Let people book time with you from a link",
+  "bookingPagesIntro": "Share a link and people pick a free time. It goes straight into your calendar.",
+  "bookingPrivacy": "Visitors see the page's title, your name on it, its length and your free times. To offer free times, our server sees when you're busy (start and end only, never titles) and when bookings are. Names, emails and notes are encrypted on the visitor's device to this page's key, so only your phones can read them.",
+  "newBookingPage": "New booking page",
+  "bookingPage": "Booking page",
+  "bookingNoPages": "No booking pages yet.",
+  "bookingLoadFailed": "Couldn't load booking pages: {error}",
+  "@bookingLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingTitle": "Title",
+  "bookingTitleHint": "For example: 30-minute chat",
+  "bookingHostName": "Your name on the page",
+  "bookingDescription": "Description (optional)",
+  "bookingLength": "Length",
+  "bookingStep": "Start times every",
+  "bookingBuffer": "Free time around events",
+  "bookingNone": "None",
+  "bookingNotice": "Earliest booking",
+  "bookingNoticeHours": "{hours, plural, =1{1 hour ahead} other{{hours} hours ahead}}",
+  "@bookingNoticeHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "bookingNoticeDays": "{days, plural, =1{1 day ahead} other{{days} days ahead}}",
+  "@bookingNoticeDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "bookingHorizon": "How far ahead",
+  "bookingHorizonDays": "{days} days",
+  "@bookingHorizonDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "bookingCalendar": "Add bookings to",
+  "bookingTimeZone": "Time zone",
+  "bookingHours": "Available hours",
+  "bookingUnavailable": "Unavailable",
+  "bookingAddHours": "Add hours",
+  "bookingActive": "Taking bookings",
+  "bookingPaused": "Paused",
+  "bookingShare": "Share link",
+  "bookingDelete": "Delete booking page",
+  "bookingDeleteConfirm": "Delete this booking page? Its link stops working. Bookings already in your calendar stay there.",
+  "bookingUpcoming": "Upcoming bookings",
+  "bookingNoneYet": "No bookings yet.",
+  "bookingAdding": "Being added to your calendar",
+  "bookingNeedsTitle": "Give the page a title.",
+  "bookingNeedsHours": "Choose at least one day with hours.",
+  "bookingEventTitle": "{name} ({page})",
+  "@bookingEventTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "page": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingEventFooter": "Booked on your booking page “{page}”.",
+  "@bookingEventFooter": {
+    "placeholders": {
+      "page": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingShareText": "Book a time with me: {link}",
+  "@bookingShareText": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "widgetNothingElseToday": "Nothing else today",
+  "widgetPreviousMonth": "Previous month",
+  "widgetNextMonth": "Next month"
 }

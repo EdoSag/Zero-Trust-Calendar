@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 1x1 date icon (W9): weekday in the accent, day number below. TextClocks,
+     so the system keeps them current. Also the picker preview. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/date_icon_root"
+    style="@style/ZtWidget.Root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="4dp"
+    android:gravity="center"
+    android:orientation="vertical">
+    <TextClock
+        style="@style/ZtWidget.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:format12Hour="EEE"
+        android:format24Hour="EEE"
+        android:textColor="@color/zt_widget_accent"
+        android:fontFamily="sans-serif-medium"
+        android:textAllCaps="true"/>
+    <TextClock
+        style="@style/ZtWidget.Display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:format12Hour="d"
+        android:format24Hour="d"
+        android:includeFontPadding="false"/>
+</LinearLayout>

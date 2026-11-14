@@ -1,7 +1,7 @@
 name: zerotrust_calendar
 description: "Zero-Trust Calendar: an end-to-end encrypted calendar, linked with ZT Notes, Tasks and Contacts."
 publish_to: none
-version: 0.3.0+6
+version: 0.5.0+8
 
 environment:
   sdk: ^3.9.0
@@ -24,11 +24,12 @@ dependencies:
     git:
       url: https://github.com/EdoSag/Zero-Trust-Core.git
       path: packages/zero_trust_core
-      # Core Dev with the shared spaces trust chain fix (Core PR #35) and
-      # invite links per app (Core PR #37). Every app that shares must be on
-      # this commit or later: older ones cannot read the new member records.
+      # Core Dev: the shared spaces trust chain fix (Core PR #35), invite
+      # links per app (Core PR #37), and the booking page tables this app
+      # uses (Core PRs #41, #42). Every app that shares must be on this
+      # commit or later: older ones cannot read the new member records.
       # Switch to the release tag once one is pushed.
-      ref: cb397d13efd868e34a34d465251a7f705b49f9e1
+      ref: 939c88d8af77a8e0996be82368cdfb4f08a94dc7
   flutter_riverpod: ^3.5.0
   supabase_flutter: ^2.9.0
   flutter_dotenv: ^6.0.1
@@ -45,9 +46,18 @@ dependencies:
   qr_flutter: ^4.1.0
   qr_code_scanner_plus: ">=2.1.2 <2.2.0"
   basic_utils: ^5.8.2
+  pointycastle: ^4.0.0
   crypto: ^3.0.8
+  flutter_timezone: ^5.1.1
 
 dev_dependencies:
+  # Release checks every Zero-Trust app runs in CI (keys, sync, sign-in, app
+  # setup, database). Independent of zero_trust_core, so it may be newer.
+  zt_release_checks:
+    git:
+      url: https://github.com/EdoSag/Zero-Trust-Core.git
+      path: packages/zt_release_checks
+      ref: b43fcd045722bc364ef2eaa739db181f9dac144f
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0

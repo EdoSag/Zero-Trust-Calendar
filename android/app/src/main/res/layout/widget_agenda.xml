@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Today's agenda (W9 / K10) in the shared Zero-Trust widget look
+  (Zero-Trust-Core/android-widget-kit): the date and +, then today's events
+  in a list that scrolls, or one line (nothing else today, signed out).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ZtWidget.Root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <LinearLayout
+            android:id="@+id/agenda_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="@dimen/zt_widget_header_icon"
+                android:layout_height="@dimen/zt_widget_header_icon"
+                android:src="@mipmap/ic_launcher"
+                android:importantForAccessibility="no"/>
+            <TextView
+                android:id="@+id/agenda_date"
+                style="@style/ZtWidget.Title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/agenda_add"
+            style="@style/ZtWidget.Action"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_zt_widget_add"
+            android:contentDescription="@string/agenda_new_event"/>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp">
+        <ListView
+            android:id="@+id/agenda_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:scrollbars="none"/>
+        <LinearLayout
+            android:id="@+id/agenda_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+            <FrameLayout
+                android:id="@+id/agenda_lock"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/zt_widget_tile_circle"
+                android:visibility="gone">
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_zt_widget_lock"
+                    android:tint="@color/zt_widget_on_surface_variant"
+                    android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <TextView
+                android:id="@+id/agenda_message_text"
+                style="@style/ZtWidget.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:maxLines="3"/>
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

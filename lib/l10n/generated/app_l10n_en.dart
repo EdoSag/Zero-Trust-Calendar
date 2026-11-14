@@ -564,7 +564,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get offTheUpNextWidget =>
-      'Off: the \"Up next\" and \"My day\" widgets show only times. On: event and task titles are stored unencrypted on this phone for the home screen.';
+      'Off: the widgets show only times, and which days have events. On: event and task titles are stored unencrypted on this phone for the home screen.';
 
   @override
   String get showTasksFromZtTasks => 'Show tasks from ZT Tasks';
@@ -1788,4 +1788,159 @@ class AppL10nEn extends AppL10n {
   @override
   String get findATimeNone =>
       'No time works for everyone in the next two weeks. Try a shorter length, evenings or weekends.';
+
+  @override
+  String get bookingPages => 'Booking pages';
+
+  @override
+  String get bookingPagesHint => 'Let people book time with you from a link';
+
+  @override
+  String get bookingPagesIntro =>
+      'Share a link and people pick a free time. It goes straight into your calendar.';
+
+  @override
+  String get bookingPrivacy =>
+      'Visitors see the page\'s title, your name on it, its length and your free times. To offer free times, our server sees when you\'re busy (start and end only, never titles) and when bookings are. Names, emails and notes are encrypted on the visitor\'s device to this page\'s key, so only your phones can read them.';
+
+  @override
+  String get newBookingPage => 'New booking page';
+
+  @override
+  String get bookingPage => 'Booking page';
+
+  @override
+  String get bookingNoPages => 'No booking pages yet.';
+
+  @override
+  String bookingLoadFailed(String error) {
+    return 'Couldn\'t load booking pages: $error';
+  }
+
+  @override
+  String get bookingTitle => 'Title';
+
+  @override
+  String get bookingTitleHint => 'For example: 30-minute chat';
+
+  @override
+  String get bookingHostName => 'Your name on the page';
+
+  @override
+  String get bookingDescription => 'Description (optional)';
+
+  @override
+  String get bookingLength => 'Length';
+
+  @override
+  String get bookingStep => 'Start times every';
+
+  @override
+  String get bookingBuffer => 'Free time around events';
+
+  @override
+  String get bookingNone => 'None';
+
+  @override
+  String get bookingNotice => 'Earliest booking';
+
+  @override
+  String bookingNoticeHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: '$hours hours ahead',
+      one: '1 hour ahead',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String bookingNoticeDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days ahead',
+      one: '1 day ahead',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bookingHorizon => 'How far ahead';
+
+  @override
+  String bookingHorizonDays(int days) {
+    return '$days days';
+  }
+
+  @override
+  String get bookingCalendar => 'Add bookings to';
+
+  @override
+  String get bookingTimeZone => 'Time zone';
+
+  @override
+  String get bookingHours => 'Available hours';
+
+  @override
+  String get bookingUnavailable => 'Unavailable';
+
+  @override
+  String get bookingAddHours => 'Add hours';
+
+  @override
+  String get bookingActive => 'Taking bookings';
+
+  @override
+  String get bookingPaused => 'Paused';
+
+  @override
+  String get bookingShare => 'Share link';
+
+  @override
+  String get bookingDelete => 'Delete booking page';
+
+  @override
+  String get bookingDeleteConfirm =>
+      'Delete this booking page? Its link stops working. Bookings already in your calendar stay there.';
+
+  @override
+  String get bookingUpcoming => 'Upcoming bookings';
+
+  @override
+  String get bookingNoneYet => 'No bookings yet.';
+
+  @override
+  String get bookingAdding => 'Being added to your calendar';
+
+  @override
+  String get bookingNeedsTitle => 'Give the page a title.';
+
+  @override
+  String get bookingNeedsHours => 'Choose at least one day with hours.';
+
+  @override
+  String bookingEventTitle(String name, String page) {
+    return '$name ($page)';
+  }
+
+  @override
+  String bookingEventFooter(String page) {
+    return 'Booked on your booking page “$page”.';
+  }
+
+  @override
+  String bookingShareText(String link) {
+    return 'Book a time with me: $link';
+  }
+
+  @override
+  String get widgetNothingElseToday => 'Nothing else today';
+
+  @override
+  String get widgetPreviousMonth => 'Previous month';
+
+  @override
+  String get widgetNextMonth => 'Next month';
 }

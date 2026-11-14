@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Month grid (W9 / K10): resizable from 3x3 to the whole screen. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="250dp"
+    android:minResizeWidth="180dp"
+    android:minResizeHeight="180dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="3"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/widget_month"
+    android:previewLayout="@layout/widget_month_preview"
+    android:description="@string/month_widget_description"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen">
+</appwidget-provider>

@@ -26,6 +26,9 @@ import '../ui/event_details_page.dart';
 import '../ui/home_page.dart';
 import '../ui/navigation.dart';
 import '../util/format.dart';
+import '../booking/booking_pages.dart';
+import '../booking/booking_sync.dart';
+import '../widget/month_agenda_widgets.dart';
 import '../widget/my_day_widget.dart';
 import '../widget/up_next_widget.dart';
 import 'auth_providers.dart';
@@ -134,6 +137,7 @@ class _AppGateState extends ConsumerState<AppGate> with WidgetsBindingObserver {
         ref.read(reminderSchedulerProvider).cancelAll().ignore();
         clearUpNext().ignore();
         clearMyDay().ignore();
+        clearMonthAndAgenda().ignore();
         setState(() => _signingIn = true);
       }
     });
@@ -202,6 +206,7 @@ class CalendarHome extends ConsumerStatefulWidget {
 class _CalendarHomeState extends ConsumerState<CalendarHome> {
   StreamSubscription<ReminderTap>? _taps;
   StreamSubscription<void>? _files;
+  StreamSubscription<void>? _bookings;
   Timer? _debounce;
   Timer? _hourly;
   String? _lastPhonePayload;
@@ -212,6 +217,15 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     _taps = ref.read(reminderSchedulerProvider).taps.listen(_onReminder);
     pendingWidgetTap.addListener(_takeWidgetTap);
     _files = IncomingFiles.instance.arrived.listen((_) => _takeFiles());
+    // A visitor booked or cancelled on a booking page: take it now.
+    try {
+      _bookings = ref
+          .read(bookingBackendProvider)
+          .changes()
+          .listen((_) => _schedule(), onError: (Object _) {});
+    } on Object {
+      // Not signed in or no network: the hourly pass picks bookings up.
+    }
     // Reminders more than 30 days ahead, and the widget's "next", move on
     // as time passes; subscribed calendars are fetched again.
     _hourly = Timer.periodic(const Duration(hours: 1), (_) {
@@ -233,6 +247,20 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     if (uri == null || !mounted) return;
     pendingWidgetTap.value = null;
     ref.read(focusedDayProvider.notifier).today();
+    // Month grid: a day; agenda: an event (its occurrence for a series).
+    final day = DateTime.tryParse(uri.queryParameters['date'] ?? '');
+    if (uri.host == 'day' && day != null) ref.read(focusedDayProvider.notifier).set(day);
+    final eventId = uri.queryParameters['id'];
+    if (uri.host == 'event' && eventId != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => EventDetailsPage(
+            eventId: eventId,
+            occurrenceStart: DateTime.tryParse(uri.queryParameters['start'] ?? ''),
+          ),
+        ),
+      );
+    }
     if (uri.host == 'new-event') createEvent(context);
     // "My day": its task list opens ZT Tasks.
     if (uri.host == 'tasks') openLinkedApp(LinkedApp.tasks).ignore();
@@ -243,6 +271,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     _taps?.cancel();
     pendingWidgetTap.removeListener(_takeWidgetTap);
     _files?.cancel();
+    _bookings?.cancel();
     _debounce?.cancel();
     _hourly?.cancel();
     super.dispose();
@@ -356,8 +385,69 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
         date: DateFormat.MMMMEEEEd(currentL10n.localeName).format(now),
       ),
     );
+    if (!mounted) return;
+    await _publishMonthAndAgenda(events, calendars, settings, entries, now);
     await _shareBusyTimes(events, calendars, now);
+    // Subscribed calendars' meetings keep visitors off those times too.
+    await _syncBookings(
+      [...events, ...ref.read(feedEventsProvider)],
+      calendars,
+      now,
+    );
     await _syncPhoneCalendar(events, calendars, settings, now);
+  }
+
+  /// Month grid dots for the previous month to two months ahead, and the
+  /// agenda's rows for today and tomorrow (W9).
+  Future<void> _publishMonthAndAgenda(
+    List<CalendarEvent> events,
+    List<ZtCalendarInfo> calendars,
+    CalendarSettings settings,
+    List<CalendarEntry> nextTwoWeeks,
+    DateTime now,
+  ) async {
+    final range = monthWidgetRange(now);
+    final monthEntries = buildEntries(
+      range: range,
+      events: [...events, ...ref.read(feedEventsProvider)],
+      calendars: calendars,
+      contacts: settings.showBirthdays ? ref.read(linkedContactsProvider).value ?? const [] : const [],
+    );
+    final today = dayOf(now);
+    final tomorrow = addDays(today, 1);
+    List<AgendaRow> rows(DateTime day) => agendaRows(
+      nextTwoWeeks,
+      day: day,
+      showTitles: settings.widgetTitles,
+      formatTime: (t) => formatTime(context, t),
+    );
+    await publishMonthAndAgenda(
+      dots: monthDots(monthEntries, range),
+      agenda: {dayKey(today): rows(today), dayKey(tomorrow): rows(tomorrow)},
+      weekStart: weekStartOf(context, settings),
+    );
+  }
+
+  /// Booking pages: new bookings into the calendar, cancelled ones out,
+  /// busy times up to date for visitors.
+  Future<void> _syncBookings(
+    List<CalendarEvent> events,
+    List<ZtCalendarInfo> calendars,
+    DateTime now,
+  ) async {
+    try {
+      await ref.read(bookingSyncProvider).sync(
+        events: events,
+        calendars: calendars,
+        now: now,
+        text: (
+          title: currentL10n.bookingEventTitle,
+          footer: currentL10n.bookingEventFooter,
+        ),
+      );
+    } on Object {
+      // Offline, or booking pages not set up on the server: next time.
+    }
   }
 
   /// "Find a time": keeps this account's busy times (times only) up to

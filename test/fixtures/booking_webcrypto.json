@@ -1,0 +1,12 @@
+{
+ "privateKey": "nCFtrfgWp1NWvJByEqv1oF5oEZkuez/gP0n1F1tXzc8=",
+ "publicKey": "BIGwWYqtOh6E7hJPntz980QNwYkiOFLsv8y4AurPpKxAbaVoQhHlcEd0KpdZ0IQcKjBPUi4HZhcNmmbLw5+tV0I=",
+ "pageId": "page-fixture-0000000001",
+ "startMs": 1794819600000,
+ "data": {
+  "name": "Dana Levi · דנה",
+  "email": "dana@example.com",
+  "note": "Hi 👋"
+ },
+ "sealed": "{\"v\":1,\"epk\":\"BDslZz+XXTQuvKx7t0HTgfkMWMVAK3oL3bBd6j+Xc8+Y0nqkkndvuzDcpj098M6ovDTRNLwbVESfnT50BZroyx0=\",\"iv\":\"UjfjpjVFwuK2Qt0b\",\"ct\":\"DT8F3xFzxaesHhD1kvM9qJMEQaA097nk1I1aJysLJLCwsuymRiF37hSQWosdZSOB8+ZfvGNOZ+nDEMcrzBLw7+4Cp95Ldr7nksO6/+Y9j2oIg+Xwg3CDgrW3\"}"
+}
