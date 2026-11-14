@@ -176,7 +176,7 @@
   "eventTitlesInReminders": "Event titles in reminders",
   "offRemindersOnlySayEvent": "Off: reminders only say \"Event\". Titles are handed to the phone so they can show while Calendar is locked.",
   "showDetailsOnTheHome": "Show details on the home screen",
-  "offTheUpNextWidget": "Off: the \"Up next\" and \"My day\" widgets show only times. On: event and task titles are stored unencrypted on this phone for the home screen.",
+  "offTheUpNextWidget": "Off: the widgets show only times, and which days have events. On: event and task titles are stored unencrypted on this phone for the home screen.",
   "showTasksFromZtTasks": "Show tasks from ZT Tasks",
   "tasksWithADueDate": "Tasks with a due date. Tick them off here",
   "showCompletedTasks": "Show completed tasks",
@@ -1258,5 +1258,8 @@
         "type": "String"
       }
     }
-  }
+  },
+  "widgetNothingElseToday": "Nothing else today",
+  "widgetPreviousMonth": "Previous month",
+  "widgetNextMonth": "Next month"
 }

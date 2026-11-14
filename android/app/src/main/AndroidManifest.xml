@@ -92,6 +92,40 @@
                 android:resource="@xml/up_next_widget_info"/>
         </receiver>
 
+        <!-- Month grid, today's agenda and date icon (W9). -->
+        <receiver android:name=".widget.MonthWidgetProvider"
+            android:label="@string/month_widget_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.intent.action.DATE_CHANGED"/>
+                <action android:name="android.intent.action.TIME_SET"/>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/month_widget_info"/>
+        </receiver>
+
+        <receiver android:name=".widget.AgendaWidgetProvider"
+            android:label="@string/agenda_widget_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/agenda_widget_info"/>
+        </receiver>
+
+        <receiver android:name=".widget.DateIconWidgetProvider"
+            android:label="@string/date_icon_widget_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/date_icon_widget_info"/>
+        </receiver>
+
         <receiver android:name=".widget.MyDayWidgetProvider"
             android:label="@string/my_day_header"
             android:exported="true">

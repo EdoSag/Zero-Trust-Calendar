@@ -1156,7 +1156,7 @@ abstract class AppL10n {
   /// No description provided for @offTheUpNextWidget.
   ///
   /// In en, this message translates to:
-  /// **'Off: the \"Up next\" and \"My day\" widgets show only times. On: event and task titles are stored unencrypted on this phone for the home screen.'**
+  /// **'Off: the widgets show only times, and which days have events. On: event and task titles are stored unencrypted on this phone for the home screen.'**
   String get offTheUpNextWidget;
 
   /// No description provided for @showTasksFromZtTasks.
@@ -3036,6 +3036,24 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Book a time with me: {link}'**
   String bookingShareText(String link);
+
+  /// No description provided for @widgetNothingElseToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing else today'**
+  String get widgetNothingElseToday;
+
+  /// No description provided for @widgetPreviousMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get widgetPreviousMonth;
+
+  /// No description provided for @widgetNextMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get widgetNextMonth;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

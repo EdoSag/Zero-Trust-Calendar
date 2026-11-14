@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 1x1 date icon (W9). A single icon, so not resizable. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="40dp"
+    android:minHeight="40dp"
+    android:targetCellWidth="1"
+    android:targetCellHeight="1"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/widget_date_icon"
+    android:previewLayout="@layout/widget_date_icon"
+    android:description="@string/date_icon_widget_description"
+    android:resizeMode="none"
+    android:widgetCategory="home_screen">
+</appwidget-provider>
