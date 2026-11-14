@@ -52,3 +52,6 @@ app.*.map.json
 
 # Supabase client settings; CI writes its own.
 .env
+
+# Written and removed by `dart run zt_release_checks`.
+test/zt_release_checks_test.dart
