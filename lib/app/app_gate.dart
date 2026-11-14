@@ -388,7 +388,12 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     if (!mounted) return;
     await _publishMonthAndAgenda(events, calendars, settings, entries, now);
     await _shareBusyTimes(events, calendars, now);
-    await _syncBookings(events, calendars, now);
+    // Subscribed calendars' meetings keep visitors off those times too.
+    await _syncBookings(
+      [...events, ...ref.read(feedEventsProvider)],
+      calendars,
+      now,
+    );
     await _syncPhoneCalendar(events, calendars, settings, now);
   }
 

@@ -193,6 +193,19 @@ void main() {
       expect(r.changed, [id]);
     });
 
+    test('an event that syncs in after another phone took the cancel is removed', () async {
+      // The other phone marked it cancelled while the event wasn't there.
+      backend.rows['b6'] = booking('b6', 'cancelled');
+      expect((await run()).changed, isEmpty);
+      // Then the event arrives through sync.
+      final id = bookingEventId('b6');
+      events[id] = CalendarEvent(id: id, title: 'x', start: start, end: start);
+      final r = await run();
+      expect(events, isEmpty);
+      expect(r.changed, [id]);
+      expect(backend.rows['b6']!.status, 'cancelled');
+    });
+
     test('a calendar that is gone falls back to the default one', () async {
       backend.rows['b5'] = booking(
         'b5',
