@@ -318,7 +318,9 @@ class _BookingPageEditorState extends ConsumerState<BookingPageEditor> {
     if (start == null || !mounted) return;
     final end = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(hour: e ~/ 60, minute: e % 60),
+      // A range that ends at midnight is stored as 1440; the picker only
+      // takes hours 0-23, so show it as 00:00.
+      initialTime: TimeOfDay(hour: (e ~/ 60) % 24, minute: e % 60),
     );
     if (end == null) return;
     final from = start.hour * 60 + start.minute;
