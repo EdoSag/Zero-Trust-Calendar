@@ -1,0 +1,29 @@
+Zero-Trust Calendar is a full calendar for your days, meetings and family plans. Month, week, day and schedule views, reminders that fire on time, and every event encrypted on your phone before it syncs.
+
+WHAT IT DOES
+• Month, week, 3-day, day and schedule views, with search.
+• Repeating events with "this event, following or all" editing.
+• Drag to move and resize events, long-press an empty slot to create one.
+• Quick add in plain words: "Lunch with Dana Fri 1pm" (English and Hebrew).
+• Several reminders per event, with snooze, directions and a "running late" message.
+• A time zone per event, for trips and calls abroad.
+• Shared and family calendars with other Zero-Trust users, end-to-end encrypted.
+• Find a time and a public booking page: people pick a free slot, and the server only ever sees busy times.
+• Public holidays and subscribed calendars, video-call links and attachments.
+• Works with Zero-Trust Tasks, Notes and Contacts: due tasks, meeting notes, guests and birthdays.
+• Open .ics invitations, import from Google Calendar (Takeout) and export any time.
+• Optional: show chosen calendars in the phone's own calendar, or to desktop apps through a local bridge.
+• "Up next" and "My day" home-screen widgets.
+
+WHY ZERO-TRUST
+• End-to-end encrypted: everything is encrypted on your phone before it syncs. We can't read it, and neither can anyone who breaks into the server.
+• One private account for every Zero-Trust app, unlocked with your fingerprint or face.
+• Works offline and syncs across your devices when you're back online.
+• No ads, no trackers, no analytics, no data sold. Ever.
+• Open source (AGPL-3.0), so anyone can check what the app does.
+• English and Hebrew, with full right-to-left support.
+
+Part of the Zero-Trust suite: Notes, Tasks, Calendar, Contacts, Phone, Fitness, Meds, Time and Browser. One account opens them all.
+
+Privacy policy: https://zerotrust.bz/privacy/
+Support: support@zerotrust.bz
