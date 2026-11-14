@@ -1190,20 +1190,29 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/zero_trust_core"
-      ref: cb397d13efd868e34a34d465251a7f705b49f9e1
-      resolved-ref: cb397d13efd868e34a34d465251a7f705b49f9e1
+      ref: "939c88d8af77a8e0996be82368cdfb4f08a94dc7"
+      resolved-ref: "939c88d8af77a8e0996be82368cdfb4f08a94dc7"
       url: "https://github.com/EdoSag/Zero-Trust-Core.git"
     source: git
-    version: "0.10.0"
+    version: "0.11.0"
   zt_crypto:
     dependency: transitive
     description:
       path: "packages/zt_crypto"
-      ref: cb397d13efd868e34a34d465251a7f705b49f9e1
-      resolved-ref: cb397d13efd868e34a34d465251a7f705b49f9e1
+      ref: "939c88d8af77a8e0996be82368cdfb4f08a94dc7"
+      resolved-ref: "939c88d8af77a8e0996be82368cdfb4f08a94dc7"
       url: "https://github.com/EdoSag/Zero-Trust-Core.git"
     source: git
     version: "0.3.2"
+  zt_release_checks:
+    dependency: "direct dev"
+    description:
+      path: "packages/zt_release_checks"
+      ref: b43fcd045722bc364ef2eaa739db181f9dac144f
+      resolved-ref: b43fcd045722bc364ef2eaa739db181f9dac144f
+      url: "https://github.com/EdoSag/Zero-Trust-Core.git"
+    source: git
+    version: "0.1.0"
 sdks:
   dart: ">=3.13.0 <4.0.0"
   flutter: ">=3.47.0"
