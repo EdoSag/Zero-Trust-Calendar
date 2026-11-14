@@ -88,6 +88,15 @@ void main() {
       expect(offHe.single.title, he.event);
     });
 
+    test('a busy day is kept whole, so later events survive earlier ones ending', () {
+      final busy = [
+        for (var i = 0; i < 40; i++) event('Slot $i', DateTime(2026, 11, 14, 0, i * 15), const Duration(minutes: 15)),
+      ];
+      final rows = agendaRows(entries(busy, range), day: DateTime(2026, 11, 14), showTitles: true, formatTime: time, l10n: en);
+      expect(rows, hasLength(40));
+      expect(rows.last.title, 'Slot 39');
+    });
+
     test('a day key the widget can look up', () {
       expect(dayKey(DateTime(2026, 1, 5, 23)), '2026-01-05');
     });

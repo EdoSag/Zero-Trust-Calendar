@@ -29,6 +29,9 @@ import java.time.format.DateTimeFormatter
 class AgendaWidgetProvider : HomeWidgetProvider() {
 
     companion object {
+        /** Rows shown at most; more would make the list's parcel heavy. */
+        private const val MAX_ROWS = 30
+
         fun update(context: Context, manager: AppWidgetManager, widgetId: Int) {
             val prefs = HomeWidgetPlugin.getData(context)
             val views = buildViews(context, prefs, widgetId)
@@ -60,12 +63,16 @@ class AgendaWidgetProvider : HomeWidgetProvider() {
                 .setViewTypeCount(1)
             val now = System.currentTimeMillis()
             var nextEnd: Long? = null
+            var shown = 0
             if (!locked && rows != null) {
                 for (i in 0 until rows.length()) {
                     val row = rows.optJSONObject(i) ?: continue
                     val end = if (row.has("e")) row.optLong("e") else null
                     if (end != null && end <= now) continue
                     if (end != null && (nextEnd == null || end < nextEnd)) nextEnd = end
+                    // The app saves the whole day; show the first rows still to come.
+                    if (shown >= MAX_ROWS) continue
+                    shown++
                     val item = RemoteViews(context.packageName, R.layout.widget_agenda_item)
                     item.setTextViewText(R.id.agenda_row_time, row.optString("t"))
                     item.setTextViewText(R.id.agenda_row_title, row.optString("ti"))

@@ -89,13 +89,17 @@ class AgendaRow {
 
 /// [day]'s entries for the agenda: all-day ones first, then by time.
 /// Titles only when [showTitles].
+///
+/// The whole day is kept (up to [max], far more than a day holds): the
+/// widget drops rows as they end and shows the first 30 still to come, so
+/// later events must not be cut off here.
 List<AgendaRow> agendaRows(
   List<CalendarEntry> entries, {
   required DateTime day,
   required bool showTitles,
   required String Function(DateTime) formatTime,
   AppL10n? l10n,
-  int max = 30,
+  int max = 200,
 }) {
   final l = l10n ?? currentL10n;
   final on = [

@@ -92,17 +92,21 @@ class MonthWidgetProvider : HomeWidgetProvider() {
                 val inMonth = date.month == month.month
                 views.setTextViewText(dayId, date.dayOfMonth.toString())
                 views.setContentDescription(MonthGridIds.CELLS[i], date.format(dayFormat))
+                // Every cell is set each time: the launcher may apply these
+                // views over the last month's, where another day was today
+                // or muted.
                 if (date == today) {
                     views.setInt(dayId, "setBackgroundResource", R.drawable.zt_widget_accent_circle)
                     views.setTextColor(dayId, onAccent)
-                } else if (!inMonth) {
+                } else {
+                    views.setInt(dayId, "setBackgroundResource", 0)
                     // Days of the months around it: muted.
-                    if (Build.VERSION.SDK_INT >= 31) {
-                        // Resolved by the launcher, so it follows light and dark.
-                        views.setColorStateList(dayId, "setTextColor", R.color.zt_widget_on_surface_variant)
-                    } else {
-                        views.setTextColor(dayId, context.getColor(R.color.zt_widget_on_surface_variant))
-                    }
+                    dayTextColor(
+                        context,
+                        views,
+                        dayId,
+                        if (inMonth) R.color.zt_widget_on_surface else R.color.zt_widget_on_surface_variant,
+                    )
                 }
                 val color = dots?.optJSONArray(date.toString())?.optString(0)
                 if (color.isNullOrEmpty()) {
@@ -118,6 +122,15 @@ class MonthWidgetProvider : HomeWidgetProvider() {
                 )
             }
             return views
+        }
+
+        private fun dayTextColor(context: Context, views: RemoteViews, id: Int, color: Int) {
+            if (Build.VERSION.SDK_INT >= 31) {
+                // Resolved by the launcher, so it follows light and dark.
+                views.setColorStateList(id, "setTextColor", color)
+            } else {
+                views.setTextColor(id, context.getColor(color))
+            }
         }
 
         private fun monthIntent(context: Context, widgetId: Int, delta: Int): PendingIntent {
