@@ -1,7 +1,7 @@
 name: zerotrust_calendar
 description: "Zero-Trust Calendar: an end-to-end encrypted calendar, linked with ZT Notes, Tasks and Contacts."
 publish_to: none
-version: 0.5.0+8
+version: 0.5.1+9
 
 environment:
   sdk: ^3.9.0
@@ -29,7 +29,7 @@ dependencies:
       # uses (Core PRs #41, #42). Every app that shares must be on this
       # commit or later: older ones cannot read the new member records.
       # Switch to the release tag once one is pushed.
-      ref: 939c88d8af77a8e0996be82368cdfb4f08a94dc7
+      ref: 52f53dae085fb247ec1b8fa34b95f3231dc0421b
   flutter_riverpod: ^3.5.0
   supabase_flutter: ^2.9.0
   flutter_dotenv: ^6.0.1
