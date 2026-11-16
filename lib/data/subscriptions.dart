@@ -149,6 +149,34 @@ const holidayCalendars = [
   HolidayCalendar('Islamic holidays', 'en.islamic'),
 ];
 
+/// The name a new subscription gets: what the person typed, else the
+/// calendar's own name inside the file (X-WR-CALNAME, which Google,
+/// Outlook and iCloud all set), else something from the link.
+String subscriptionName({
+  required String typed,
+  required String? fromFeed,
+  required String url,
+}) {
+  if (typed.trim().isNotEmpty) return typed.trim();
+  if (fromFeed != null && fromFeed.trim().isNotEmpty) return fromFeed.trim();
+  return feedNameFromUrl(url);
+}
+
+/// A readable name from a feed link: the file name without `.ics`, or the
+/// host for links whose file name says nothing (Google's `basic.ics`,
+/// Outlook's `calendar.ics`, iCloud's long ids).
+String feedNameFromUrl(String? url) {
+  final uri = Uri.tryParse(normalizeFeedUrl(url ?? ''));
+  if (uri == null || uri.host.isEmpty) return '';
+  final last = uri.pathSegments.where((s) => s.isNotEmpty).lastOrNull ?? '';
+  final base = last.replaceAll(RegExp(r'\.ics$', caseSensitive: false), '');
+  const generic = {'basic', 'calendar', 'full', 'ical'};
+  if (base.isEmpty || base.length > 40 || generic.contains(base.toLowerCase())) {
+    return uri.host;
+  }
+  return Uri.decodeComponent(base);
+}
+
 /// `webcal://x` and plain `x.com/cal.ics` become https:// addresses.
 String normalizeFeedUrl(String raw) {
   var v = raw.trim();
@@ -218,25 +246,33 @@ class SubscriptionService {
   final Ref _ref;
   final FeedFetcher fetch;
 
-  /// How often a subscribed calendar is downloaded again.
-  static const refreshEvery = Duration(hours: 12);
+  /// How often a subscribed calendar is downloaded again (while Calendar
+  /// is open on any of the account's devices). Google refreshes its own
+  /// secret links only every few hours, so more often gains little.
+  static const refreshEvery = Duration(hours: 3);
 
   SyncController get _sync => _ref.read(ztSyncControllerProvider.notifier);
 
   /// Creates the calendar and downloads it once. Throws (and adds
-  /// nothing) when the first download fails.
+  /// nothing) when the first download fails. An empty [name] takes the
+  /// calendar's own name from the file (see [subscriptionName]).
   Future<ZtCalendarInfo> subscribe({
     required String name,
     required String url,
     required int color,
   }) async {
+    final link = normalizeFeedUrl(url);
+    final text = await fetch(Uri.parse(link));
     final calendar = ZtCalendarInfo(
       id: const Uuid().v4(),
-      name: name,
+      name: subscriptionName(
+        typed: name,
+        fromFeed: name.trim().isEmpty ? Ics.parse(text).name : null,
+        url: link,
+      ),
       color: color,
-      url: normalizeFeedUrl(url),
+      url: link,
     );
-    final text = await fetch(Uri.parse(calendar.url!));
     final feed = feedFromIcs(calendar, text, now: DateTime.now());
     await _ref.read(calendarRepositoryProvider).saveCalendar(calendar);
     await _save(feed);

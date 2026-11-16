@@ -15,7 +15,7 @@ Future<void> showSubscribeDialog(
   String? name,
 }) async {
   final link = TextEditingController(text: url ?? '');
-  final title = TextEditingController(text: name ?? _nameFromUrl(url));
+  final title = TextEditingController(text: name ?? '');
   final ok = await showDialog<bool>(
     context: context,
     builder: (d) => AlertDialog(
@@ -36,11 +36,24 @@ Future<void> showSubscribeDialog(
             TextField(
               controller: title,
               textCapitalization: TextCapitalization.sentences,
-              decoration: InputDecoration(labelText: context.l10n.name),
+              decoration: InputDecoration(
+                labelText: context.l10n.name,
+                helperText: context.l10n.leaveEmptyForCalendarsOwnName,
+                helperMaxLines: 2,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
               context.l10n.calendarDownloadsItFromThat,
+            ),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                key: const Key('feed-link-help'),
+                icon: const Icon(Icons.help_outline),
+                label: Text(context.l10n.whereDoIFindTheLink),
+                onPressed: () => showFeedLinkHelp(d),
+              ),
             ),
           ],
         ),
@@ -56,16 +69,48 @@ Future<void> showSubscribeDialog(
   link.dispose();
   title.dispose();
   if (ok != true || rawUrl.isEmpty || !context.mounted) return;
-  await _subscribe(context, ref, rawName.isEmpty ? _nameFromUrl(rawUrl) : rawName, rawUrl);
+  // An empty name takes the calendar's own name from the file.
+  await _subscribe(context, ref, rawName, rawUrl);
 }
 
-String _nameFromUrl(String? url) {
-  final uri = Uri.tryParse(normalizeFeedUrl(url ?? ''));
-  if (uri == null || uri.host.isEmpty) return '';
-  final last = uri.pathSegments.where((s) => s.isNotEmpty).lastOrNull ?? '';
-  final base = last.replaceAll(RegExp(r'\.ics$', caseSensitive: false), '');
-  return base.isEmpty || base == 'basic' ? uri.host : Uri.decodeComponent(base);
-}
+/// Step-by-step help for getting a calendar's private link out of Google
+/// Calendar, Outlook and iCloud.
+Future<void> showFeedLinkHelp(BuildContext context) => showDialog<void>(
+  context: context,
+  builder: (d) {
+    final l10n = d.l10n;
+    final theme = Theme.of(d);
+    Widget section(String title, String body) => Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: theme.textTheme.titleSmall),
+          const SizedBox(height: 4),
+          Text(body),
+        ],
+      ),
+    );
+    return AlertDialog(
+      title: Text(l10n.getALinkFromAnotherCalendar),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            section(l10n.feedHelpGoogleTitle, l10n.feedHelpGoogle),
+            section(l10n.feedHelpOutlookTitle, l10n.feedHelpOutlook),
+            section(l10n.feedHelpIcloudTitle, l10n.feedHelpIcloud),
+            Text(l10n.feedHelpPrivacy, style: theme.textTheme.bodySmall),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(d).pop(), child: Text(l10n.close)),
+      ],
+    );
+  },
+);
 
 Future<void> _subscribe(
   BuildContext context,
@@ -75,16 +120,17 @@ Future<void> _subscribe(
 ) async {
   final messenger = ScaffoldMessenger.of(context);
   final count = (await ref.read(calendarsProvider.future)).length;
-  messenger.showSnackBar(SnackBar(content: Text(currentL10n.downloadingName(name))));
+  final shown = name.isEmpty ? feedNameFromUrl(url) : name;
+  messenger.showSnackBar(SnackBar(content: Text(currentL10n.downloadingName(shown))));
   try {
-    await ref.read(subscriptionServiceProvider).subscribe(
+    final added = await ref.read(subscriptionServiceProvider).subscribe(
       name: name,
       url: url,
       color: calendarPalette[count % calendarPalette.length],
     );
     messenger
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(currentL10n.subscribedTo(name))));
+      ..showSnackBar(SnackBar(content: Text(currentL10n.subscribedTo(added.name))));
   } on Object catch (e) {
     messenger
       ..hideCurrentSnackBar()
@@ -112,6 +158,12 @@ class HolidaysPage extends ConsumerWidget {
             title: Text(context.l10n.subscribeByLink),
             subtitle: Text(context.l10n.anyIcsOrWebcalLink),
             onTap: () => showSubscribeDialog(context, ref),
+          ),
+          ListTile(
+            leading: const Icon(Icons.help_outline),
+            title: Text(context.l10n.whereDoIFindTheLink),
+            subtitle: Text(context.l10n.googleOutlookOrIcloud),
+            onTap: () => showFeedLinkHelp(context),
           ),
           for (final c in calendars)
             if (c.isSubscription && !holidayCalendars.any((h) => h.url == c.url))

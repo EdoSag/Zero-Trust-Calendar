@@ -1276,7 +1276,7 @@ abstract class AppL10n {
   /// No description provided for @calendarDownloadsItFromThat.
   ///
   /// In en, this message translates to:
-  /// **'Calendar downloads it from that address (the site sees a download from your phone, nothing about your account) and keeps an encrypted copy, refreshed twice a day. Its events are read-only.'**
+  /// **'Calendar downloads it from that address (the site sees a download from your phone, nothing about your account) and keeps an encrypted copy, refreshed every few hours while Calendar is open. Its events are read-only.'**
   String get calendarDownloadsItFromThat;
 
   /// No description provided for @subscribe.
@@ -3054,6 +3054,72 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Next month'**
   String get widgetNextMonth;
+
+  /// No description provided for @leaveEmptyForCalendarsOwnName.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use the calendar\'s own name'**
+  String get leaveEmptyForCalendarsOwnName;
+
+  /// No description provided for @whereDoIFindTheLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do I find the link?'**
+  String get whereDoIFindTheLink;
+
+  /// No description provided for @googleOutlookOrIcloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Calendar, Outlook or iCloud'**
+  String get googleOutlookOrIcloud;
+
+  /// No description provided for @getALinkFromAnotherCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Get a link from another calendar'**
+  String get getALinkFromAnotherCalendar;
+
+  /// No description provided for @feedHelpGoogleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Calendar'**
+  String get feedHelpGoogleTitle;
+
+  /// No description provided for @feedHelpGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'On a computer, open calendar.google.com and click the gear, then Settings. Under \"Settings for my calendars\" pick the calendar and open \"Integrate calendar\". Copy \"Secret address in iCal format\". Google updates this link every few hours, so a new event can take a while to appear.'**
+  String get feedHelpGoogle;
+
+  /// No description provided for @feedHelpOutlookTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Outlook.com or Microsoft 365'**
+  String get feedHelpOutlookTitle;
+
+  /// No description provided for @feedHelpOutlook.
+  ///
+  /// In en, this message translates to:
+  /// **'In Outlook on the web, open Settings, then Calendar, then Shared calendars. Under \"Publish a calendar\" pick the calendar and \"Can view all details\", click Publish, and copy the ICS link.'**
+  String get feedHelpOutlook;
+
+  /// No description provided for @feedHelpIcloudTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'iCloud (Apple)'**
+  String get feedHelpIcloudTitle;
+
+  /// No description provided for @feedHelpIcloud.
+  ///
+  /// In en, this message translates to:
+  /// **'On an iPhone, open Calendar and tap Calendars. Tap the info button next to the calendar, turn on \"Public Calendar\" and tap \"Share Link\". Anyone with a public iCloud link can open it.'**
+  String get feedHelpIcloud;
+
+  /// No description provided for @feedHelpPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep these links private: anyone who has one can see that calendar. ZT Calendar stores the link encrypted and downloads it straight from your phone. Subscribed calendars are read-only here. To move events over for good, export a file from the other app and use Import instead.'**
+  String get feedHelpPrivacy;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
