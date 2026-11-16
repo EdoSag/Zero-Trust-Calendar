@@ -209,6 +209,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
   StreamSubscription<void>? _bookings;
   Timer? _debounce;
   Timer? _hourly;
+  AppLifecycleListener? _lifecycle;
   String? _lastPhonePayload;
 
   @override
@@ -232,6 +233,9 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
       _schedule();
       _refreshFeeds();
     });
+    // Coming back to Calendar fetches subscribed calendars that are due,
+    // so a Google or Outlook link is fresh when you look.
+    _lifecycle = AppLifecycleListener(onResume: _refreshFeeds);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _schedule();
       _takeFiles();
@@ -274,6 +278,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     _bookings?.cancel();
     _debounce?.cancel();
     _hourly?.cancel();
+    _lifecycle?.dispose();
     super.dispose();
   }
 

@@ -632,7 +632,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get calendarDownloadsItFromThat =>
-      'Calendar downloads it from that address (the site sees a download from your phone, nothing about your account) and keeps an encrypted copy, refreshed twice a day. Its events are read-only.';
+      'Calendar downloads it from that address (the site sees a download from your phone, nothing about your account) and keeps an encrypted copy, refreshed every few hours while Calendar is open. Its events are read-only.';
 
   @override
   String get subscribe => 'Subscribe';
@@ -1943,4 +1943,42 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get widgetNextMonth => 'Next month';
+
+  @override
+  String get leaveEmptyForCalendarsOwnName =>
+      'Leave empty to use the calendar\'s own name';
+
+  @override
+  String get whereDoIFindTheLink => 'Where do I find the link?';
+
+  @override
+  String get googleOutlookOrIcloud => 'Google Calendar, Outlook or iCloud';
+
+  @override
+  String get getALinkFromAnotherCalendar => 'Get a link from another calendar';
+
+  @override
+  String get feedHelpGoogleTitle => 'Google Calendar';
+
+  @override
+  String get feedHelpGoogle =>
+      'On a computer, open calendar.google.com and click the gear, then Settings. Under \"Settings for my calendars\" pick the calendar and open \"Integrate calendar\". Copy \"Secret address in iCal format\". Google updates this link every few hours, so a new event can take a while to appear.';
+
+  @override
+  String get feedHelpOutlookTitle => 'Outlook.com or Microsoft 365';
+
+  @override
+  String get feedHelpOutlook =>
+      'In Outlook on the web, open Settings, then Calendar, then Shared calendars. Under \"Publish a calendar\" pick the calendar and \"Can view all details\", click Publish, and copy the ICS link.';
+
+  @override
+  String get feedHelpIcloudTitle => 'iCloud (Apple)';
+
+  @override
+  String get feedHelpIcloud =>
+      'On an iPhone, open Calendar and tap Calendars. Tap the info button next to the calendar, turn on \"Public Calendar\" and tap \"Share Link\". Anyone with a public iCloud link can open it.';
+
+  @override
+  String get feedHelpPrivacy =>
+      'Keep these links private: anyone who has one can see that calendar. ZT Calendar stores the link encrypted and downloads it straight from your phone. Subscribed calendars are read-only here. To move events over for good, export a file from the other app and use Import instead.';
 }

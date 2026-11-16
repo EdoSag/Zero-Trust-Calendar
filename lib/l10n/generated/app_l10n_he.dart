@@ -622,7 +622,7 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get calendarDownloadsItFromThat =>
-      'היומן מוריד אותו מהכתובת הזו (האתר רואה הורדה מהטלפון שלך, שום דבר על החשבון) ושומר עותק מוצפן שמתרענן פעמיים ביום. האירועים שלו לקריאה בלבד.';
+      'היומן מוריד אותו מהכתובת הזו (האתר רואה הורדה מהטלפון שלך, שום דבר על החשבון) ושומר עותק מוצפן שמתרענן כל כמה שעות כשהיומן פתוח. האירועים שלו לקריאה בלבד.';
 
   @override
   String get subscribe => 'הרשמה';
@@ -1940,4 +1940,42 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get widgetNextMonth => 'החודש הבא';
+
+  @override
+  String get leaveEmptyForCalendarsOwnName =>
+      'השאירו ריק כדי להשתמש בשם של היומן עצמו';
+
+  @override
+  String get whereDoIFindTheLink => 'איפה מוצאים את הקישור?';
+
+  @override
+  String get googleOutlookOrIcloud => 'יומן Google, ‏Outlook או iCloud';
+
+  @override
+  String get getALinkFromAnotherCalendar => 'קבלת קישור מיומן אחר';
+
+  @override
+  String get feedHelpGoogleTitle => 'יומן Google';
+
+  @override
+  String get feedHelpGoogle =>
+      'במחשב, פתחו את calendar.google.com, לחצו על גלגל השיניים ואז על \"הגדרות\". תחת \"הגדרות של היומנים שלי\" בחרו את היומן ופתחו את \"שילוב יומן\". העתיקו את \"כתובת סודית בפורמט iCal\". Google מעדכנת את הקישור הזה כל כמה שעות, כך שאירוע חדש עשוי להופיע באיחור.';
+
+  @override
+  String get feedHelpOutlookTitle => 'Outlook.com או Microsoft 365';
+
+  @override
+  String get feedHelpOutlook =>
+      'ב-Outlook באינטרנט, פתחו את \"הגדרות\", אחר כך \"לוח שנה\" ואז \"לוחות שנה משותפים\". תחת \"פרסם לוח שנה\" בחרו את היומן ואת \"יכול להציג את כל הפרטים\", לחצו \"פרסם\" והעתיקו את קישור ה-ICS.';
+
+  @override
+  String get feedHelpIcloudTitle => 'iCloud (Apple)';
+
+  @override
+  String get feedHelpIcloud =>
+      'ב-iPhone, פתחו את אפליקציית לוח השנה והקישו על \"לוחות שנה\". הקישו על כפתור המידע ליד היומן, הפעילו את \"לוח שנה ציבורי\" והקישו על \"שיתוף קישור\". כל מי שיש לו קישור ציבורי של iCloud יכול לפתוח אותו.';
+
+  @override
+  String get feedHelpPrivacy =>
+      'שמרו על הקישורים האלה בסוד: כל מי שיש לו קישור כזה יכול לראות את היומן. ZT Calendar שומר את הקישור מוצפן ומוריד אותו ישירות מהטלפון שלכם. יומנים במינוי הם לקריאה בלבד כאן. כדי להעביר אירועים לצמיתות, ייצאו קובץ מהאפליקציה השנייה והשתמשו ב\"ייבוא\".';
 }
