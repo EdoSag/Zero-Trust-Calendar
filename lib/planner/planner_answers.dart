@@ -61,6 +61,10 @@ abstract interface class PlannerAnswerBox {
   /// The answers that wait, oldest first; they are removed.
   Future<List<PlanAnswer>> take();
 
+  /// Keeps [answers] that were taken but could not be applied, ahead of
+  /// newer ones, without announcing them: the next run tries again.
+  Future<void> putBack(List<PlanAnswer> answers);
+
   /// Fires when an answer was added while the app is running.
   Stream<void> get arrived;
 }
@@ -82,6 +86,10 @@ class MemoryPlannerAnswerBox implements PlannerAnswerBox {
     _answers.clear();
     return out;
   }
+
+  @override
+  Future<void> putBack(List<PlanAnswer> answers) async =>
+      _answers.insertAll(0, answers);
 
   @override
   Stream<void> get arrived => _arrived.stream;
@@ -125,6 +133,19 @@ Future<List<PlanAnswer>> takePlanAnswers(Directory directory) async {
   return out;
 }
 
+/// Puts [answers] back in [directory], ahead of any written since they were
+/// taken. They go into the file a cut-short read leaves behind, which
+/// [takePlanAnswers] reads first.
+Future<void> putBackPlanAnswers(Directory directory, List<PlanAnswer> answers) async {
+  if (answers.isEmpty) return;
+  await directory.create(recursive: true);
+  await File('${directory.path}/$_fileName.taking').writeAsString(
+    [for (final a in answers) '${jsonEncode(a.toJson())}\n'].join(),
+    mode: FileMode.append,
+    flush: true,
+  );
+}
+
 /// Keeps a button press from the notification, in whichever isolate it
 /// arrives (the app's, or the one Android starts while the app is closed),
 /// and tells the running app, if there is one.
@@ -164,6 +185,15 @@ class FilePlannerAnswerBox implements PlannerAnswerBox {
       return await takePlanAnswers(await getApplicationSupportDirectory());
     } on Object {
       return const [];
+    }
+  }
+
+  @override
+  Future<void> putBack(List<PlanAnswer> answers) async {
+    try {
+      await putBackPlanAnswers(await getApplicationSupportDirectory(), answers);
+    } on Object {
+      // Storage unavailable: those blocks are asked about again in the app.
     }
   }
 

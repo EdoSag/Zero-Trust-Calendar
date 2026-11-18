@@ -198,6 +198,54 @@ void main() {
       expect(mark.reason, PlanReason.kept);
       expect(account.log, ['save a:1']);
     });
+
+    test('"Not done after all" on the last part opens the task again, '
+        'so its time is planned and not dropped', () async {
+      final account = FakeAccount(
+        settings: on,
+        tasks: [task('a')],
+        events: [block('a:1', 'a', now.subtract(const Duration(hours: 2)))],
+      );
+      final container = await start(account);
+      final actions = container.read(plannerActionsProvider);
+      // The last part is done, so the task is ticked off.
+      expect(await actions.setDone(account.blocks.single, true), 'a');
+      await pumpEventQueue();
+      expect(account.tasks.single.completed, isTrue);
+
+      // Later, from the block's sheet (the message with Undo is long gone).
+      account.log.clear();
+      await actions.setDone(account.blocks.single, false);
+      await pumpEventQueue();
+      expect(account.log, ['save a:1', 'complete a false']);
+      expect(account.tasks.single.completed, isFalse);
+
+      // The Planner keeps planning the task: an hour of it is on the
+      // calendar, not done.
+      await container.read(plannerControllerProvider.notifier).runNow();
+      await pumpEventQueue();
+      await container.read(plannerControllerProvider.notifier).runNow();
+      final open = [
+        for (final b in account.blocks)
+          if (!PlanMark.of(b)!.done) b,
+      ];
+      expect(open, hasLength(1));
+      expect(open.single.duration.inMinutes, 60);
+    });
+
+    test('a repeating task is not reopened from Calendar either', () async {
+      final account = FakeAccount(
+        settings: on,
+        tasks: [task('a', repeats: true)],
+        events: [
+          block('a:1', 'a', running, done: true, occurrence: '2026-11-20T00:00:00.000'),
+        ],
+      );
+      final container = await start(account);
+      await container.read(plannerActionsProvider).setDone(account.blocks.single, false);
+      await pumpEventQueue();
+      expect(account.log, ['save a:1']);
+    });
   });
 
   group('Need more time', () {
@@ -447,6 +495,49 @@ void main() {
           if (!PlanMark.of(b)!.done) '${PlanMark.of(b)!.itemId} ${b.duration.inMinutes}',
       ]..sort();
       expect(open, ['a 60', 'b 60', 'c 60']);
+    });
+
+    test('one that cannot be applied does not lose the others', () async {
+      final passed = now.subtract(const Duration(hours: 3));
+      final account = FakeAccount(
+        settings: on,
+        // Task "gone" was deleted in ZT Tasks while Calendar was locked; its
+        // block is still on the calendar.
+        tasks: [task('a', minutes: 120), task('b', minutes: 120)],
+        events: [
+          block('gone:1', 'gone', passed),
+          block('a:1', 'a', passed.add(const Duration(hours: 1))),
+          block('b:1', 'b', passed.add(const Duration(hours: 2))),
+        ],
+      );
+      final container = await start(account);
+      final planner = container.read(plannerControllerProvider.notifier);
+      await account.answers.add(const PlanAnswer('gone:1', PlanAnswerKind.more));
+      await account.answers.add(const PlanAnswer('a:1', PlanAnswerKind.done));
+      await account.answers.add(const PlanAnswer('b:1', PlanAnswerKind.done));
+      // Saving a:1 fails once (storage hiccup).
+      var failures = 1;
+      account.onSaveBlock = (id) async {
+        if (id == 'a:1' && failures-- > 0) throw StateError('disk full');
+      };
+
+      await planner.runNow();
+      await pumpEventQueue();
+      CalendarEvent? stored(String id) =>
+          account.blocks.where((b) => b.id == id).firstOrNull;
+      // The answer after the two that could not be applied was applied.
+      expect(PlanMark.of(stored('b:1'))!.done, isTrue);
+      expect(PlanMark.of(stored('a:1'))!.done, isFalse);
+      // The one that failed waits; the one for the deleted task is dropped.
+      final waiting = await account.answers.take();
+      expect(waiting, const [PlanAnswer('a:1', PlanAnswerKind.done)]);
+      await account.answers.putBack(waiting);
+
+      // The next run applies it.
+      await planner.runNow();
+      await pumpEventQueue();
+      expect(PlanMark.of(stored('a:1'))!.done, isTrue);
+      expect(await account.answers.take(), isEmpty);
     });
 
     test('"Done" on the last part ticks the task off', () async {

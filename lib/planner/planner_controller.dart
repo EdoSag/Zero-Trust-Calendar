@@ -225,9 +225,15 @@ class PlannerController extends Notifier<PlannerStatus> {
       final answers = await ref.read(plannerAnswerBoxProvider).take();
       if (!ref.mounted) return;
       if (answers.isNotEmpty) {
-        await ref.read(plannerActionsProvider).applyAnswers(answers);
-        _again = true;
-        return;
+        final failed = await ref.read(plannerActionsProvider).applyAnswers(answers);
+        // What could not be saved waits for the next run.
+        await ref.read(plannerAnswerBoxProvider).putBack(failed);
+        if (!ref.mounted) return;
+        if (failed.length < answers.length) {
+          _again = true;
+          return;
+        }
+        // Nothing was applied, so nothing changed: plan as usual.
       }
       final signature = inputs.settings.planSignature;
       final rebuildNow = _rebuild || (plannedWith != null && plannedWith != signature);

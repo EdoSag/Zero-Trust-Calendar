@@ -129,6 +129,20 @@ void main() {
       expect(dir.listSync(), isEmpty);
     });
 
+    test('ones that could not be applied go back in front of newer ones', () async {
+      await appendPlanAnswer(dir, const PlanAnswer('a:1', PlanAnswerKind.done));
+      final taken = await takePlanAnswers(dir);
+      // Another button is pressed before the first could be saved.
+      await appendPlanAnswer(dir, const PlanAnswer('b:1', PlanAnswerKind.skip));
+      await putBackPlanAnswers(dir, taken);
+      await putBackPlanAnswers(dir, const []);
+      expect(await takePlanAnswers(dir), const [
+        PlanAnswer('a:1', PlanAnswerKind.done),
+        PlanAnswer('b:1', PlanAnswerKind.skip),
+      ]);
+      expect(dir.listSync(), isEmpty);
+    });
+
     test('hold only the block id and the button, no title or time', () async {
       await appendPlanAnswer(dir, const PlanAnswer('a:1', PlanAnswerKind.more));
       final text = File('${dir.path}/planner_answers.jsonl').readAsStringSync();

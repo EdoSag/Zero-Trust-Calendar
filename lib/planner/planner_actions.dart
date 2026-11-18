@@ -29,7 +29,8 @@ class PlannerActions {
   static CalendarEvent _marked(CalendarEvent block, PlanMark mark) =>
       block.copyWith(extra: {...block.extra, 'plan': mark.toJson()});
 
-  /// Marks [block] done, or not done after all.
+  /// Marks [block] done, or not done after all (which also opens its task
+  /// again, when that was ticked off).
   ///
   /// A block that hasn't started yet ("Already done") is moved to end now:
   /// the work was done before now, and the time it was planned for is free
@@ -54,7 +55,17 @@ class PlannerActions {
         mark.copyWith(done: done, reason: done ? PlanReason.done : PlanReason.kept),
       ),
     );
-    if (!done) return null;
+    if (!done) {
+      // The task was ticked off (by the last block being done, or in ZT
+      // Tasks). This part isn't done after all, so neither is the task:
+      // left ticked off, the Planner would drop the block instead of
+      // planning its time again.
+      final task = _task(mark.itemId);
+      if (task != null && task.completed && !task.repeats) {
+        await _ref.read(plannerTaskCompleterProvider)(task.id, false);
+      }
+      return null;
+    }
     final task = _task(mark.itemId);
     if (task == null || task.completed || task.repeats) return null;
     final others = [
@@ -145,9 +156,12 @@ class PlannerActions {
   /// Puts a block back exactly as it was (undo).
   Future<void> restore(CalendarEvent block) => _writer.saveBlock(block);
 
-  /// Applies the answers given on notifications. An answer for a block that
-  /// is gone or already done is dropped.
-  Future<void> applyAnswers(List<PlanAnswer> answers) async {
+  /// Applies the answers given on notifications, each on its own: one
+  /// that fails doesn't stop the ones after it. An answer for a block that
+  /// is gone or already done, or whose task is gone, is dropped. Returns the
+  /// answers that could not be saved, to be kept for the next run.
+  Future<List<PlanAnswer>> applyAnswers(List<PlanAnswer> answers) async {
+    final failed = <PlanAnswer>[];
     for (final a in answers) {
       final block = _ref
           .read(plannerBlocksProvider)
@@ -155,15 +169,22 @@ class PlannerActions {
           .firstOrNull;
       final mark = PlanMark.of(block);
       if (block == null || mark == null || mark.done) continue;
-      switch (a.kind) {
-        case PlanAnswerKind.done:
-          await setDone(block, true);
-        case PlanAnswerKind.more:
-          await needMoreTime(block, _settings.minChunk, now: block.end);
-        case PlanAnswerKind.skip:
-          await didNot(block);
+      try {
+        switch (a.kind) {
+          case PlanAnswerKind.done:
+            await setDone(block, true);
+          case PlanAnswerKind.more:
+            // The task was deleted meanwhile: the Planner removes its block.
+            if (_task(mark.itemId) == null) continue;
+            await needMoreTime(block, _settings.minChunk, now: block.end);
+          case PlanAnswerKind.skip:
+            await didNot(block);
+        }
+      } on Object {
+        failed.add(a);
       }
     }
+    return failed;
   }
 }
 
