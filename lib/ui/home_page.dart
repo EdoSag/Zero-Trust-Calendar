@@ -11,6 +11,7 @@ import 'entry_widgets.dart';
 import 'month_view.dart';
 import 'navigation.dart';
 import 'planner_page.dart';
+import 'planner_risks.dart';
 import 'quick_add_sheet.dart';
 import 'schedule_view.dart';
 import 'search_page.dart';
@@ -112,7 +113,13 @@ class HomePage extends ConsumerWidget {
         ],
       ),
       drawer: _CalendarDrawer(onView: (v) => _setView(ref, v)),
-      body: body,
+      // Tasks the Planner could not fit show across the top of every view.
+      body: Column(
+        children: [
+          const PlannerRiskBanner(),
+          Expanded(child: body),
+        ],
+      ),
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,

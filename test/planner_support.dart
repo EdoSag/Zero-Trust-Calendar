@@ -12,6 +12,7 @@ import 'package:zerotrust_calendar/data/subscriptions.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 import 'package:zerotrust_calendar/model/calendar_event.dart';
 import 'package:zerotrust_calendar/model/linked_items.dart';
+import 'package:zerotrust_calendar/planner/planner_answers.dart';
 import 'package:zerotrust_calendar/planner/planner_controller.dart';
 import 'package:zerotrust_calendar/planner/planner_model.dart';
 import 'package:zerotrust_calendar/reminders/reminders.dart';
@@ -47,8 +48,12 @@ class FakeAccount {
   Future<void> Function(String id)? onSaveBlock;
 
   /// Every write, in order: `save <id>`, `delete <id>`, `settings`,
-  /// `calendar`, `task <id> <changes>`.
+  /// `calendar`, `task <id> <changes>`, `complete <id> <bool>`,
+  /// `due <id> <yyyy-mm-dd>`.
   final log = <String>[];
+
+  /// Answers given on notifications, waiting for the Planner.
+  final answers = MemoryPlannerAnswerBox();
 
   final _events = StreamController<List<CalendarEvent>>.broadcast();
   final _tasks = StreamController<PlannerTaskList>.broadcast();
@@ -69,32 +74,60 @@ class FakeAccount {
 
   void setTask(String id, Map<String, Object?> changes) {
     log.add('task $id $changes');
-    tasks = [
-      for (final t in tasks)
-        if (t.id != id)
-          t
-        else
-          PlannerTask(
-            id: t.id,
-            title: t.title,
-            minutes: changes.containsKey('planMinutes')
-                ? changes['planMinutes'] as int?
-                : t.minutes,
-            priority: t.priority,
-            due: t.due,
-            dueHasTime: t.dueHasTime,
-            auto: changes.containsKey('planAuto') ? changes['planAuto'] as bool? : t.auto,
-            hoursId: changes.containsKey('planHours')
-                ? (changes['planHours'] as String?) ?? workHoursId
-                : t.hoursId,
-            completed: t.completed,
-            repeats: t.repeats,
-            dueRaw: t.dueRaw,
-            createdAt: t.createdAt,
-          ),
-    ];
+    _change(
+      id,
+      (t) => _copy(
+        t,
+        minutes: changes.containsKey('planMinutes')
+            ? changes['planMinutes'] as int?
+            : t.minutes,
+        auto: changes.containsKey('planAuto') ? changes['planAuto'] as bool? : t.auto,
+        hoursId: changes.containsKey('planHours')
+            ? (changes['planHours'] as String?) ?? workHoursId
+            : t.hoursId,
+      ),
+    );
+  }
+
+  void completeTask(String id, bool completed) {
+    log.add('complete $id $completed');
+    _change(id, (t) => _copy(t, completed: completed));
+  }
+
+  void setDue(String id, DateTime day) {
+    log.add('due $id ${day.toIso8601String().substring(0, 10)}');
+    _change(id, (t) => _copy(t, due: DateTime(day.year, day.month, day.day)));
+  }
+
+  void _change(String id, PlannerTask Function(PlannerTask) change) {
+    tasks = [for (final t in tasks) t.id == id ? change(t) : t];
     emit();
   }
+
+  static const _same = Object();
+
+  static PlannerTask _copy(
+    PlannerTask t, {
+    Object? minutes = _same,
+    Object? auto = _same,
+    String? hoursId,
+    bool? completed,
+    DateTime? due,
+  }) => PlannerTask(
+    id: t.id,
+    title: t.title,
+    minutes: identical(minutes, _same) ? t.minutes : minutes as int?,
+    priority: t.priority,
+    due: due ?? t.due,
+    dueHasTime: t.dueHasTime,
+    notBefore: t.notBefore,
+    auto: identical(auto, _same) ? t.auto : auto as bool?,
+    hoursId: hoursId ?? t.hoursId,
+    completed: completed ?? t.completed,
+    repeats: t.repeats,
+    dueRaw: t.dueRaw,
+    createdAt: t.createdAt,
+  );
 
   List<CalendarEvent> get blocks => [
     for (final e in events)
@@ -119,6 +152,11 @@ class FakeAccount {
     plannerSyncedProvider.overrideWith((ref) => synced),
     plannerWriterProvider.overrideWith((ref) => _FakeWriter(ref, this)),
     plannerTaskWriterProvider.overrideWithValue((id, changes) async => setTask(id, changes)),
+    plannerTaskCompleterProvider.overrideWithValue(
+      (id, completed) async => completeTask(id, completed),
+    ),
+    plannerTaskDueWriterProvider.overrideWithValue((id, day) async => setDue(id, day)),
+    plannerAnswerBoxProvider.overrideWithValue(answers),
   ];
 
   /// The app around [home], with the real theme and both languages.

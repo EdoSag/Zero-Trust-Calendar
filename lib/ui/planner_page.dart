@@ -11,6 +11,7 @@ import '../planner/planner_model.dart';
 import '../util/format.dart';
 import 'entry_widgets.dart';
 import 'linked_app_launcher.dart';
+import 'planner_risks.dart';
 import 'planner_setup_page.dart';
 import 'planner_widgets.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
@@ -121,7 +122,6 @@ class _PlannerBody extends ConsumerWidget {
     final planned = [for (final t in open) if (t.plannedUnder(settings.tasks)) t];
     final others = [for (final t in open) if (!t.plannedUnder(settings.tasks)) t];
     final risks = status.last?.result.risks ?? const <PlanRisk>[];
-    final titles = {for (final t in open) t.id: t.title};
 
     Widget header(String text) => Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
@@ -197,20 +197,7 @@ class _PlannerBody extends ConsumerWidget {
             leading: Icon(Icons.error_outline, color: theme.colorScheme.error),
             title: Text(l.plannerCouldNotPlan('${status.error}')),
           ),
-        for (final r in risks)
-          ListTile(
-            leading: Icon(Icons.warning_amber_rounded, color: theme.colorScheme.error),
-            title: Text(
-              (titles[r.taskId] ?? '').isEmpty ? l.noTitle : titles[r.taskId]!,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text(
-              r.minutesUnplanned > 0
-                  ? l.plannerRiskNoRoom(formatPlanMinutes(l, r.minutesUnplanned))
-                  : l.plannerRiskLate(formatPlanMinutes(l, r.minutesLate)),
-            ),
-          ),
+        for (final r in risks) PlannerRiskTile(risk: r),
 
         header(l.plannerTasksToPlan),
         if (taskList == null)
@@ -385,6 +372,13 @@ class _PlannerBody extends ConsumerWidget {
           value: settings.remindAtStart,
           onChanged: (on) => _save(context, ref, settings.copyWith(remindAtStart: on)),
         ),
+        if (settings.pastBlocks != PastBlocks.countAsDone)
+          SwitchListTile(
+            title: Text(l.plannerAskAtEnd),
+            subtitle: Text(l.plannerAskAtEndHint),
+            value: settings.askAtEnd,
+            onChanged: (on) => _save(context, ref, settings.copyWith(askAtEnd: on)),
+          ),
         const Divider(),
         ListTile(
           leading: const Icon(Icons.auto_fix_high_outlined),

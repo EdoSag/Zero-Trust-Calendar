@@ -547,11 +547,12 @@ class _TimedBlock extends ConsumerWidget {
   final ValueChanged<Offset> onDragUpdate;
   final VoidCallback onDragEnd;
 
-  /// Your own events move; tasks, birthdays, subscribed calendars and the
-  /// Planner's blocks (which the Planner places) don't.
+  /// Your own events move; tasks, birthdays and subscribed calendars
+  /// don't. A Planner block moves too, and is then locked where it was put;
+  /// a block that is done is history and stays.
   bool get _movable =>
       entry.kind == EntryKind.event &&
-      entry.plan == null &&
+      !(entry.plan?.done ?? false) &&
       !(entry.event?.readOnly ?? true);
 
   @override

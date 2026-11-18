@@ -102,7 +102,11 @@ PlanTask planTaskOf(PlannerTask t, PlannerSettings settings, {int order = 0}) {
   final maxChunk = t.maxChunk ?? settings.maxChunk;
   if (maxChunk < minChunk) minChunk = maxChunk;
   final due = t.dueBy;
-  final notBefore = t.notBefore;
+  // "Not now" keeps the task away until a time; the later of that and the
+  // task's own start date counts.
+  final skip = settings.skips[t.id];
+  final start = t.notBefore;
+  final notBefore = skip != null && (start == null || skip.isAfter(start)) ? skip : start;
   return PlanTask(
     id: t.id,
     minutes: t.minutes ?? settings.defaultMinutes,
@@ -283,3 +287,17 @@ Map<String, List<CalendarEvent>> planGroups(Iterable<CalendarEvent> events) {
   }
   return groups;
 }
+
+/// The blocks of [task]'s current occurrence among [blocks].
+List<CalendarEvent> planBlocksOf(PlannerTask task, Iterable<CalendarEvent> blocks) => [
+  for (final b in blocks)
+    if (PlanMark.of(b) case final m?
+        when m.itemId == task.id && m.occurrence == task.occurrence)
+      b,
+];
+
+/// Minutes of [task] that are done: the length of its done blocks.
+int planDoneMinutes(PlannerTask task, Iterable<CalendarEvent> blocks) => [
+  for (final b in planBlocksOf(task, blocks))
+    if (PlanMark.of(b)!.done) b.duration.inMinutes,
+].fold(0, (a, b) => a + b);

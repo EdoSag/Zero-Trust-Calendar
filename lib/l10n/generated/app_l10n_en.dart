@@ -2284,4 +2284,148 @@ class AppL10nEn extends AppL10n {
   @override
   String get plannerPreviewNoRoom =>
       'No free time was found in your hours in the next 4 weeks.';
+
+  @override
+  String get plannerNeedMoreTime => 'Need more time';
+
+  @override
+  String get plannerDidNotDoIt => 'Didn\'t do it';
+
+  @override
+  String get plannerDidNotDoItHint => 'Its time is planned again.';
+
+  @override
+  String get plannerFinishedBlock => 'Finished this block?';
+
+  @override
+  String plannerFinishedTitle(String title) {
+    return 'Finished $title?';
+  }
+
+  @override
+  String plannerMovedAndLocked(String when) {
+    return 'Moved to $when and locked there';
+  }
+
+  @override
+  String get plannerMarkedDone => 'Marked as done';
+
+  @override
+  String get plannerMarkedNotDone => 'Marked as not done';
+
+  @override
+  String get plannerHowMuchMore => 'How much more time?';
+
+  @override
+  String plannerAddedTime(String amount) {
+    return 'Added to the task: $amount';
+  }
+
+  @override
+  String get plannerLaterToday => 'Later today';
+
+  @override
+  String get plannerLaterThatDay => 'Later that day';
+
+  @override
+  String get plannerTheDayAfter => 'The day after';
+
+  @override
+  String get plannerAWeekLater => 'A week later';
+
+  @override
+  String get plannerNotNowUntil => 'When should it be planned again?';
+
+  @override
+  String plannerPlannedAgainFrom(String when) {
+    return 'Not planned before: $when';
+  }
+
+  @override
+  String get plannerPlannedAgain => 'Its time will be planned again';
+
+  @override
+  String get plannerBlockOverlaps => 'This block overlaps an event.';
+
+  @override
+  String get plannerNotDoneAfterAll => 'Not done after all';
+
+  @override
+  String get plannerAlreadyDone => 'Already done';
+
+  @override
+  String get plannerAlreadyDoneHint =>
+      'Frees the time that was planned for it.';
+
+  @override
+  String get plannerNotNow => 'Not now';
+
+  @override
+  String get plannerUnlock => 'Unlock';
+
+  @override
+  String get plannerLockHere => 'Lock here';
+
+  @override
+  String get plannerLockHereHint => 'The Planner will not move it.';
+
+  @override
+  String get plannerUnlocked => 'Unlocked. The Planner may move it again.';
+
+  @override
+  String get plannerLocked => 'Locked at this time';
+
+  @override
+  String plannerTasksAtRisk(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tasks are at risk',
+      one: '1 task is at risk',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get plannerAtRiskTitle => 'Tasks at risk';
+
+  @override
+  String get plannerAtRiskBody =>
+      'These tasks don\'t fit before their due date. Tap one to change its length or its due date, or make room in your calendar.';
+
+  @override
+  String get plannerAtRiskNone => 'Every task fits now.';
+
+  @override
+  String get plannerOpenPlanner => 'Open the Planner';
+
+  @override
+  String get plannerFixLength => 'Change the length';
+
+  @override
+  String plannerFixLengthNow(String amount) {
+    return 'Now $amount';
+  }
+
+  @override
+  String get plannerFixDue => 'Move the due date';
+
+  @override
+  String get plannerFixStop => 'Stop planning this task';
+
+  @override
+  String get plannerAskAtEnd => 'Ask when a block ends';
+
+  @override
+  String get plannerAskAtEndHint =>
+      'A notification asks whether you finished. Its buttons work while Calendar is locked.';
+
+  @override
+  String get markAsDone => 'Mark as done';
+
+  @override
+  String get markAsNotDone => 'Mark as not done';
+
+  @override
+  String get plannerDone => 'Done';
 }
