@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:zt_scheduler/zt_scheduler.dart';
 
@@ -225,6 +227,22 @@ class PlannerSettings {
               : const [(10 * 60, 18 * 60)],
       },
     };
+  }
+
+  /// The settings that decide where blocks go, as one string. When it
+  /// differs from the one a device last planned with, the blocks that exist
+  /// were placed under other limits and are all placed afresh. Switches that
+  /// don't move blocks (on and off, reminders, what passed blocks count as)
+  /// are left out.
+  String get planSignature {
+    final json = toJson();
+    return jsonEncode([
+      for (final key in const [
+        'hours', 'tasks', 'defaultMinutes', 'minChunk', 'maxChunk',
+        'breakAfterMeetings', 'maxMinutesPerDay', 'freeCalendars', 'allDayBusy',
+      ])
+        json[key],
+    ]);
   }
 
   List<MinuteRange> rangesOn(String hoursId, int weekday) =>

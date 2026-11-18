@@ -130,11 +130,25 @@ class PlannerController extends Notifier<PlannerStatus> {
   /// Small changes are grouped, so the calendar doesn't flicker.
   static const debounce = Duration(milliseconds: 1500);
 
+  /// Where this device remembers [PlannerSettings.planSignature] of the
+  /// settings it last planned with (its own preferences, not synced).
+  static const plannedWithKey = 'planner.plannedWith';
+
   Timer? _debounce;
   Timer? _clock;
   bool _running = false;
   bool _again = false;
   bool _rebuild = false;
+
+  /// The run that is in flight, so turning the Planner off can wait for it.
+  Future<void>? _current;
+
+  /// Set while the Planner is being turned off, and until the settings say
+  /// so themselves: nothing is planned or written meanwhile.
+  bool _turnedOff = false;
+
+  /// Ids of the blocks the run in flight has saved that aren't done.
+  final _written = <String>{};
 
   @override
   PlannerStatus build() {
@@ -142,7 +156,11 @@ class PlannerController extends Notifier<PlannerStatus> {
       _debounce?.cancel();
       _clock?.cancel();
     });
-    ref.listen(plannerSettingsProvider, (_, _) => schedule());
+    ref.listen(plannerSettingsProvider, (_, next) {
+      // The settings now say "off" themselves.
+      if (next.value?.enabled == false) _turnedOff = false;
+      schedule();
+    });
     ref.listen(allEventsProvider, (_, _) => schedule());
     ref.listen(calendarsProvider, (_, _) => schedule());
     ref.listen(plannerTasksProvider, (_, _) => schedule());
@@ -177,7 +195,28 @@ class PlannerController extends Notifier<PlannerStatus> {
       return;
     }
     _running = true;
+    final run = _current = _run();
     try {
+      await run;
+    } finally {
+      _running = false;
+      if (identical(_current, run)) _current = null;
+      if (_again && ref.mounted) {
+        _again = false;
+        schedule();
+      }
+    }
+  }
+
+  Future<void> _run() async {
+    try {
+      // The settings this device last planned with. When they differ from
+      // the ones in force (changed on another device, or the app closed
+      // before it planned), blocks that are left where they are would never
+      // be checked against the new limits: every movable block is placed
+      // afresh. A device that never planned takes the plan as it is.
+      final plannedWith = await _plannedWith();
+      if (!ref.mounted) return;
       final inputs = _inputs();
       if (inputs == null) return;
       // Answers given on notifications while Calendar was locked come
@@ -190,7 +229,8 @@ class PlannerController extends Notifier<PlannerStatus> {
         _again = true;
         return;
       }
-      final rebuildNow = _rebuild;
+      final signature = inputs.settings.planSignature;
+      final rebuildNow = _rebuild || (plannedWith != null && plannedWith != signature);
       _rebuild = false;
       final outcome = computePlan(
         now: DateTime.now(),
@@ -200,18 +240,34 @@ class PlannerController extends Notifier<PlannerStatus> {
         tasks: inputs.tasks,
         rebuild: rebuildNow,
       );
-      await _apply(outcome);
+      if (!await _apply(outcome)) {
+        // Turned off halfway: what was written is removed by the turn-off.
+        if (rebuildNow) _rebuild = true;
+        return;
+      }
+      _written.clear();
+      if (plannedWith != signature) await _rememberPlannedWith(signature);
       if (!ref.mounted) return;
       state = PlannerStatus(last: outcome);
       _armClock(outcome.blocksAfter(inputs.events), outcome.at);
     } on Object catch (e) {
       if (ref.mounted) state = PlannerStatus(last: state.last, error: e);
-    } finally {
-      _running = false;
-      if (_again && ref.mounted) {
-        _again = false;
-        schedule();
-      }
+    }
+  }
+
+  Future<String?> _plannedWith() async {
+    try {
+      return await ref.read(ztPreferencesStoreProvider).read(plannedWithKey);
+    } on Object {
+      return null; // Unreadable: plan as a device that never planned.
+    }
+  }
+
+  Future<void> _rememberPlannedWith(String signature) async {
+    try {
+      await ref.read(ztPreferencesStoreProvider).write(plannedWithKey, signature);
+    } on Object {
+      // Not kept: the next run places the blocks afresh once more.
     }
   }
 
@@ -238,8 +294,11 @@ class PlannerController extends Notifier<PlannerStatus> {
   }
 
   /// Saves the Planner's settings. Turning the Planner on makes sure the
-  /// Planned calendar exists; turning it off removes the blocks that aren't
-  /// done. Any other change plans the week afresh.
+  /// Planned calendar exists; turning it off waits for a run that is in
+  /// flight and then removes the blocks that aren't done. A change to where
+  /// blocks may go plans the week afresh, here and on every other device
+  /// (each notices that the settings are not the ones it last planned
+  /// with).
   Future<void> saveSettings(PlannerSettings settings) async {
     final before = switch (ref.read(plannerSettingsProvider)) {
       AsyncData(:final value) => value,
@@ -250,13 +309,41 @@ class PlannerController extends Notifier<PlannerStatus> {
       await writer.ensureCalendar(
         appL10nFor(ref.read(ztLanguageProvider)).plannedCalendarName,
       );
+      _turnedOff = false;
     } else if (before.enabled) {
+      // No new run starts, and a run that is saving blocks stops after the
+      // one it is on. Only then are the blocks removed, so none is written
+      // behind the cleanup's back and left on the calendar.
+      _turnedOff = true;
       _clock?.cancel();
-      for (final e in ref.read(plannerBlocksProvider)) {
-        if (!PlanMark.of(e)!.done) await writer.deleteBlock(e.id);
+      _debounce?.cancel();
+      try {
+        await _current;
+      } on Object {
+        // That run's failure is its own.
       }
+      final ids = {
+        for (final e in ref.read(plannerBlocksProvider))
+          if (!PlanMark.of(e)!.done) e.id,
+        // Blocks that run saved may not have reached the list yet.
+        ..._written,
+      };
+      for (final id in ids) {
+        await writer.deleteBlock(id);
+      }
+      _written.clear();
+      if (ref.mounted) state = const PlannerStatus(waiting: PlannerWaiting.off);
     }
-    await writer.saveSettings(settings);
+    try {
+      await writer.saveSettings(settings);
+    } on Object {
+      // Still on, as far as the settings go: keep planning.
+      if (!settings.enabled && _turnedOff) {
+        _turnedOff = false;
+        schedule();
+      }
+      rethrow;
+    }
     if (settings.enabled) schedule(rebuild: true);
   }
 
@@ -273,6 +360,10 @@ class PlannerController extends Notifier<PlannerStatus> {
           AsyncData(:final value) => value,
           _ => null,
         };
+    if (_turnedOff && !preview) {
+      state = const PlannerStatus(waiting: PlannerWaiting.off);
+      return null;
+    }
     if (s == null || !s.enabled) {
       // Off: its blocks are gone, so answers about them mean nothing.
       if (s != null && !preview) ref.read(plannerAnswerBoxProvider).take().ignore();
@@ -309,15 +400,22 @@ class PlannerController extends Notifier<PlannerStatus> {
     return (settings: s, events: events, calendars: calendars, tasks: tasks);
   }
 
-  Future<void> _apply(PlannerOutcome outcome) async {
-    if (outcome.changesNothing) return;
+  /// Saves what [outcome] changes. False when the Planner was turned off
+  /// meanwhile: it stops before the next write.
+  Future<bool> _apply(PlannerOutcome outcome) async {
+    _written.clear();
+    if (outcome.changesNothing) return !_turnedOff;
     final writer = ref.read(plannerWriterProvider);
     for (final e in outcome.save) {
+      if (_turnedOff) return false;
       await writer.saveBlock(e);
+      if (!PlanMark.of(e)!.done) _written.add(e.id);
     }
     for (final id in outcome.delete) {
+      if (_turnedOff) return false;
       await writer.deleteBlock(id);
     }
+    return !_turnedOff;
   }
 
   /// Plans again when the next block ends (it then waits for an answer, or
