@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../model/calendar_event.dart';
+import '../planner/planner_model.dart';
 
 /// "Find a time" (K15, first part): members of a shared calendar can let it
 /// know when they are busy, and the app finds slots when everyone is free.
@@ -103,9 +104,17 @@ List<(DateTime, DateTime)> busyBlocks({
   final to = from.add(busyHorizon);
   return mergeBlocks([
     for (final e in events)
-      if (!e.allDay && visible.contains(e.calendarId))
+      if (!e.allDay && visible.contains(e.calendarId) && !_flexible(e))
         for (final o in e.occurrencesBetween(from, to)) o,
   ]);
+}
+
+/// A Planner block that can still move doesn't keep others away: a meeting
+/// or a booking wins and the block is planned again. Locked blocks, and
+/// blocks that are done, count like any event.
+bool _flexible(CalendarEvent e) {
+  final mark = PlanMark.of(e);
+  return mark != null && !mark.locked && !mark.done;
 }
 
 /// Start times of free slots of [length], on a [step] grid, between

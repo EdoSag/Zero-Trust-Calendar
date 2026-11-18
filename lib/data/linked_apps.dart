@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../model/linked_items.dart';
+import '../planner/planner_model.dart';
 
 /// The sibling apps whose data Calendar shows: notes linked to events, tasks
 /// with due dates, contacts as guests and their birthdays.
@@ -22,8 +23,8 @@ enum LinkedApp {
   final String androidPackage;
 
   /// Calendar writes to Notes only to create a new note ("Meeting notes"
-  /// for an event), and to Tasks only to create a task or tick one off. It
-  /// never writes Contacts.
+  /// for an event), and to Tasks only to create a task, tick one off or set
+  /// its Planner fields (length, Auto-schedule). It never writes Contacts.
   final bool writable;
 }
 
@@ -157,11 +158,18 @@ class LinkedMirror {
     _lifecycle = AppLifecycleListener(onResume: () => refresh().ignore());
   }
 
+  /// How the last [refresh] went: null before the first one finishes, then
+  /// true (everything pulled) or false (offline or failed). The Planner
+  /// waits for it, so it never plans from a list that is still arriving.
+  bool? lastRefreshOk;
+
   Future<void> refresh() async {
     try {
       await engine.sync();
+      lastRefreshOk = true;
     } on Object {
       // Offline: what's already on this device still shows.
+      lastRefreshOk = false;
     }
     if (!_refreshed.isClosed) _refreshed.add(null);
   }
@@ -193,6 +201,19 @@ class LinkedMirror {
     }
     final now = DateTime.now();
     await engine.save(id, LinkedTask.completedJson(json, completed, now));
+    refresh().ignore();
+  }
+
+  /// Changes a task's Planner fields (`planMinutes`, `planAuto`, ...) and
+  /// `updatedAt`, keeping every other field as stored.
+  Future<void> setTaskPlanFields(String id, Map<String, Object?> changes) async {
+    if (app != LinkedApp.tasks) throw StateError('Only tasks are planned');
+    final item = await store.get(id);
+    final json = item?.json;
+    if (item == null || item.deleted || json == null) {
+      throw StateError('That task is gone');
+    }
+    await engine.save(id, PlannerTask.withPlanFields(json, changes, DateTime.now()));
     refresh().ignore();
   }
 
@@ -242,6 +263,40 @@ final linkedTasksProvider = StreamProvider<List<LinkedTask>>((ref) async* {
     yield [for (final i in items) ?LinkedTask.fromItem(i.itemId, i.json)];
   }
 });
+
+/// ZT Tasks tasks as the Planner reads them, with or without a due date.
+@immutable
+class PlannerTaskList {
+  const PlannerTaskList(this.tasks, {required this.refreshOk});
+  final List<PlannerTask> tasks;
+
+  /// [LinkedMirror.lastRefreshOk] when the list was read.
+  final bool? refreshOk;
+
+  /// Whether the list can be planned from: the first pull has finished, and
+  /// if it failed (offline) there are tasks from an earlier one.
+  bool get ready => refreshOk == true || (refreshOk == false && tasks.isNotEmpty);
+}
+
+final plannerTasksProvider = StreamProvider<PlannerTaskList>((ref) async* {
+  final mirror = await ref.watch(linkedMirrorProvider(LinkedApp.tasks).future);
+  await for (final items in mirror.watch()) {
+    yield PlannerTaskList(
+      [for (final i in items) ?PlannerTask.fromItem(i.itemId, i.json)],
+      refreshOk: mirror.lastRefreshOk,
+    );
+  }
+});
+
+/// Sets a task's Planner fields in ZT Tasks
+/// ([LinkedMirror.setTaskPlanFields]). Tests replace it.
+final plannerTaskWriterProvider =
+    Provider<Future<void> Function(String id, Map<String, Object?> changes)>(
+      (ref) => (id, changes) async {
+        final mirror = await ref.read(linkedMirrorProvider(LinkedApp.tasks).future);
+        await mirror.setTaskPlanFields(id, changes);
+      },
+    );
 
 /// ZT Contacts contacts, by name.
 final linkedContactsProvider = StreamProvider<List<LinkedContact>>((

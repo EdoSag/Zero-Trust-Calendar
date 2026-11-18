@@ -12,6 +12,7 @@ import '../util/format.dart';
 import 'event_details_page.dart';
 import 'event_editor_page.dart';
 import 'linked_app_launcher.dart';
+import 'planner_block_sheet.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// The day the calendar is showing (the first day of the visible range).
@@ -33,6 +34,8 @@ int weekStartOf(BuildContext context, CalendarSettings settings) =>
 /// Tasks, or the contact's birthday card.
 Future<void> openEntry(BuildContext context, WidgetRef ref, CalendarEntry entry) async {
   switch (entry.kind) {
+    case EntryKind.event when entry.plan != null:
+      await showPlannerBlock(context, entry.event!);
     case EntryKind.event:
       await Navigator.of(context).push(
         MaterialPageRoute<void>(

@@ -1213,6 +1213,15 @@ packages:
       url: "https://github.com/EdoSag/Zero-Trust-Core.git"
     source: git
     version: "0.1.0"
+  zt_scheduler:
+    dependency: "direct main"
+    description:
+      path: "packages/zt_scheduler"
+      ref: "060167d1e6c753dd041f128fb6d992e77ffc0520"
+      resolved-ref: "060167d1e6c753dd041f128fb6d992e77ffc0520"
+      url: "https://github.com/EdoSag/Zero-Trust-Core.git"
+    source: git
+    version: "0.1.0"
 sdks:
   dart: ">=3.13.0 <4.0.0"
   flutter: ">=3.47.0"

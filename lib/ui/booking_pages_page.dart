@@ -9,6 +9,7 @@ import '../booking/booking_crypto.dart';
 import '../booking/booking_pages.dart';
 import '../data/calendar_store.dart';
 import '../model/calendar_event.dart';
+import '../planner/planner_model.dart';
 import '../util/format.dart';
 import '../util/time_zones.dart';
 import 'time_zone_picker.dart';
@@ -335,7 +336,7 @@ class _BookingPageEditorState extends ConsumerState<BookingPageEditor> {
     final l = context.l10n;
     final calendars = [
       for (final c in ref.watch(calendarsProvider).value ?? const [ZtCalendarInfo.personal])
-        if (c.url == null) c,
+        if (c.url == null && c.id != plannerCalendarId) c,
     ];
     if (!calendars.any((c) => c.id == _calendarId)) {
       _calendarId = CalendarEvent.defaultCalendarId;

@@ -16,6 +16,7 @@ import '../data/phone_calendar_sync.dart';
 import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
+import '../planner/planner_controller.dart';
 import '../platform/channels.dart';
 import '../reminders/reminders.dart';
 import '../ui/guest_actions.dart';
@@ -236,7 +237,13 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     });
     // Coming back to Calendar fetches subscribed calendars that are due,
     // so a Google or Outlook link is fresh when you look.
-    _lifecycle = AppLifecycleListener(onResume: _refreshFeeds);
+    _lifecycle = AppLifecycleListener(
+      onResume: () {
+        _refreshFeeds();
+        // Time passed while Calendar was away: blocks may have ended.
+        ref.read(plannerControllerProvider.notifier).schedule();
+      },
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _schedule();
       _takeFiles();
@@ -529,6 +536,8 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     ref.watch(ztSpacesProvider);
     // The desktop calendar bridge, when the user turned it on (K16).
     ref.watch(desktopBridgeProvider);
+    // The Planner, when it is on: plans again as events and tasks change.
+    ref.watch(plannerControllerProvider);
     ref.listen(eventsProvider, (_, _) => _schedule());
     ref.listen(sharedEventsProvider, (_, _) => _schedule());
     ref.listen(linkedTasksProvider, (_, _) => _schedule());

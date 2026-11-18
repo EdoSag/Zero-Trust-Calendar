@@ -1272,5 +1272,186 @@
   "feedHelpOutlook": "In Outlook on the web, open Settings, then Calendar, then Shared calendars. Under \"Publish a calendar\" pick the calendar and \"Can view all details\", click Publish, and copy the ICS link.",
   "feedHelpIcloudTitle": "iCloud (Apple)",
   "feedHelpIcloud": "On an iPhone, open Calendar and tap Calendars. Tap the info button next to the calendar, turn on \"Public Calendar\" and tap \"Share Link\". Anyone with a public iCloud link can open it.",
-  "feedHelpPrivacy": "Keep these links private: anyone who has one can see that calendar. ZT Calendar stores the link encrypted and downloads it straight from your phone. Subscribed calendars are read-only here. To move events over for good, export a file from the other app and use Import instead."
+  "feedHelpPrivacy": "Keep these links private: anyone who has one can see that calendar. ZT Calendar stores the link encrypted and downloads it straight from your phone. Subscribed calendars are read-only here. To move events over for good, export a file from the other app and use Import instead.",
+  "planner": "Planner",
+  "plannedCalendarName": "Planned",
+  "plannerPartOf": "{title} ({part} of {total})",
+  "@plannerPartOf": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "part": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerHoursMinutes": "{hours} h {minutes} min",
+  "@plannerHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerReasonEarliest": "This is the earliest free time in your hours.",
+  "plannerReasonDeadline": "Placed here to finish before the due date.",
+  "plannerReasonLate": "It doesn't fit before the due date. This is the earliest time left.",
+  "plannerReasonLocked": "You locked it at this time.",
+  "plannerReasonDone": "Marked as done.",
+  "plannerNoHours": "No hours set",
+  "plannerHoursEndFirst": "The end has to be after the start.",
+  "plannerHoursOverlap": "These hours overlap other hours on that day.",
+  "plannerDayOff": "Off",
+  "plannerTaskFinishedSaved": "Task finished. Saved in ZT Tasks.",
+  "plannerBlockGone": "This block is no longer planned.",
+  "plannerBlockPart": "Part {part} of {total}",
+  "@plannerBlockPart": {
+    "placeholders": {
+      "part": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerBlockMoves": "The Planner moves this block when your calendar changes.",
+  "plannerTaskFinished": "Task finished",
+  "plannerCouldNotPlan": "Could not plan: {error}",
+  "@plannerCouldNotPlan": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerIntroTitle": "Let Calendar plan your tasks",
+  "plannerIntroBody": "The Planner takes tasks from ZT Tasks and fits them into the free time around your events. When a meeting moves or a new one arrives, it plans again, and it tells you when a task no longer fits before its due date.",
+  "plannerIntroPrivacy": "Everything is worked out on this phone. Your tasks and events stay end-to-end encrypted, and no AI is involved.",
+  "plannerSetUp": "Set up the Planner",
+  "plannerNext7Days": "Next 7 days",
+  "plannerWaitingForSync": "Waiting for your calendar and tasks to finish syncing…",
+  "plannerRiskNoRoom": "{amount} doesn't fit in the next 4 weeks",
+  "@plannerRiskNoRoom": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerRiskLate": "{amount} is planned after the due date",
+  "@plannerRiskLate": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerTasksToPlan": "Tasks to plan",
+  "plannerLoadingTasks": "Loading tasks from ZT Tasks…",
+  "plannerNoOpenTasks": "There are no open tasks in ZT Tasks.",
+  "plannerNoTasksSwitchedOn": "No task is switched on yet. Switch on the tasks you want planned.",
+  "plannerOtherTasks": "Other tasks ({count})",
+  "@plannerOtherTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerWorkHours": "Work hours",
+  "plannerPersonalHours": "Personal hours",
+  "plannerWhichTasks": "Which tasks to plan",
+  "plannerAllTasks": "All tasks",
+  "plannerAllTasksHint": "Every open task in ZT Tasks, except the ones you switch off.",
+  "plannerOnlySwitchedOn": "Only tasks I switch on",
+  "plannerOnlySwitchedOnHint": "Nothing is planned until you switch a task on.",
+  "plannerUsualLength": "Usual task length",
+  "plannerShortestBlock": "Shortest block",
+  "plannerLongestBlock": "Longest block",
+  "plannerBreakAfterMeetings": "Break after meetings",
+  "plannerNoBreak": "None",
+  "plannerMostPerDay": "Most planned time per day",
+  "plannerBusyCalendars": "Calendars that count as busy",
+  "plannerNoBusyCalendars": "None",
+  "plannerPassedCountAsDone": "Blocks that pass count as done",
+  "plannerPassedCountAsDoneOn": "A block whose time has passed is marked done.",
+  "plannerPassedCountAsDoneOff": "A block that passed waits for the rest of the day, then its time is planned again.",
+  "plannerRemindAtStart": "Notify me when a block starts",
+  "plannerTidyUp": "Tidy up my week",
+  "plannerTidyUpHint": "Plans every block afresh, as early as it fits.",
+  "plannerTidiedUp": "Planning your week again",
+  "plannerTurnOff": "Turn off the Planner",
+  "plannerTurnOffTitle": "Turn off the Planner?",
+  "plannerTurnOffBody": "Planned blocks that aren't done are removed from your calendar. Your tasks stay as they are in ZT Tasks, and your Planner settings are kept.",
+  "plannerTaskLength": "Length",
+  "plannerLengthGuess": "{length} (guess)",
+  "@plannerLengthGuess": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerPlanIn": "Plan it in",
+  "plannerNothingPlanned": "Nothing is planned in the next 7 days.",
+  "plannerPlannedTotal": "{amount} planned",
+  "@plannerPlannedTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerDailyLimit": "At most {amount} a day",
+  "@plannerDailyLimit": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerDoneOf": "{amount} done",
+  "@plannerDoneOf": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerNotPlannedYet": "not planned yet",
+  "plannerNextBlock": "next: {when}",
+  "@plannerNextBlock": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerHoursHint": "The Planner only places blocks inside these hours.",
+  "plannerBusyCalendarsHint": "Events in these calendars keep the Planner away. Untick a calendar whose events you can work through.",
+  "plannerHiddenCalendar": "Hidden calendars don't count",
+  "plannerAllDayBusy": "All-day events count as busy",
+  "plannerAllDayBusyHint": "Nothing is planned on a day with an all-day event, such as a holiday.",
+  "plannerBack": "Back",
+  "plannerNext": "Next",
+  "plannerTurnOn": "Turn on the Planner",
+  "plannerStepHours": "Your hours",
+  "plannerStepHoursBody": "When may the Planner place tasks? Work tasks go into work hours and personal tasks into personal hours.",
+  "plannerStepTasks": "Which tasks",
+  "plannerStepTasksBody": "Choose what the Planner plans. You can change this later.",
+  "plannerPickTasks": "Tasks to plan now",
+  "plannerStepDefaults": "Defaults",
+  "plannerStepDefaultsBody": "Used for tasks that don't say otherwise. You can set a length for each task.",
+  "plannerStepPreview": "Your plan",
+  "plannerStepPreviewBody": "This is what the Planner would add to your calendar. Nothing is saved until you turn it on.",
+  "plannerPreviewNoTasks": "There is nothing to plan yet. After you turn the Planner on, switch on the tasks you want planned.",
+  "plannerPreviewNoRoom": "No free time was found in your hours in the next 4 weeks."
 }

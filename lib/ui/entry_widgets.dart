@@ -4,12 +4,21 @@ import '../data/entries.dart';
 import '../util/format.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
+/// The small mark on the Planner's blocks.
+const IconData plannerIcon = Icons.view_timeline_outlined;
+
 IconData? entryIcon(CalendarEntry e) => switch (e.kind) {
   EntryKind.task => Icons.task_alt,
   EntryKind.birthday => Icons.cake_outlined,
+  EntryKind.event when e.plan != null =>
+    e.plan!.done ? Icons.check_circle_outline : plannerIcon,
   EntryKind.event =>
     (e.event?.noteIds.isNotEmpty ?? false) ? Icons.sticky_note_2_outlined : null,
 };
+
+/// A block that is done is shown crossed out.
+TextDecoration? entryDecoration(CalendarEntry e) =>
+    (e.plan?.done ?? false) ? TextDecoration.lineThrough : null;
 
 /// A small coloured label, for the month grid and the all-day strip.
 class EntryChip extends StatelessWidget {
@@ -39,6 +48,7 @@ class EntryChip extends StatelessWidget {
       height: 1.2,
       color: fg,
       fontWeight: FontWeight.w500,
+      decoration: entryDecoration(entry),
     );
     final icon = entryIcon(entry);
     return Semantics(
@@ -131,7 +141,9 @@ class EntryTile extends StatelessWidget {
                   children: [
                     Text(
                       entry.title,
-                      style: theme.textTheme.titleSmall,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        decoration: entryDecoration(entry),
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
