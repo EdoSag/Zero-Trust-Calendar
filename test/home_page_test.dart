@@ -11,6 +11,8 @@ import 'package:zerotrust_calendar/data/subscriptions.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 import 'package:zerotrust_calendar/model/calendar_event.dart';
 import 'package:zerotrust_calendar/model/linked_items.dart';
+import 'package:zerotrust_calendar/planner/planner_controller.dart';
+import 'package:zerotrust_calendar/planner/planner_model.dart';
 import 'package:zerotrust_calendar/reminders/reminders.dart';
 import 'package:zerotrust_calendar/ui/event_details_page.dart';
 import 'package:zerotrust_calendar/ui/event_editor_page.dart';
@@ -36,6 +38,8 @@ Widget app(Widget home, List<CalendarEvent> events,
       linkedTasksProvider.overrideWith((ref) => Stream.value(const <LinkedTask>[])),
       linkedContactsProvider.overrideWith((ref) => Stream.value(const <LinkedContact>[])),
       feedsProvider.overrideWith((ref) => Stream.value(const <CalendarFeed>[])),
+      // The Planner is off unless a test turns it on.
+      plannerSettingsProvider.overrideWith((ref) => Stream.value(const PlannerSettings())),
     ],
     child: MaterialApp(
       // The real app theme: its full-width buttons vanish inside a Row, which

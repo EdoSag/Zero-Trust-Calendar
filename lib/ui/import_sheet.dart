@@ -9,6 +9,7 @@ import '../data/calendar_store.dart';
 import '../ics/ics.dart';
 import '../ics/import_service.dart';
 import '../model/calendar_event.dart';
+import '../planner/planner_model.dart';
 import '../platform/channels.dart';
 import 'shared_calendar_pages.dart';
 import '../util/format.dart';
@@ -240,7 +241,7 @@ class _AddFileSheetState extends ConsumerState<_AddFileSheet> {
       ..sort((a, b) => a.start.compareTo(b.start));
     final calendars = [
       for (final c in ref.watch(calendarsProvider).value ?? const [ZtCalendarInfo.personal])
-        if (!c.isSubscription) c,
+        if (!c.isSubscription && c.id != plannerCalendarId) c,
     ];
     final mine = ref.watch(eventsProvider).value ?? const <CalendarEvent>[];
     final matched = _matchCount(mine);

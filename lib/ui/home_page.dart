@@ -7,8 +7,10 @@ import '../data/calendar_store.dart';
 import '../model/calendar_event.dart';
 import '../util/format.dart';
 import 'calendars_page.dart';
+import 'entry_widgets.dart';
 import 'month_view.dart';
 import 'navigation.dart';
+import 'planner_page.dart';
 import 'quick_add_sheet.dart';
 import 'schedule_view.dart';
 import 'search_page.dart';
@@ -224,6 +226,12 @@ class _CalendarDrawer extends ConsumerWidget {
           onTap: () => push(const CalendarsPage()),
         ),
         const Divider(indent: 28, endIndent: 28),
+        ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 28),
+          leading: const Icon(plannerIcon),
+          title: Text(context.l10n.planner),
+          onTap: () => push(const PlannerPage()),
+        ),
         ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 28),
           leading: const Icon(Icons.settings_outlined),

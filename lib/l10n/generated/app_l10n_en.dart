@@ -1981,4 +1981,307 @@ class AppL10nEn extends AppL10n {
   @override
   String get feedHelpPrivacy =>
       'Keep these links private: anyone who has one can see that calendar. ZT Calendar stores the link encrypted and downloads it straight from your phone. Subscribed calendars are read-only here. To move events over for good, export a file from the other app and use Import instead.';
+
+  @override
+  String get planner => 'Planner';
+
+  @override
+  String get plannedCalendarName => 'Planned';
+
+  @override
+  String plannerPartOf(String title, int part, int total) {
+    return '$title ($part of $total)';
+  }
+
+  @override
+  String plannerHoursMinutes(int hours, int minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
+  String get plannerReasonEarliest =>
+      'This is the earliest free time in your hours.';
+
+  @override
+  String get plannerReasonDeadline =>
+      'Placed here to finish before the due date.';
+
+  @override
+  String get plannerReasonLate =>
+      'It doesn\'t fit before the due date. This is the earliest time left.';
+
+  @override
+  String get plannerReasonLocked => 'You locked it at this time.';
+
+  @override
+  String get plannerReasonDone => 'Marked as done.';
+
+  @override
+  String get plannerNoHours => 'No hours set';
+
+  @override
+  String get plannerHoursEndFirst => 'The end has to be after the start.';
+
+  @override
+  String get plannerHoursOverlap =>
+      'These hours overlap other hours on that day.';
+
+  @override
+  String get plannerDayOff => 'Off';
+
+  @override
+  String get plannerTaskFinishedSaved => 'Task finished. Saved in ZT Tasks.';
+
+  @override
+  String get plannerBlockGone => 'This block is no longer planned.';
+
+  @override
+  String plannerBlockPart(int part, int total) {
+    return 'Part $part of $total';
+  }
+
+  @override
+  String get plannerBlockMoves =>
+      'The Planner moves this block when your calendar changes.';
+
+  @override
+  String get plannerTaskFinished => 'Task finished';
+
+  @override
+  String plannerCouldNotPlan(String error) {
+    return 'Could not plan: $error';
+  }
+
+  @override
+  String get plannerIntroTitle => 'Let Calendar plan your tasks';
+
+  @override
+  String get plannerIntroBody =>
+      'The Planner takes tasks from ZT Tasks and fits them into the free time around your events. When a meeting moves or a new one arrives, it plans again, and it tells you when a task no longer fits before its due date.';
+
+  @override
+  String get plannerIntroPrivacy =>
+      'Everything is worked out on this phone. Your tasks and events stay end-to-end encrypted, and no AI is involved.';
+
+  @override
+  String get plannerSetUp => 'Set up the Planner';
+
+  @override
+  String get plannerNext7Days => 'Next 7 days';
+
+  @override
+  String get plannerWaitingForSync =>
+      'Waiting for your calendar and tasks to finish syncing…';
+
+  @override
+  String plannerRiskNoRoom(String amount) {
+    return '$amount doesn\'t fit in the next 4 weeks';
+  }
+
+  @override
+  String plannerRiskLate(String amount) {
+    return '$amount is planned after the due date';
+  }
+
+  @override
+  String get plannerTasksToPlan => 'Tasks to plan';
+
+  @override
+  String get plannerLoadingTasks => 'Loading tasks from ZT Tasks…';
+
+  @override
+  String get plannerNoOpenTasks => 'There are no open tasks in ZT Tasks.';
+
+  @override
+  String get plannerNoTasksSwitchedOn =>
+      'No task is switched on yet. Switch on the tasks you want planned.';
+
+  @override
+  String plannerOtherTasks(int count) {
+    return 'Other tasks ($count)';
+  }
+
+  @override
+  String get plannerWorkHours => 'Work hours';
+
+  @override
+  String get plannerPersonalHours => 'Personal hours';
+
+  @override
+  String get plannerWhichTasks => 'Which tasks to plan';
+
+  @override
+  String get plannerAllTasks => 'All tasks';
+
+  @override
+  String get plannerAllTasksHint =>
+      'Every open task in ZT Tasks, except the ones you switch off.';
+
+  @override
+  String get plannerOnlySwitchedOn => 'Only tasks I switch on';
+
+  @override
+  String get plannerOnlySwitchedOnHint =>
+      'Nothing is planned until you switch a task on.';
+
+  @override
+  String get plannerUsualLength => 'Usual task length';
+
+  @override
+  String get plannerShortestBlock => 'Shortest block';
+
+  @override
+  String get plannerLongestBlock => 'Longest block';
+
+  @override
+  String get plannerBreakAfterMeetings => 'Break after meetings';
+
+  @override
+  String get plannerNoBreak => 'None';
+
+  @override
+  String get plannerMostPerDay => 'Most planned time per day';
+
+  @override
+  String get plannerBusyCalendars => 'Calendars that count as busy';
+
+  @override
+  String get plannerNoBusyCalendars => 'None';
+
+  @override
+  String get plannerPassedCountAsDone => 'Blocks that pass count as done';
+
+  @override
+  String get plannerPassedCountAsDoneOn =>
+      'A block whose time has passed is marked done.';
+
+  @override
+  String get plannerPassedCountAsDoneOff =>
+      'A block that passed waits for the rest of the day, then its time is planned again.';
+
+  @override
+  String get plannerRemindAtStart => 'Notify me when a block starts';
+
+  @override
+  String get plannerTidyUp => 'Tidy up my week';
+
+  @override
+  String get plannerTidyUpHint =>
+      'Plans every block afresh, as early as it fits.';
+
+  @override
+  String get plannerTidiedUp => 'Planning your week again';
+
+  @override
+  String get plannerTurnOff => 'Turn off the Planner';
+
+  @override
+  String get plannerTurnOffTitle => 'Turn off the Planner?';
+
+  @override
+  String get plannerTurnOffBody =>
+      'Planned blocks that aren\'t done are removed from your calendar. Your tasks stay as they are in ZT Tasks, and your Planner settings are kept.';
+
+  @override
+  String get plannerTaskLength => 'Length';
+
+  @override
+  String plannerLengthGuess(String length) {
+    return '$length (guess)';
+  }
+
+  @override
+  String get plannerPlanIn => 'Plan it in';
+
+  @override
+  String get plannerNothingPlanned => 'Nothing is planned in the next 7 days.';
+
+  @override
+  String plannerPlannedTotal(String amount) {
+    return '$amount planned';
+  }
+
+  @override
+  String plannerDailyLimit(String amount) {
+    return 'At most $amount a day';
+  }
+
+  @override
+  String plannerDoneOf(String amount) {
+    return '$amount done';
+  }
+
+  @override
+  String get plannerNotPlannedYet => 'not planned yet';
+
+  @override
+  String plannerNextBlock(String when) {
+    return 'next: $when';
+  }
+
+  @override
+  String get plannerHoursHint =>
+      'The Planner only places blocks inside these hours.';
+
+  @override
+  String get plannerBusyCalendarsHint =>
+      'Events in these calendars keep the Planner away. Untick a calendar whose events you can work through.';
+
+  @override
+  String get plannerHiddenCalendar => 'Hidden calendars don\'t count';
+
+  @override
+  String get plannerAllDayBusy => 'All-day events count as busy';
+
+  @override
+  String get plannerAllDayBusyHint =>
+      'Nothing is planned on a day with an all-day event, such as a holiday.';
+
+  @override
+  String get plannerBack => 'Back';
+
+  @override
+  String get plannerNext => 'Next';
+
+  @override
+  String get plannerTurnOn => 'Turn on the Planner';
+
+  @override
+  String get plannerStepHours => 'Your hours';
+
+  @override
+  String get plannerStepHoursBody =>
+      'When may the Planner place tasks? Work tasks go into work hours and personal tasks into personal hours.';
+
+  @override
+  String get plannerStepTasks => 'Which tasks';
+
+  @override
+  String get plannerStepTasksBody =>
+      'Choose what the Planner plans. You can change this later.';
+
+  @override
+  String get plannerPickTasks => 'Tasks to plan now';
+
+  @override
+  String get plannerStepDefaults => 'Defaults';
+
+  @override
+  String get plannerStepDefaultsBody =>
+      'Used for tasks that don\'t say otherwise. You can set a length for each task.';
+
+  @override
+  String get plannerStepPreview => 'Your plan';
+
+  @override
+  String get plannerStepPreviewBody =>
+      'This is what the Planner would add to your calendar. Nothing is saved until you turn it on.';
+
+  @override
+  String get plannerPreviewNoTasks =>
+      'There is nothing to plan yet. After you turn the Planner on, switch on the tasks you want planned.';
+
+  @override
+  String get plannerPreviewNoRoom =>
+      'No free time was found in your hours in the next 4 weeks.';
 }

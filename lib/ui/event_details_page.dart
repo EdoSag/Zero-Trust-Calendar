@@ -13,6 +13,7 @@ import '../data/subscriptions.dart';
 import '../ics/ics.dart';
 import '../model/calendar_event.dart';
 import '../model/linked_items.dart';
+import '../planner/planner_model.dart';
 import '../util/format.dart';
 import '../util/time_zones.dart';
 import 'attachments.dart';
@@ -20,6 +21,7 @@ import 'event_editor_page.dart';
 import 'guest_actions.dart';
 import 'linked_app_launcher.dart';
 import 'linked_pickers.dart';
+import 'planner_block_sheet.dart';
 import 'inline_button_style.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
@@ -47,6 +49,17 @@ class EventDetailsPage extends ConsumerWidget {
           child: events == null
               ? const CircularProgressIndicator()
               : Text(context.l10n.thisEventWasDeleted),
+        ),
+      );
+    }
+    if (PlanMark.of(event) != null) {
+      // One of the Planner's blocks (opened from search, a widget or a
+      // reminder): the Planner places it, so it isn't edited like an event.
+      return Scaffold(
+        appBar: AppBar(title: Text(context.l10n.planner)),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+          child: PlannerBlockView(blockId: event.id),
         ),
       );
     }

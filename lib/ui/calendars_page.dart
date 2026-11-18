@@ -6,7 +6,10 @@ import '../data/calendar_store.dart';
 import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
+import '../planner/planner_controller.dart';
+import '../planner/planner_model.dart';
 import '../util/format.dart';
+import 'entry_widgets.dart';
 import 'shared_calendar_pages.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
@@ -21,6 +24,7 @@ class CalendarsPage extends ConsumerWidget {
     final shared = ref.watch(sharedCalendarsProvider).value ?? const <SharedCalendar>[];
     final joins = ref.watch(pendingJoinsProvider).value ?? const [];
     final waiting = [for (final s in shared) if (s.waiting) s];
+    final plannerOn = ref.watch(plannerSettingsProvider).value?.enabled ?? false;
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.calendars)),
       floatingActionButton: FloatingActionButton.extended(
@@ -39,6 +43,8 @@ class CalendarsPage extends ConsumerWidget {
               leading: Icon(
                 c.isSubscription
                     ? Icons.rss_feed
+                    : c.id == plannerCalendarId
+                    ? plannerIcon
                     : c.isShared
                     ? (shared.any((s) => s.id == c.id && s.family) ? Icons.family_restroom : Icons.group)
                     : Icons.circle,
@@ -62,7 +68,14 @@ class CalendarsPage extends ConsumerWidget {
                         builder: (_) => SharedCalendarPage(spaceId: spaceIdOf(c.id)!),
                       ),
                     )
-                  : _edit(context, ref, c, calendars.length),
+                  : _edit(
+                      context,
+                      ref,
+                      c,
+                      calendars.length,
+                      // While the Planner is on it needs its calendar.
+                      canDelete: !(plannerOn && c.id == plannerCalendarId),
+                    ),
             ),
           for (final s in waiting)
             ListTile(
@@ -91,8 +104,9 @@ class CalendarsPage extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     ZtCalendarInfo? calendar,
-    int count,
-  ) async {
+    int count, {
+    bool canDelete = true,
+  }) async {
     final name = TextEditingController(text: calendar?.name ?? '');
     var color = calendar?.color ?? calendarPalette[count % calendarPalette.length];
     final result = await showDialog<String>(
@@ -135,7 +149,9 @@ class CalendarsPage extends ConsumerWidget {
             ),
           ),
           actions: [
-            if (calendar != null && calendar.id != CalendarEvent.defaultCalendarId)
+            if (calendar != null &&
+                canDelete &&
+                calendar.id != CalendarEvent.defaultCalendarId)
               TextButton(
                 onPressed: () => Navigator.of(dialog).pop('delete'),
                 child: Text(context.l10n.delete),

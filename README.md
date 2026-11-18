@@ -56,6 +56,19 @@ account, settings and look as the other Zero-Trust apps, built on
 - **Video calls and attachments:** a meeting link with a Join button
   (found automatically in imported invitations), and encrypted file
   attachments (25 MB each).
+- **Planner** (menu > Planner, off until you set it up): fits your ZT Tasks
+  tasks into the free time around your events and plans again when your
+  calendar or your tasks change. You choose your work and personal hours,
+  which tasks it plans ("Only tasks I switch on" or "All tasks"), the usual
+  task length, block sizes, the break after meetings and the most planned
+  time per day; a preview shows the plan before anything is saved. Blocks
+  are ordinary encrypted events in a "Planned" calendar, so they sync, get
+  reminders and show in every view and widget, marked and numbered ("Write
+  report (1 of 3)"). A task that no longer fits before its due date is
+  listed as at risk. Everything is worked out on the phone by the
+  `zt_scheduler` package of Zero-Trust-Core: no server, no AI. It plans
+  while Calendar is unlocked; marking blocks done, locking and dragging
+  them come next.
 - **Show on this phone** (optional, per calendar, off by default): copies
   events into Android's own calendar so Wear OS, Android Auto and other
   apps can see them.
