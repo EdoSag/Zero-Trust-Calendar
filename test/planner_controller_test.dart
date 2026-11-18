@@ -206,4 +206,83 @@ void main() {
     // after a settings change is what makes them four blocks of one hour.
     expect(account.blocks.map((b) => b.duration.inMinutes), [60, 60, 60, 60]);
   });
+
+  test('settings changed on another device plan the blocks afresh here too', () async {
+    final account = FakeAccount(settings: on, tasks: [task('a', minutes: 240)]);
+    final container = await start(account);
+    final planner = container.read(plannerControllerProvider.notifier);
+    await planner.runNow();
+    expect(account.blocks.map((b) => b.duration.inMinutes), [120, 120]);
+
+    // The new settings arrive by sync: nothing here called saveSettings.
+    account.settings = account.settings.copyWith(maxChunk: 60);
+    account.emit();
+    await pumpEventQueue();
+    await planner.runNow();
+    expect(account.blocks.map((b) => b.duration.inMinutes), [60, 60, 60, 60]);
+
+    // Planned with these settings now: the next run leaves everything alone.
+    await pumpEventQueue();
+    account.log.clear();
+    await planner.runNow();
+    expect(account.log, isEmpty);
+
+    // A switch that moves no block (the reminder) is not a reason to
+    // place them afresh.
+    final before = [for (final b in account.blocks) b.start];
+    account.settings = account.settings.copyWith(remindAtStart: false);
+    account.emit();
+    await pumpEventQueue();
+    await planner.runNow();
+    expect([for (final b in account.blocks) b.start], before);
+  });
+
+  test('settings changed while the app was closed are followed when it opens', () async {
+    final account = FakeAccount(settings: on, tasks: [task('a', minutes: 240)]);
+    final first = await start(account);
+    await first.read(plannerControllerProvider.notifier).runNow();
+    expect(account.blocks.map((b) => b.duration.inMinutes), [120, 120]);
+    first.dispose();
+
+    // Saved (here or elsewhere) but never planned with: the app closed
+    // before the Planner ran.
+    account.settings = account.settings.copyWith(maxChunk: 60);
+    final second = await start(account);
+    await second.read(plannerControllerProvider.notifier).runNow();
+    expect(account.blocks.map((b) => b.duration.inMinutes), [60, 60, 60, 60]);
+  });
+
+  test('turning the Planner off while it is saving blocks leaves none behind', () async {
+    final account = FakeAccount(
+      settings: on,
+      tasks: [task('a'), task('b'), task('c')],
+    );
+    final container = await start(account);
+    final planner = container.read(plannerControllerProvider.notifier);
+    Future<void>? turningOff;
+    account.onSaveBlock = (id) async {
+      // The user turns the Planner off while the first block is on its way.
+      turningOff ??= planner.saveSettings(account.settings.copyWith(enabled: false));
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+    };
+    await planner.runNow();
+    await turningOff;
+    await pumpEventQueue();
+
+    expect(account.settings.enabled, isFalse);
+    expect(account.blocks, isEmpty, reason: 'blocks were written after the cleanup');
+    // The run stopped after the block it was on.
+    expect(account.log.where((l) => l.startsWith('save')), hasLength(1));
+    expect(container.read(plannerControllerProvider).waiting, PlannerWaiting.off);
+
+    // Off stays off, and on again plans as usual.
+    account.onSaveBlock = null;
+    account.log.clear();
+    await planner.runNow();
+    expect(account.log, isEmpty);
+    await planner.saveSettings(account.settings.copyWith(enabled: true));
+    await pumpEventQueue();
+    await planner.runNow();
+    expect(account.blocks, hasLength(3));
+  });
 }

@@ -38,6 +38,14 @@ class FakeAccount {
   bool? tasksRefreshOk;
   bool synced;
 
+  /// This device's own preferences. Shared by every container made from
+  /// this account, as they are when the app is closed and opened again.
+  final prefs = InMemoryPreferencesStore();
+
+  /// Called before each block is saved, so a test can step in while the
+  /// Planner is writing.
+  Future<void> Function(String id)? onSaveBlock;
+
   /// Every write, in order: `save <id>`, `delete <id>`, `settings`,
   /// `calendar`, `task <id> <changes>`.
   final log = <String>[];
@@ -95,7 +103,7 @@ class FakeAccount {
 
   List<Override> get overrides => [
     ztAppConfigProvider.overrideWithValue(calendarAppConfig),
-    ztPreferencesStoreProvider.overrideWithValue(InMemoryPreferencesStore()),
+    ztPreferencesStoreProvider.overrideWithValue(prefs),
     reminderSchedulerProvider.overrideWithValue(NoopReminderScheduler()),
     eventsProvider.overrideWith((ref) => _from(_events, () => [...events])),
     calendarsProvider.overrideWith((ref) => _from(_calendars, () => [...calendars])),
@@ -132,6 +140,7 @@ class _FakeWriter extends PlannerWriter {
 
   @override
   Future<void> saveBlock(CalendarEvent block) async {
+    await account.onSaveBlock?.call(block.id);
     account.log.add('save ${block.id}');
     account.events = [
       for (final e in account.events)
