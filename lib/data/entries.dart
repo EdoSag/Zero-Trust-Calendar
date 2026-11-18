@@ -8,6 +8,7 @@ import '../model/linked_items.dart';
 import '../planner/planner_model.dart';
 import '../planner/planner_plan.dart';
 import 'calendar_store.dart';
+import 'event_done.dart';
 import 'linked_apps.dart';
 import 'subscriptions.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
@@ -29,6 +30,7 @@ class CalendarEntry {
     this.task,
     this.contact,
     this.plan,
+    this.done = false,
   });
 
   final EntryKind kind;
@@ -47,6 +49,10 @@ class CalendarEntry {
 
   /// Set when the event is one of the Planner's blocks.
   final PlanMark? plan;
+
+  /// Shown crossed out: a Planner block that is done, or an event the user
+  /// marked as done.
+  final bool done;
 
   bool get isOccurrenceOfSeries => event?.repeats ?? false;
 
@@ -127,6 +133,7 @@ List<CalendarEntry> buildEntries({
           color: e.color ?? cal.color,
           event: e,
           plan: plan,
+          done: plan?.done ?? (!e.readOnly && eventDone(e, s)),
         ),
       );
     }

@@ -1453,5 +1453,88 @@
   "plannerStepPreview": "Your plan",
   "plannerStepPreviewBody": "This is what the Planner would add to your calendar. Nothing is saved until you turn it on.",
   "plannerPreviewNoTasks": "There is nothing to plan yet. After you turn the Planner on, switch on the tasks you want planned.",
-  "plannerPreviewNoRoom": "No free time was found in your hours in the next 4 weeks."
+  "plannerPreviewNoRoom": "No free time was found in your hours in the next 4 weeks.",
+  "plannerNeedMoreTime": "Need more time",
+  "plannerDidNotDoIt": "Didn't do it",
+  "plannerDidNotDoItHint": "Its time is planned again.",
+  "plannerFinishedBlock": "Finished this block?",
+  "plannerFinishedTitle": "Finished {title}?",
+  "@plannerFinishedTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerMovedAndLocked": "Moved to {when} and locked there",
+  "@plannerMovedAndLocked": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerMarkedDone": "Marked as done",
+  "plannerMarkedNotDone": "Marked as not done",
+  "plannerHowMuchMore": "How much more time?",
+  "plannerAddedTime": "Added to the task: {amount}",
+  "@plannerAddedTime": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerLaterToday": "Later today",
+  "plannerLaterThatDay": "Later that day",
+  "plannerTheDayAfter": "The day after",
+  "plannerAWeekLater": "A week later",
+  "plannerNotNowUntil": "When should it be planned again?",
+  "plannerPlannedAgainFrom": "Not planned before: {when}",
+  "@plannerPlannedAgainFrom": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerPlannedAgain": "Its time will be planned again",
+  "plannerBlockOverlaps": "This block overlaps an event.",
+  "plannerNotDoneAfterAll": "Not done after all",
+  "plannerAlreadyDone": "Already done",
+  "plannerAlreadyDoneHint": "Frees the time that was planned for it.",
+  "plannerNotNow": "Not now",
+  "plannerUnlock": "Unlock",
+  "plannerLockHere": "Lock here",
+  "plannerLockHereHint": "The Planner will not move it.",
+  "plannerUnlocked": "Unlocked. The Planner may move it again.",
+  "plannerLocked": "Locked at this time",
+  "plannerTasksAtRisk": "{count, plural, =1{1 task is at risk} other{{count} tasks are at risk}}",
+  "@plannerTasksAtRisk": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerAtRiskTitle": "Tasks at risk",
+  "plannerAtRiskBody": "These tasks don't fit before their due date. Tap one to change its length or its due date, or make room in your calendar.",
+  "plannerAtRiskNone": "Every task fits now.",
+  "plannerOpenPlanner": "Open the Planner",
+  "plannerFixLength": "Change the length",
+  "plannerFixLengthNow": "Now {amount}",
+  "@plannerFixLengthNow": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerFixDue": "Move the due date",
+  "plannerFixStop": "Stop planning this task",
+  "plannerAskAtEnd": "Ask when a block ends",
+  "plannerAskAtEndHint": "A notification asks whether you finished. Its buttons work while Calendar is locked.",
+  "markAsDone": "Mark as done",
+  "markAsNotDone": "Mark as not done",
+  "plannerDone": "Done"
 }

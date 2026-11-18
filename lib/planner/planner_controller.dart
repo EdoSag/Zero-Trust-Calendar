@@ -9,6 +9,8 @@ import '../data/linked_apps.dart';
 import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
+import 'planner_actions.dart';
+import 'planner_answers.dart';
 import 'planner_model.dart';
 import 'planner_plan.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
@@ -116,8 +118,8 @@ final plannerControllerProvider =
 /// Keeps the plan up to date while Calendar is unlocked.
 ///
 /// It plans again a moment after anything it reads changes (events, tasks,
-/// calendars, its settings), after every sync, on resume, and when a
-/// block's time passes. A run that finds nothing to change writes nothing,
+/// calendars, its settings), after every sync, on resume, when a block's
+/// time passes, and when a block's notification is answered. A run that finds nothing to change writes nothing,
 /// so two devices looking at the same data don't take turns rewriting it.
 ///
 /// It never plans from half-loaded data: it waits until this session's
@@ -144,9 +146,16 @@ class PlannerController extends Notifier<PlannerStatus> {
     ref.listen(allEventsProvider, (_, _) => schedule());
     ref.listen(calendarsProvider, (_, _) => schedule());
     ref.listen(plannerTasksProvider, (_, _) => schedule());
+    // Shared and subscribed calendars count as busy, and the Planner waits
+    // for them: plan when they have loaded, even if no event changed.
+    ref.listen(sharedCalendarsProvider, (_, _) => schedule());
+    ref.listen(feedsProvider, (_, _) => schedule());
     ref.listen(plannerSyncedProvider, (_, synced) {
       if (synced) schedule();
     });
+    // A button on a block's notification, pressed while the app is open.
+    final answers = ref.read(plannerAnswerBoxProvider).arrived.listen((_) => schedule());
+    ref.onDispose(answers.cancel);
     schedule();
     return const PlannerStatus(waiting: PlannerWaiting.loading);
   }
@@ -171,6 +180,16 @@ class PlannerController extends Notifier<PlannerStatus> {
     try {
       final inputs = _inputs();
       if (inputs == null) return;
+      // Answers given on notifications while Calendar was locked come
+      // first. They change blocks and tasks, so the plan is made from what
+      // they leave, on the next run.
+      final answers = await ref.read(plannerAnswerBoxProvider).take();
+      if (!ref.mounted) return;
+      if (answers.isNotEmpty) {
+        await ref.read(plannerActionsProvider).applyAnswers(answers);
+        _again = true;
+        return;
+      }
       final rebuildNow = _rebuild;
       _rebuild = false;
       final outcome = computePlan(
@@ -255,6 +274,8 @@ class PlannerController extends Notifier<PlannerStatus> {
           _ => null,
         };
     if (s == null || !s.enabled) {
+      // Off: its blocks are gone, so answers about them mean nothing.
+      if (s != null && !preview) ref.read(plannerAnswerBoxProvider).take().ignore();
       state = PlannerStatus(
         waiting: s == null ? PlannerWaiting.loading : PlannerWaiting.off,
       );

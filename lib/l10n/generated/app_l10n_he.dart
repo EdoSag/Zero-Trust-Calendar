@@ -2273,4 +2273,147 @@ class AppL10nHe extends AppL10n {
   @override
   String get plannerPreviewNoRoom =>
       'לא נמצא זמן פנוי בשעות שלכם ב-4 השבועות הקרובים.';
+
+  @override
+  String get plannerNeedMoreTime => 'צריך עוד זמן';
+
+  @override
+  String get plannerDidNotDoIt => 'לא בוצע';
+
+  @override
+  String get plannerDidNotDoItHint => 'הזמן שלו יתוכנן מחדש.';
+
+  @override
+  String get plannerFinishedBlock => 'סיימתם את הבלוק הזה?';
+
+  @override
+  String plannerFinishedTitle(String title) {
+    return 'סיימתם את $title?';
+  }
+
+  @override
+  String plannerMovedAndLocked(String when) {
+    return 'הועבר ל-$when וננעל שם';
+  }
+
+  @override
+  String get plannerMarkedDone => 'סומן כבוצע';
+
+  @override
+  String get plannerMarkedNotDone => 'סומן כלא בוצע';
+
+  @override
+  String get plannerHowMuchMore => 'כמה זמן נוסף?';
+
+  @override
+  String plannerAddedTime(String amount) {
+    return 'נוסף למשימה: $amount';
+  }
+
+  @override
+  String get plannerLaterToday => 'מאוחר יותר היום';
+
+  @override
+  String get plannerLaterThatDay => 'מאוחר יותר באותו יום';
+
+  @override
+  String get plannerTheDayAfter => 'ביום שאחרי';
+
+  @override
+  String get plannerAWeekLater => 'שבוע אחר כך';
+
+  @override
+  String get plannerNotNowUntil => 'ממתי לתכנן אותו מחדש?';
+
+  @override
+  String plannerPlannedAgainFrom(String when) {
+    return 'לא יתוכנן לפני: $when';
+  }
+
+  @override
+  String get plannerPlannedAgain => 'הזמן שלו יתוכנן מחדש';
+
+  @override
+  String get plannerBlockOverlaps => 'הבלוק הזה חופף לאירוע.';
+
+  @override
+  String get plannerNotDoneAfterAll => 'בעצם לא בוצע';
+
+  @override
+  String get plannerAlreadyDone => 'כבר בוצע';
+
+  @override
+  String get plannerAlreadyDoneHint => 'משחרר את הזמן שתוכנן לו.';
+
+  @override
+  String get plannerNotNow => 'לא עכשיו';
+
+  @override
+  String get plannerUnlock => 'ביטול הנעילה';
+
+  @override
+  String get plannerLockHere => 'נעילה כאן';
+
+  @override
+  String get plannerLockHereHint => 'המתכנן לא יזיז אותו.';
+
+  @override
+  String get plannerUnlocked => 'הנעילה בוטלה. המתכנן רשאי להזיז אותו שוב.';
+
+  @override
+  String get plannerLocked => 'ננעל בשעה הזו';
+
+  @override
+  String plannerTasksAtRisk(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count משימות בסיכון',
+      one: 'משימה אחת בסיכון',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get plannerAtRiskTitle => 'משימות בסיכון';
+
+  @override
+  String get plannerAtRiskBody =>
+      'המשימות האלה לא נכנסות לפני תאריך היעד שלהן. הקישו על משימה כדי לשנות את האורך או את תאריך היעד שלה, או פנו מקום ביומן.';
+
+  @override
+  String get plannerAtRiskNone => 'כל המשימות נכנסות עכשיו.';
+
+  @override
+  String get plannerOpenPlanner => 'פתיחת המתכנן';
+
+  @override
+  String get plannerFixLength => 'שינוי האורך';
+
+  @override
+  String plannerFixLengthNow(String amount) {
+    return 'כרגע $amount';
+  }
+
+  @override
+  String get plannerFixDue => 'הזזת תאריך היעד';
+
+  @override
+  String get plannerFixStop => 'להפסיק לתכנן את המשימה הזו';
+
+  @override
+  String get plannerAskAtEnd => 'לשאול כשבלוק מסתיים';
+
+  @override
+  String get plannerAskAtEndHint =>
+      'התראה שואלת אם סיימתם. הכפתורים שלה פועלים גם כשהיומן נעול.';
+
+  @override
+  String get markAsDone => 'סימון כבוצע';
+
+  @override
+  String get markAsNotDone => 'סימון כלא בוצע';
+
+  @override
+  String get plannerDone => 'בוצע';
 }

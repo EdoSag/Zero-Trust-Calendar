@@ -223,6 +223,11 @@ Future<void> moveEntry(
   if (event == null || event.readOnly) return;
   final repo = ref.read(calendarRepositoryProvider);
   final messenger = ScaffoldMessenger.of(context);
+  if (entry.plan != null) {
+    // A Planner block: it is locked where the user puts it.
+    await movePlannerBlock(context, ref, event, start, end);
+    return;
+  }
   try {
     if (event.repeats) {
       final scope = await askSeriesScope(context, action: context.l10n.move);

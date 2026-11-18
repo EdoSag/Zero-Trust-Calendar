@@ -3,7 +3,7 @@ import 'package:zt_scheduler/zt_scheduler.dart';
 
 import '../model/calendar_event.dart';
 
-/// The Planner (R2): tasks from ZT Tasks fitted into the free time around
+/// The Planner: tasks from ZT Tasks fitted into the free time around
 /// the calendar's events, by the `zt_scheduler` engine, on this device.
 ///
 /// Its blocks are ordinary events in one calendar with the fixed id
@@ -143,6 +143,8 @@ class PlannerSettings {
     this.allDayBusy = false,
     this.pastBlocks = PastBlocks.askThenReplan,
     this.remindAtStart = true,
+    this.askAtEnd = true,
+    this.skips = const {},
     this.updatedAt,
     this.extra = const {},
   });
@@ -179,6 +181,20 @@ class PlannerSettings {
   /// A notification when a block starts.
   final bool remindAtStart;
 
+  /// A notification when a block ends, asking whether it was done.
+  final bool askAtEnd;
+
+  /// "Not now": task id to the time (local) before which the task isn't
+  /// planned. Times that have passed mean nothing and are dropped the next
+  /// time the settings are saved.
+  final Map<String, DateTime> skips;
+
+  /// [skips] without the ones that have passed at [now].
+  Map<String, DateTime> skipsAfter(DateTime now) => {
+    for (final e in skips.entries)
+      if (e.value.isAfter(now)) e.key: e.value,
+  };
+
   /// Last edit time from sync (not stored in the JSON).
   final DateTime? updatedAt;
 
@@ -188,7 +204,7 @@ class PlannerSettings {
   static const _known = {
     'kind', '_v', 'enabled', 'hours', 'tasks', 'defaultMinutes', 'minChunk',
     'maxChunk', 'breakAfterMeetings', 'maxMinutesPerDay', 'freeCalendars',
-    'allDayBusy', 'pastBlocks', 'remindAtStart',
+    'allDayBusy', 'pastBlocks', 'remindAtStart', 'askAtEnd', 'skips',
   };
 
   /// Work hours 9:00 to 17:00 on the five work days, personal hours in the
@@ -233,6 +249,8 @@ class PlannerSettings {
     bool? allDayBusy,
     PastBlocks? pastBlocks,
     bool? remindAtStart,
+    bool? askAtEnd,
+    Map<String, DateTime>? skips,
   }) => PlannerSettings(
     enabled: enabled ?? this.enabled,
     hours: hours ?? this.hours,
@@ -246,6 +264,8 @@ class PlannerSettings {
     allDayBusy: allDayBusy ?? this.allDayBusy,
     pastBlocks: pastBlocks ?? this.pastBlocks,
     remindAtStart: remindAtStart ?? this.remindAtStart,
+    askAtEnd: askAtEnd ?? this.askAtEnd,
+    skips: skips ?? this.skips,
     updatedAt: updatedAt,
     extra: extra,
   );
@@ -273,7 +293,17 @@ class PlannerSettings {
     'allDayBusy': allDayBusy,
     'pastBlocks': pastBlocks.name,
     'remindAtStart': remindAtStart,
+    'askAtEnd': askAtEnd,
+    if (skips.isNotEmpty)
+      'skips': {
+        for (final id in skips.keys.toList()..sort()) id: _wallIso(skips[id]!),
+      },
   };
+
+  /// A local time as written in the settings: the date and time of day with
+  /// no zone, so "not before tomorrow" means the same on every device.
+  static String _wallIso(DateTime t) =>
+      DateTime(t.year, t.month, t.day, t.hour, t.minute).toIso8601String();
 
   static PlannerSettings fromJson(Map<String, Object?> json, [DateTime? updatedAt]) {
     const d = PlannerSettings();
@@ -322,6 +352,14 @@ class PlannerSettings {
       allDayBusy: json['allDayBusy'] == true,
       pastBlocks: PastBlocks.values.asNameMap()[json['pastBlocks']] ?? d.pastBlocks,
       remindAtStart: json['remindAtStart'] != false,
+      askAtEnd: json['askAtEnd'] != false,
+      skips: {
+        if (json['skips'] case final Map raw)
+          for (final e in raw.entries)
+            if (e.key is String && e.value is String)
+              if (DateTime.tryParse(e.value as String) case final t?)
+                e.key as String: DateTime(t.year, t.month, t.day, t.hour, t.minute),
+      },
       updatedAt: updatedAt,
       extra: {
         for (final e in json.entries)
@@ -471,5 +509,30 @@ class PlannerTask {
     }
     out['updatedAt'] = now.toIso8601String();
     return out;
+  }
+
+  /// [json] (a stored task) due on the day of [day], at the time of day it
+  /// was due before (midnight, ZT Tasks' "no time", when it had none), with
+  /// every other field as stored.
+  static Map<String, Object?> withDueDay(
+    Map<String, Object?> json,
+    DateTime day,
+    DateTime now,
+  ) {
+    final old = json['dueDate'] is String
+        ? DateTime.tryParse(json['dueDate'] as String)?.toLocal()
+        : null;
+    final due = DateTime(
+      day.year,
+      day.month,
+      day.day,
+      old?.hour ?? 0,
+      old?.minute ?? 0,
+    );
+    return {
+      ...json,
+      'dueDate': due.toIso8601String(),
+      'updatedAt': now.toIso8601String(),
+    };
   }
 }

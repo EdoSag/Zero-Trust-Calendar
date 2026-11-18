@@ -10,15 +10,17 @@ const IconData plannerIcon = Icons.view_timeline_outlined;
 IconData? entryIcon(CalendarEntry e) => switch (e.kind) {
   EntryKind.task => Icons.task_alt,
   EntryKind.birthday => Icons.cake_outlined,
+  EntryKind.event when e.done => Icons.check_circle_outline,
   EntryKind.event when e.plan != null =>
-    e.plan!.done ? Icons.check_circle_outline : plannerIcon,
+    e.plan!.locked ? Icons.lock_outline : plannerIcon,
   EntryKind.event =>
     (e.event?.noteIds.isNotEmpty ?? false) ? Icons.sticky_note_2_outlined : null,
 };
 
-/// A block that is done is shown crossed out.
+/// A block that is done, and an event marked as done, are shown crossed
+/// out.
 TextDecoration? entryDecoration(CalendarEntry e) =>
-    (e.plan?.done ?? false) ? TextDecoration.lineThrough : null;
+    e.done ? TextDecoration.lineThrough : null;
 
 /// A small coloured label, for the month grid and the all-day strip.
 class EntryChip extends StatelessWidget {

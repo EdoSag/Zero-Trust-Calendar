@@ -64,11 +64,18 @@ account, settings and look as the other Zero-Trust apps, built on
   time per day; a preview shows the plan before anything is saved. Blocks
   are ordinary encrypted events in a "Planned" calendar, so they sync, get
   reminders and show in every view and widget, marked and numbered ("Write
-  report (1 of 3)"). A task that no longer fits before its due date is
-  listed as at risk. Everything is worked out on the phone by the
+  report (1 of 3)"). Tap a block to mark it done (the last part ticks the
+  task off in ZT Tasks), ask for more time, say "Not now", lock it where it
+  is or move it; a block you drag is locked where you drop it. When a block
+  ends, a notification asks whether you finished, and its buttons work
+  while Calendar is locked: the answer is kept on the phone (a block id
+  and the button, nothing else) and applied at the next unlock. A task
+  that no longer fits before its due date shows in a banner on the
+  calendar, with quick fixes. Everything is worked out on the phone by the
   `zt_scheduler` package of Zero-Trust-Core: no server, no AI. It plans
-  while Calendar is unlocked; marking blocks done, locking and dragging
-  them come next.
+  while Calendar is unlocked.
+- **Mark as done:** any event of yours can be ticked off on its page, and
+  is then shown crossed out (a repeating event one day at a time).
 - **Show on this phone** (optional, per calendar, off by default): copies
   events into Android's own calendar so Wear OS, Android Auto and other
   apps can see them.

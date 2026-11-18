@@ -217,6 +217,19 @@ class LinkedMirror {
     refresh().ignore();
   }
 
+  /// Moves a task's due date to [day], keeping its time of day and every
+  /// other field as stored.
+  Future<void> setTaskDueDay(String id, DateTime day) async {
+    if (app != LinkedApp.tasks) throw StateError('Only tasks have due dates');
+    final item = await store.get(id);
+    final json = item?.json;
+    if (item == null || item.deleted || json == null) {
+      throw StateError('That task is gone');
+    }
+    await engine.save(id, PlannerTask.withDueDay(json, day, DateTime.now()));
+    refresh().ignore();
+  }
+
   Future<void> close() async {
     _lifecycle?.dispose();
     await _refreshed.close();
@@ -307,3 +320,23 @@ final linkedContactsProvider = StreamProvider<List<LinkedContact>>((
       ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
   }
 });
+
+/// Ticks a task off in ZT Tasks, or back on
+/// ([LinkedMirror.setTaskCompleted]). Tests replace it.
+final plannerTaskCompleterProvider =
+    Provider<Future<void> Function(String id, bool completed)>(
+      (ref) => (id, completed) async {
+        final mirror = await ref.read(linkedMirrorProvider(LinkedApp.tasks).future);
+        await mirror.setTaskCompleted(id, completed);
+      },
+    );
+
+/// Moves a task's due date in ZT Tasks ([LinkedMirror.setTaskDueDay]).
+/// Tests replace it.
+final plannerTaskDueWriterProvider =
+    Provider<Future<void> Function(String id, DateTime day)>(
+      (ref) => (id, day) async {
+        final mirror = await ref.read(linkedMirrorProvider(LinkedApp.tasks).future);
+        await mirror.setTaskDueDay(id, day);
+      },
+    );

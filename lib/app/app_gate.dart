@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
+import 'package:zt_scheduler/zt_scheduler.dart' show PastBlocks;
 
 import '../caldav/caldav_bridge.dart';
 import '../data/calendar_store.dart';
@@ -17,6 +18,7 @@ import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
 import '../planner/planner_controller.dart';
+import '../planner/planner_model.dart';
 import '../platform/channels.dart';
 import '../reminders/reminders.dart';
 import '../ui/guest_actions.dart';
@@ -26,6 +28,7 @@ import '../ui/linked_pickers.dart';
 import '../ui/event_details_page.dart';
 import '../ui/home_page.dart';
 import '../ui/navigation.dart';
+import '../ui/planner_widgets.dart';
 import '../util/format.dart';
 import '../booking/booking_pages.dart';
 import '../booking/booking_sync.dart';
@@ -350,11 +353,24 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     final settings = ref.read(calendarSettingsProvider);
     final calendars = ref.read(calendarsProvider).value ?? const [ZtCalendarInfo.personal];
     final now = DateTime.now();
+    final planner = ref.read(plannerSettingsProvider).value ?? const PlannerSettings();
+    final l = context.l10n;
     final reminders = remindersFor(
       events,
       now: now,
       showTitles: settings.notificationTitles,
       hiddenCalendars: {for (final c in calendars) if (c.hidden) c.id},
+      // A block asks "Finished?" when it ends, unless blocks that pass
+      // count as done anyway.
+      askAtBlockEnd: planner.enabled &&
+          planner.askAtEnd &&
+          planner.pastBlocks != PastBlocks.countAsDone,
+      blockEndTitle: (b) => settings.notificationTitles && b.title.trim().isNotEmpty
+          ? l.plannerFinishedTitle(b.title.trim())
+          : l.plannerFinishedBlock,
+      blockEndBody: (b) =>
+          '${formatPlanMinutes(l, b.duration.inMinutes)} · '
+          '${formatSpan(context, b.start, b.end, false)}',
       bodyFor: (e, start) {
         final end = e.allDay
             ? addDays(dayOf(start), (e.duration.inHours / 24).round())
@@ -544,6 +560,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     ref.listen(calendarsProvider, (_, _) => _schedule());
     ref.listen(feedsProvider, (_, _) => _schedule());
     ref.listen(calendarSettingsProvider, (_, _) => _schedule());
+    ref.listen(plannerSettingsProvider, (_, _) => _schedule());
     ref.listen(linkedContactsProvider, (_, _) => _schedule());
     // Reminders and the widget carry text in the app's language. The
     // debounce lets the new language load first.
