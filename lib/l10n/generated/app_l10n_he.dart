@@ -2572,4 +2572,55 @@ class AppL10nHe extends AppL10n {
   String plannerLastWeekHabits(int kept, int total) {
     return 'הרגלים שנשמרו: $kept מתוך $total';
   }
+
+  @override
+  String get findTimeForTask => 'מציאת זמן למשימה';
+
+  @override
+  String get findTimePickTask => 'איזו משימה?';
+
+  @override
+  String get findTimeNoTasks =>
+      'אין משימות פתוחות ב-ZT Tasks. הוסיפו משימה שם וחזרו לכאן.';
+
+  @override
+  String findTimeDue(String day) {
+    return 'יעד: $day';
+  }
+
+  @override
+  String get findTimeFreeTimes => 'זמנים פנויים';
+
+  @override
+  String get findTimeNone =>
+      'אין זמן פנוי בשבועיים הקרובים. נסו אורך קצר יותר או שעות אחרות.';
+
+  @override
+  String get findTimeAdd => 'הוספה';
+
+  @override
+  String get findTimeHint =>
+      'המשימה תתווסף כאירוע שמקושר אליה. היא תישאר במקום שבחרתם.';
+
+  @override
+  String findTimeAdded(String when) {
+    return 'נוסף ליומן: $when';
+  }
+
+  @override
+  String get plannerPlusTitle => 'המתכנן האוטומטי הוא חלק מ-Plus';
+
+  @override
+  String get plannerPlusBody =>
+      'עם Plus, היומן מתכנן את המשימות, ההרגלים וזמן הריכוז שלכם ומזיז אותם כשהיום משתנה. Plus עדיין לא במכירה. בתוכנית החינמית, מציאת זמן משבצת משימה אחת בכל פעם.';
+
+  @override
+  String get plannerPausedTitle => 'המתכנן מושהה';
+
+  @override
+  String get plannerPausedBody =>
+      'התוכנית שלכם כבר לא כוללת את המתכנן (הוא חלק מ-Plus). הבלוקים שלכם נשארים במקום, אבל שום דבר לא מזיז אותם עכשיו.';
+
+  @override
+  String get plannerCheckPlan => 'לבדוק שוב את התוכנית שלי';
 }

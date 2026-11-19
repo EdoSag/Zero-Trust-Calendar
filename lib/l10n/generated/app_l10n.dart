@@ -4140,6 +4140,90 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'habits kept {kept} of {total}'**
   String plannerLastWeekHabits(int kept, int total);
+
+  /// No description provided for @findTimeForTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a time for a task'**
+  String get findTimeForTask;
+
+  /// No description provided for @findTimePickTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Which task?'**
+  String get findTimePickTask;
+
+  /// No description provided for @findTimeNoTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'No open tasks in ZT Tasks. Add a task there, then come back.'**
+  String get findTimeNoTasks;
+
+  /// No description provided for @findTimeDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {day}'**
+  String findTimeDue(String day);
+
+  /// No description provided for @findTimeFreeTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Free times'**
+  String get findTimeFreeTimes;
+
+  /// No description provided for @findTimeNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No free time in the next two weeks. Try a shorter length or other hours.'**
+  String get findTimeNone;
+
+  /// No description provided for @findTimeAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get findTimeAdd;
+
+  /// No description provided for @findTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The task is added as an event linked to it. It stays where you put it.'**
+  String get findTimeHint;
+
+  /// No description provided for @findTimeAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to your calendar: {when}'**
+  String findTimeAdded(String when);
+
+  /// No description provided for @plannerPlusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The automatic Planner is part of Plus'**
+  String get plannerPlusTitle;
+
+  /// No description provided for @plannerPlusBody.
+  ///
+  /// In en, this message translates to:
+  /// **'With Plus, Calendar plans your tasks, habits and focus time and moves them when your day changes. Plus isn\'t on sale yet. On the free plan, Find a time places one task at a time.'**
+  String get plannerPlusBody;
+
+  /// No description provided for @plannerPausedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The Planner is paused'**
+  String get plannerPausedTitle;
+
+  /// No description provided for @plannerPausedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan no longer includes the Planner (it is part of Plus). Your blocks stay where they are, but nothing moves them now.'**
+  String get plannerPausedBody;
+
+  /// No description provided for @plannerCheckPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Check my plan again'**
+  String get plannerCheckPlan;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

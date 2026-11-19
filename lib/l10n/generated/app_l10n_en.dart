@@ -2587,4 +2587,55 @@ class AppL10nEn extends AppL10n {
   String plannerLastWeekHabits(int kept, int total) {
     return 'habits kept $kept of $total';
   }
+
+  @override
+  String get findTimeForTask => 'Find a time for a task';
+
+  @override
+  String get findTimePickTask => 'Which task?';
+
+  @override
+  String get findTimeNoTasks =>
+      'No open tasks in ZT Tasks. Add a task there, then come back.';
+
+  @override
+  String findTimeDue(String day) {
+    return 'Due $day';
+  }
+
+  @override
+  String get findTimeFreeTimes => 'Free times';
+
+  @override
+  String get findTimeNone =>
+      'No free time in the next two weeks. Try a shorter length or other hours.';
+
+  @override
+  String get findTimeAdd => 'Add';
+
+  @override
+  String get findTimeHint =>
+      'The task is added as an event linked to it. It stays where you put it.';
+
+  @override
+  String findTimeAdded(String when) {
+    return 'Added to your calendar: $when';
+  }
+
+  @override
+  String get plannerPlusTitle => 'The automatic Planner is part of Plus';
+
+  @override
+  String get plannerPlusBody =>
+      'With Plus, Calendar plans your tasks, habits and focus time and moves them when your day changes. Plus isn\'t on sale yet. On the free plan, Find a time places one task at a time.';
+
+  @override
+  String get plannerPausedTitle => 'The Planner is paused';
+
+  @override
+  String get plannerPausedBody =>
+      'Your plan no longer includes the Planner (it is part of Plus). Your blocks stay where they are, but nothing moves them now.';
+
+  @override
+  String get plannerCheckPlan => 'Check my plan again';
 }

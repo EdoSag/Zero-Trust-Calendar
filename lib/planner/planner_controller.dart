@@ -10,6 +10,7 @@ import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
 import 'planner_actions.dart';
+import 'planner_access.dart';
 import 'planner_answers.dart';
 import 'planner_model.dart';
 import 'planner_plan.dart';
@@ -110,6 +111,10 @@ enum PlannerWaiting {
   /// Events, calendars or tasks are still loading, or a sync is running:
   /// planning now could undo what another device did.
   loading,
+
+  /// The account's plan doesn't include the Planner (it is part of Plus).
+  /// Blocks stay where they are; nothing is planned or moved.
+  needsPlus,
 }
 
 final plannerControllerProvider =
@@ -168,6 +173,8 @@ class PlannerController extends Notifier<PlannerStatus> {
     // for them: plan when they have loaded, even if no event changed.
     ref.listen(sharedCalendarsProvider, (_, _) => schedule());
     ref.listen(feedsProvider, (_, _) => schedule());
+    // Plus bought, given or ended.
+    ref.listen(plannerAllowedProvider, (_, _) => schedule());
     ref.listen(plannerSyncedProvider, (_, synced) {
       if (synced) schedule();
     });
@@ -376,6 +383,12 @@ class PlannerController extends Notifier<PlannerStatus> {
       state = PlannerStatus(
         waiting: s == null ? PlannerWaiting.loading : PlannerWaiting.off,
       );
+      return null;
+    }
+    // Only a plan known to lack the Planner pauses it; an unknown one
+    // (offline, still loading) doesn't.
+    if (!preview && ref.read(plannerAllowedProvider) == false) {
+      state = PlannerStatus(last: state.last, waiting: PlannerWaiting.needsPlus);
       return null;
     }
     final synced = ref.read(plannerSyncedProvider);
