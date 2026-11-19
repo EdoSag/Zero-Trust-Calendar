@@ -3876,6 +3876,270 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Done'**
   String get plannerDone;
+
+  /// No description provided for @plannerHabits.
+  ///
+  /// In en, this message translates to:
+  /// **'Habits'**
+  String get plannerHabits;
+
+  /// No description provided for @plannerNoHabits.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep time for lunch, exercise or anything you do regularly.'**
+  String get plannerNoHabits;
+
+  /// No description provided for @plannerAddHabit.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a habit'**
+  String get plannerAddHabit;
+
+  /// No description provided for @plannerEditHabit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit habit'**
+  String get plannerEditHabit;
+
+  /// No description provided for @plannerHabitLunch.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunch'**
+  String get plannerHabitLunch;
+
+  /// No description provided for @plannerHabitExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise'**
+  String get plannerHabitExercise;
+
+  /// No description provided for @plannerHabitOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get plannerHabitOther;
+
+  /// No description provided for @plannerHabitUntitled.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit'**
+  String get plannerHabitUntitled;
+
+  /// No description provided for @plannerHabitName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get plannerHabitName;
+
+  /// No description provided for @plannerHabitNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For example: Reading'**
+  String get plannerHabitNameHint;
+
+  /// No description provided for @plannerHabitDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Days'**
+  String get plannerHabitDays;
+
+  /// No description provided for @plannerHabitLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Length'**
+  String get plannerHabitLength;
+
+  /// No description provided for @plannerHabitIdeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Best time to start'**
+  String get plannerHabitIdeal;
+
+  /// No description provided for @plannerHabitWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'Only between'**
+  String get plannerHabitWindow;
+
+  /// No description provided for @plannerHabitWindowTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Too short for the habit\'s length.'**
+  String get plannerHabitWindowTooShort;
+
+  /// No description provided for @plannerHabitBetween.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} to {to}'**
+  String plannerHabitBetween(String from, String to);
+
+  /// No description provided for @plannerHabitFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get plannerHabitFrom;
+
+  /// No description provided for @plannerHabitTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get plannerHabitTo;
+
+  /// No description provided for @plannerHabitNoRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'When there\'s no room'**
+  String get plannerHabitNoRoom;
+
+  /// No description provided for @plannerHabitSkipDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip that day'**
+  String get plannerHabitSkipDay;
+
+  /// No description provided for @plannerHabitShortenTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Shorten it, down to {length}'**
+  String plannerHabitShortenTo(String length);
+
+  /// No description provided for @plannerAnyTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Any time'**
+  String get plannerAnyTime;
+
+  /// No description provided for @plannerHabitPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get plannerHabitPaused;
+
+  /// No description provided for @plannerHabitPausedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept, but not planned until you switch this off.'**
+  String get plannerHabitPausedHint;
+
+  /// No description provided for @plannerHabitPausedShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get plannerHabitPausedShort;
+
+  /// No description provided for @plannerDeleteHabitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this habit?'**
+  String get plannerDeleteHabitTitle;
+
+  /// No description provided for @plannerDeleteHabitBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Its coming times are removed from the calendar. Past ones stay.'**
+  String get plannerDeleteHabitBody;
+
+  /// No description provided for @plannerEveryDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day'**
+  String get plannerEveryDay;
+
+  /// No description provided for @plannerAround.
+  ///
+  /// In en, this message translates to:
+  /// **'around {time}'**
+  String plannerAround(String time);
+
+  /// No description provided for @plannerSkipToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip today'**
+  String get plannerSkipToday;
+
+  /// No description provided for @plannerSkipTodayHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Frees the time. It isn\'t planned again today.'**
+  String get plannerSkipTodayHint;
+
+  /// No description provided for @plannerHabitSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get plannerHabitSkipped;
+
+  /// No description provided for @plannerHabitSkippedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get plannerHabitSkippedToday;
+
+  /// No description provided for @plannerHabitKeptAfterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Did it after all'**
+  String get plannerHabitKeptAfterAll;
+
+  /// No description provided for @plannerHabitSkippedAfterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped it after all'**
+  String get plannerHabitSkippedAfterAll;
+
+  /// No description provided for @plannerFocusGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus time each week'**
+  String get plannerFocusGoal;
+
+  /// No description provided for @plannerFocusOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off. Keeps time free of meetings for deep work.'**
+  String get plannerFocusOff;
+
+  /// No description provided for @plannerFocusOffShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get plannerFocusOffShort;
+
+  /// No description provided for @plannerFocusPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} a week, in work hours'**
+  String plannerFocusPerWeek(String amount);
+
+  /// No description provided for @plannerFocusBlockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus time'**
+  String get plannerFocusBlockTitle;
+
+  /// No description provided for @plannerWeekFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus time: {planned} of {goal}'**
+  String plannerWeekFocus(String planned, String goal);
+
+  /// No description provided for @plannerWeekHabits.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 habit time planned} other{{count} habit times planned}}'**
+  String plannerWeekHabits(int count);
+
+  /// No description provided for @plannerLastWeekDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days: {amount} of tasks done'**
+  String plannerLastWeekDone(String amount);
+
+  /// No description provided for @plannerLastWeekHabits.
+  ///
+  /// In en, this message translates to:
+  /// **'habits kept {kept} of {total}'**
+  String plannerLastWeekHabits(int kept, int total);
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

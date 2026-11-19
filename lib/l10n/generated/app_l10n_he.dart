@@ -2416,4 +2416,160 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get plannerDone => 'בוצע';
+
+  @override
+  String get plannerHabits => 'הרגלים';
+
+  @override
+  String get plannerNoHabits =>
+      'שמרו זמן לארוחת צהריים, לאימון או לכל דבר שאתם עושים בקביעות.';
+
+  @override
+  String get plannerAddHabit => 'הוספת הרגל';
+
+  @override
+  String get plannerEditHabit => 'עריכת הרגל';
+
+  @override
+  String get plannerHabitLunch => 'ארוחת צהריים';
+
+  @override
+  String get plannerHabitExercise => 'אימון';
+
+  @override
+  String get plannerHabitOther => 'משהו אחר';
+
+  @override
+  String get plannerHabitUntitled => 'הרגל';
+
+  @override
+  String get plannerHabitName => 'שם';
+
+  @override
+  String get plannerHabitNameHint => 'לדוגמה: קריאה';
+
+  @override
+  String get plannerHabitDays => 'ימים';
+
+  @override
+  String get plannerHabitLength => 'אורך';
+
+  @override
+  String get plannerHabitIdeal => 'השעה הכי טובה להתחיל';
+
+  @override
+  String get plannerHabitWindow => 'רק בין';
+
+  @override
+  String get plannerHabitWindowTooShort => 'קצר מדי לאורך של ההרגל.';
+
+  @override
+  String plannerHabitBetween(String from, String to) {
+    return '$from עד $to';
+  }
+
+  @override
+  String get plannerHabitFrom => 'מ-';
+
+  @override
+  String get plannerHabitTo => 'עד';
+
+  @override
+  String get plannerHabitNoRoom => 'כשאין מקום';
+
+  @override
+  String get plannerHabitSkipDay => 'לדלג על היום הזה';
+
+  @override
+  String plannerHabitShortenTo(String length) {
+    return 'לקצר, עד $length';
+  }
+
+  @override
+  String get plannerAnyTime => 'בכל שעה';
+
+  @override
+  String get plannerHabitPaused => 'השהיה';
+
+  @override
+  String get plannerHabitPausedHint => 'נשמר, אבל לא יתוכנן עד שתכבו את זה.';
+
+  @override
+  String get plannerHabitPausedShort => 'מושהה';
+
+  @override
+  String get plannerDeleteHabitTitle => 'למחוק את ההרגל הזה?';
+
+  @override
+  String get plannerDeleteHabitBody =>
+      'הזמנים הבאים שלו יוסרו מהיומן. אלה שעברו יישארו.';
+
+  @override
+  String get plannerEveryDay => 'כל יום';
+
+  @override
+  String plannerAround(String time) {
+    return 'בסביבות $time';
+  }
+
+  @override
+  String get plannerSkipToday => 'דילוג היום';
+
+  @override
+  String get plannerSkipTodayHint => 'משחרר את הזמן. לא יתוכנן שוב היום.';
+
+  @override
+  String get plannerHabitSkipped => 'דולג';
+
+  @override
+  String get plannerHabitSkippedToday => 'דולג';
+
+  @override
+  String get plannerHabitKeptAfterAll => 'בעצם כן עשיתי';
+
+  @override
+  String get plannerHabitSkippedAfterAll => 'בעצם דילגתי';
+
+  @override
+  String get plannerFocusGoal => 'זמן ריכוז בכל שבוע';
+
+  @override
+  String get plannerFocusOff => 'כבוי. שומר זמן בלי פגישות לעבודה מרוכזת.';
+
+  @override
+  String get plannerFocusOffShort => 'כבוי';
+
+  @override
+  String plannerFocusPerWeek(String amount) {
+    return '$amount בשבוע, בשעות העבודה';
+  }
+
+  @override
+  String get plannerFocusBlockTitle => 'זמן ריכוז';
+
+  @override
+  String plannerWeekFocus(String planned, String goal) {
+    return 'זמן ריכוז: $planned מתוך $goal';
+  }
+
+  @override
+  String plannerWeekHabits(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count זמנים להרגלים מתוכננים',
+      one: 'זמן אחד להרגלים מתוכנן',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String plannerLastWeekDone(String amount) {
+    return '7 הימים האחרונים: $amount של משימות בוצעו';
+  }
+
+  @override
+  String plannerLastWeekHabits(int kept, int total) {
+    return 'הרגלים שנשמרו: $kept מתוך $total';
+  }
 }

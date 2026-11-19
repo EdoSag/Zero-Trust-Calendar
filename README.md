@@ -71,7 +71,14 @@ account, settings and look as the other Zero-Trust apps, built on
   while Calendar is locked: the answer is kept on the phone (a block id
   and the button, nothing else) and applied at the next unlock. A task
   that no longer fits before its due date shows in a banner on the
-  calendar, with quick fixes. Everything is worked out on the phone by the
+  calendar, with quick fixes. **Habits** keep time for things you do
+  regularly (lunch, exercise, or your own): the days, the length, the best
+  time and the window it must fit in; each day it gets the free time
+  nearest its best time, is shortened or skipped when there's no room, and
+  "Skip today" frees the time. A weekly **focus time** goal keeps time in
+  your work hours free of meetings. The Planner screen shows the week:
+  task time per day, focus time against the goal, and the last seven days
+  (task time done, habits kept). Everything is worked out on the phone by the
   `zt_scheduler` package of Zero-Trust-Core: no server, no AI. It plans
   while Calendar is unlocked.
 - **Mark as done:** any event of yours can be ticked off on its page, and

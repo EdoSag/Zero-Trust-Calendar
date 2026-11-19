@@ -3,6 +3,10 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:zt_scheduler/zt_scheduler.dart';
 
+import 'planner_habits.dart';
+
+export 'planner_habits.dart';
+
 import '../model/calendar_event.dart';
 
 /// The Planner: tasks from ZT Tasks fitted into the free time around
@@ -97,11 +101,19 @@ class PlanMark {
 
   static const _unset = Object();
 
+  /// A habit skipped for the day: stored as done, so the day counts as
+  /// covered and the habit isn't planned again that day, but not counted
+  /// as kept.
+  bool get skipped => extra['skipped'] == true;
+
+  bool get isHabit => kind == PlanBlockKind.habit;
+
   PlanMark copyWith({
     bool? locked,
     bool? done,
     PlanReason? reason,
     Object? occurrence = _unset,
+    bool? skipped,
   }) => PlanMark(
     kind: kind,
     itemId: itemId,
@@ -109,7 +121,13 @@ class PlanMark {
     done: done ?? this.done,
     reason: reason ?? this.reason,
     occurrence: identical(occurrence, _unset) ? this.occurrence : occurrence as String?,
-    extra: extra,
+    extra: skipped == null
+        ? extra
+        : {
+            for (final e in extra.entries)
+              if (e.key != 'skipped') e.key: e.value,
+            if (skipped) 'skipped': true,
+          },
   );
 
   /// Blocks numbered together ("2 of 3"): one task, one occurrence.
@@ -147,6 +165,9 @@ class PlannerSettings {
     this.remindAtStart = true,
     this.askAtEnd = true,
     this.skips = const {},
+    this.habits = const [],
+    this.focusMinutesPerWeek = 0,
+    this.focusTitle = 'Focus time',
     this.updatedAt,
     this.extra = const {},
   });
@@ -191,6 +212,16 @@ class PlannerSettings {
   /// time the settings are saved.
   final Map<String, DateTime> skips;
 
+  /// Routines the Planner keeps time for, in the order they choose their
+  /// time.
+  final List<PlannerHabit> habits;
+
+  /// Focus time to keep each week, in work hours; 0 for none.
+  final int focusMinutesPerWeek;
+
+  /// The focus blocks' title, in the language it was set up in.
+  final String focusTitle;
+
   /// [skips] without the ones that have passed at [now].
   Map<String, DateTime> skipsAfter(DateTime now) => {
     for (final e in skips.entries)
@@ -206,7 +237,8 @@ class PlannerSettings {
   static const _known = {
     'kind', '_v', 'enabled', 'hours', 'tasks', 'defaultMinutes', 'minChunk',
     'maxChunk', 'breakAfterMeetings', 'maxMinutesPerDay', 'freeCalendars',
-    'allDayBusy', 'pastBlocks', 'remindAtStart', 'askAtEnd', 'skips',
+    'allDayBusy', 'pastBlocks', 'remindAtStart', 'askAtEnd', 'skips', 'habits',
+    'focusPerWeek', 'focusTitle',
   };
 
   /// Work hours 9:00 to 17:00 on the five work days, personal hours in the
@@ -242,6 +274,10 @@ class PlannerSettings {
         'breakAfterMeetings', 'maxMinutesPerDay', 'freeCalendars', 'allDayBusy',
       ])
         json[key],
+      // Only when set, so settings from before habits keep their signature
+      // (and their blocks stay where they are after the update).
+      for (final key in const ['habits', 'focusPerWeek'])
+        if (json[key] != null) {key: json[key]},
     ]);
   }
 
@@ -269,6 +305,9 @@ class PlannerSettings {
     bool? remindAtStart,
     bool? askAtEnd,
     Map<String, DateTime>? skips,
+    List<PlannerHabit>? habits,
+    int? focusMinutesPerWeek,
+    String? focusTitle,
   }) => PlannerSettings(
     enabled: enabled ?? this.enabled,
     hours: hours ?? this.hours,
@@ -284,6 +323,9 @@ class PlannerSettings {
     remindAtStart: remindAtStart ?? this.remindAtStart,
     askAtEnd: askAtEnd ?? this.askAtEnd,
     skips: skips ?? this.skips,
+    habits: habits ?? this.habits,
+    focusMinutesPerWeek: focusMinutesPerWeek ?? this.focusMinutesPerWeek,
+    focusTitle: focusTitle ?? this.focusTitle,
     updatedAt: updatedAt,
     extra: extra,
   );
@@ -316,6 +358,10 @@ class PlannerSettings {
       'skips': {
         for (final id in skips.keys.toList()..sort()) id: _wallIso(skips[id]!),
       },
+    // Written only when used, so settings without them look as before.
+    if (habits.isNotEmpty) 'habits': [for (final h in habits) h.toJson()],
+    if (focusMinutesPerWeek > 0) 'focusPerWeek': focusMinutesPerWeek,
+    if (focusMinutesPerWeek > 0) 'focusTitle': focusTitle,
   };
 
   /// A local time as written in the settings: the date and time of day with
@@ -378,6 +424,11 @@ class PlannerSettings {
               if (DateTime.tryParse(e.value as String) case final t?)
                 e.key as String: DateTime(t.year, t.month, t.day, t.hour, t.minute),
       },
+      habits: _habitsFrom(json['habits']),
+      focusMinutesPerWeek: minutes('focusPerWeek', 0, max: 60 * 60),
+      focusTitle: json['focusTitle'] is String && (json['focusTitle'] as String).trim().isNotEmpty
+          ? (json['focusTitle'] as String).trim()
+          : d.focusTitle,
       updatedAt: updatedAt,
       extra: {
         for (final e in json.entries)
@@ -385,6 +436,16 @@ class PlannerSettings {
       },
     );
   }
+}
+
+/// The habits stored in the settings, each id once.
+List<PlannerHabit> _habitsFrom(Object? raw) {
+  final seen = <String>{};
+  return [
+    if (raw is List)
+      for (final h in raw)
+        if (PlannerHabit.fromJson(h) case final habit? when seen.add(habit.id)) habit,
+  ];
 }
 
 /// What the Planner needs of a ZT Tasks task: the fields ZT Tasks already
