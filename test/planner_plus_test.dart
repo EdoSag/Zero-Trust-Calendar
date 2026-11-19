@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 import 'package:zerotrust_calendar/data/calendar_store.dart';
 import 'package:zerotrust_calendar/data/linked_apps.dart';
+import 'package:zerotrust_calendar/data/shared_calendars.dart';
 import 'package:zerotrust_calendar/model/calendar_event.dart';
 import 'package:zerotrust_calendar/planner/planner_access.dart';
 import 'package:zerotrust_calendar/planner/planner_controller.dart';
@@ -303,6 +306,30 @@ void main() {
     expect(PlanMark.of(event), isNull, reason: 'an ordinary event: nothing moves it');
     expect(find.text('open'), findsOneWidget);
     expect(find.textContaining('Added to your calendar'), findsOneWidget);
+  });
+
+  testWidgets('Find a time waits for shared calendars before offering times', (tester) async {
+    usePhoneScreen(tester);
+    final loading = Completer<List<SharedCalendar>>();
+    final account = FakeAccount(
+      settings: workWeek,
+      tasks: [PlannerTask(id: 'a', title: 'Write report', minutes: 60, createdAt: 'a')],
+    )..sharedCalendars = loading;
+    await tester.pumpWidget(account.app(FindTaskTimePage(now: mondayMorning)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('find-time-task-a')));
+    await tester.pump();
+    expect(find.byKey(const ValueKey('find-time-slot-0')), findsNothing);
+    final spinner = find.byType(CircularProgressIndicator);
+    expect(spinner, findsOneWidget);
+    // Where the times will be: under their heading.
+    expect(
+      tester.getTopLeft(spinner).dy,
+      greaterThan(tester.getBottomLeft(find.text('Free times')).dy),
+    );
+    loading.complete(const []);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('find-time-slot-0')), findsOneWidget);
   });
 
   testWidgets('Find a time reads right to left in Hebrew', (tester) async {

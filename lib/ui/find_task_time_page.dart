@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../app/calendar_settings.dart';
 import '../data/calendar_store.dart';
 import '../data/linked_apps.dart';
+import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
 import '../planner/planner_controller.dart';
@@ -161,7 +162,14 @@ class _FindTaskTimePageState extends ConsumerState<FindTaskTimePage> {
     final events = ref.watch(allEventsProvider).value;
     final calendars = ref.watch(calendarsProvider).value ?? const <ZtCalendarInfo>[];
     final hasPersonal = (settings.hours[personalHoursId] ?? const {}).isNotEmpty;
-    final slots = events == null
+    // Shared and subscribed calendars' events are busy too: until they have
+    // loaded (or failed), a time could look free that isn't. As the
+    // Planner does.
+    final shared = ref.watch(sharedCalendarsProvider);
+    final feeds = ref.watch(feedsProvider);
+    final othersReady =
+        (shared.hasValue || shared.hasError) && (feeds.hasValue || feeds.hasError);
+    final slots = events == null || !othersReady
         ? null
         : findTaskTimes(
             now: widget.now ?? DateTime.now(),

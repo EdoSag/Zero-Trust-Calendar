@@ -40,6 +40,10 @@ class FakeAccount {
   bool? tasksRefreshOk;
   bool synced;
 
+  /// Shared calendars still loading until a test completes it; null:
+  /// none, loaded at once.
+  Completer<List<SharedCalendar>>? sharedCalendars;
+
   /// Whether the account's plan includes the Planner (null: not known).
   bool? plannerAllowed = true;
 
@@ -144,7 +148,9 @@ class FakeAccount {
     reminderSchedulerProvider.overrideWithValue(NoopReminderScheduler()),
     eventsProvider.overrideWith((ref) => _from(_events, () => [...events])),
     calendarsProvider.overrideWith((ref) => _from(_calendars, () => [...calendars])),
-    sharedCalendarsProvider.overrideWith((ref) async => const <SharedCalendar>[]),
+    sharedCalendarsProvider.overrideWith(
+      (ref) => sharedCalendars?.future ?? Future.value(const <SharedCalendar>[]),
+    ),
     feedsProvider.overrideWith((ref) => Stream.value(const <CalendarFeed>[])),
     linkedNotesProvider.overrideWith((ref) => Stream.value(const <LinkedNote>[])),
     linkedTasksProvider.overrideWith((ref) => Stream.value(const <LinkedTask>[])),
