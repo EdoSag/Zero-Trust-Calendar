@@ -5,6 +5,7 @@ import '../data/linked_apps.dart';
 import '../data/shared_calendars.dart';
 import '../model/calendar_event.dart';
 import '../model/linked_items.dart';
+import '../planner/planner_model.dart';
 import '../util/format.dart';
 import 'linked_app_launcher.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
@@ -34,6 +35,8 @@ Future<(String, int?)?> pickCalendarAndColor(
                 child: Text(context.l10n.calendarDefaultName),
               ),
               for (final c in calendars)
+                // The Planned calendar holds only what the Planner puts there.
+                if (c.id != plannerCalendarId)
                 ListTile(
                   leading: Icon(
                     c.isShared ? Icons.group : Icons.circle,

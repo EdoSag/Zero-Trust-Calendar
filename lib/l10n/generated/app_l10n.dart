@@ -1276,7 +1276,7 @@ abstract class AppL10n {
   /// No description provided for @calendarDownloadsItFromThat.
   ///
   /// In en, this message translates to:
-  /// **'Calendar downloads it from that address (the site sees a download from your phone, nothing about your account) and keeps an encrypted copy, refreshed twice a day. Its events are read-only.'**
+  /// **'Calendar downloads it from that address (the site sees a download from your phone, nothing about your account) and keeps an encrypted copy, refreshed every few hours while Calendar is open. Its events are read-only.'**
   String get calendarDownloadsItFromThat;
 
   /// No description provided for @subscribe.
@@ -3054,6 +3054,1487 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Next month'**
   String get widgetNextMonth;
+
+  /// No description provided for @leaveEmptyForCalendarsOwnName.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use the calendar\'s own name'**
+  String get leaveEmptyForCalendarsOwnName;
+
+  /// No description provided for @whereDoIFindTheLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do I find the link?'**
+  String get whereDoIFindTheLink;
+
+  /// No description provided for @googleOutlookOrIcloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Calendar, Outlook or iCloud'**
+  String get googleOutlookOrIcloud;
+
+  /// No description provided for @getALinkFromAnotherCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Get a link from another calendar'**
+  String get getALinkFromAnotherCalendar;
+
+  /// No description provided for @feedHelpGoogleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Calendar'**
+  String get feedHelpGoogleTitle;
+
+  /// No description provided for @feedHelpGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'On a computer, open calendar.google.com and click the gear, then Settings. Under \"Settings for my calendars\" pick the calendar and open \"Integrate calendar\". Copy \"Secret address in iCal format\". Google updates this link every few hours, so a new event can take a while to appear.'**
+  String get feedHelpGoogle;
+
+  /// No description provided for @feedHelpOutlookTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Outlook.com or Microsoft 365'**
+  String get feedHelpOutlookTitle;
+
+  /// No description provided for @feedHelpOutlook.
+  ///
+  /// In en, this message translates to:
+  /// **'In Outlook on the web, open Settings, then Calendar, then Shared calendars. Under \"Publish a calendar\" pick the calendar and \"Can view all details\", click Publish, and copy the ICS link.'**
+  String get feedHelpOutlook;
+
+  /// No description provided for @feedHelpIcloudTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'iCloud (Apple)'**
+  String get feedHelpIcloudTitle;
+
+  /// No description provided for @feedHelpIcloud.
+  ///
+  /// In en, this message translates to:
+  /// **'On an iPhone, open Calendar and tap Calendars. Tap the info button next to the calendar, turn on \"Public Calendar\" and tap \"Share Link\". Anyone with a public iCloud link can open it.'**
+  String get feedHelpIcloud;
+
+  /// No description provided for @feedHelpPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep these links private: anyone who has one can see that calendar. ZT Calendar stores the link encrypted and downloads it straight from your phone. Subscribed calendars are read-only here. To move events over for good, export a file from the other app and use Import instead.'**
+  String get feedHelpPrivacy;
+
+  /// No description provided for @planner.
+  ///
+  /// In en, this message translates to:
+  /// **'Planner'**
+  String get planner;
+
+  /// No description provided for @plannedCalendarName.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned'**
+  String get plannedCalendarName;
+
+  /// No description provided for @plannerPartOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} ({part} of {total})'**
+  String plannerPartOf(String title, int part, int total);
+
+  /// No description provided for @plannerHoursMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h {minutes} min'**
+  String plannerHoursMinutes(int hours, int minutes);
+
+  /// No description provided for @plannerReasonEarliest.
+  ///
+  /// In en, this message translates to:
+  /// **'This is the earliest free time in your hours.'**
+  String get plannerReasonEarliest;
+
+  /// No description provided for @plannerReasonDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Placed here to finish before the due date.'**
+  String get plannerReasonDeadline;
+
+  /// No description provided for @plannerReasonLate.
+  ///
+  /// In en, this message translates to:
+  /// **'It doesn\'t fit before the due date. This is the earliest time left.'**
+  String get plannerReasonLate;
+
+  /// No description provided for @plannerReasonLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'You locked it at this time.'**
+  String get plannerReasonLocked;
+
+  /// No description provided for @plannerReasonDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as done.'**
+  String get plannerReasonDone;
+
+  /// No description provided for @plannerNoHours.
+  ///
+  /// In en, this message translates to:
+  /// **'No hours set'**
+  String get plannerNoHours;
+
+  /// No description provided for @plannerHoursEndFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'The end has to be after the start.'**
+  String get plannerHoursEndFirst;
+
+  /// No description provided for @plannerHoursOverlap.
+  ///
+  /// In en, this message translates to:
+  /// **'These hours overlap other hours on that day.'**
+  String get plannerHoursOverlap;
+
+  /// No description provided for @plannerDayOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get plannerDayOff;
+
+  /// No description provided for @plannerTaskFinishedSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Task finished. Saved in ZT Tasks.'**
+  String get plannerTaskFinishedSaved;
+
+  /// No description provided for @plannerBlockGone.
+  ///
+  /// In en, this message translates to:
+  /// **'This block is no longer planned.'**
+  String get plannerBlockGone;
+
+  /// No description provided for @plannerBlockPart.
+  ///
+  /// In en, this message translates to:
+  /// **'Part {part} of {total}'**
+  String plannerBlockPart(int part, int total);
+
+  /// No description provided for @plannerBlockMoves.
+  ///
+  /// In en, this message translates to:
+  /// **'The Planner moves this block when your calendar changes.'**
+  String get plannerBlockMoves;
+
+  /// No description provided for @plannerTaskFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Task finished'**
+  String get plannerTaskFinished;
+
+  /// No description provided for @plannerCouldNotPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not plan: {error}'**
+  String plannerCouldNotPlan(String error);
+
+  /// No description provided for @plannerIntroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Let Calendar plan your tasks'**
+  String get plannerIntroTitle;
+
+  /// No description provided for @plannerIntroBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The Planner takes tasks from ZT Tasks and fits them into the free time around your events. When a meeting moves or a new one arrives, it plans again, and it tells you when a task no longer fits before its due date.'**
+  String get plannerIntroBody;
+
+  /// No description provided for @plannerIntroPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything is worked out on this phone. Your tasks and events stay end-to-end encrypted, and no AI is involved.'**
+  String get plannerIntroPrivacy;
+
+  /// No description provided for @plannerSetUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up the Planner'**
+  String get plannerSetUp;
+
+  /// No description provided for @plannerNext7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Next 7 days'**
+  String get plannerNext7Days;
+
+  /// No description provided for @plannerWaitingForSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for your calendar and tasks to finish syncing…'**
+  String get plannerWaitingForSync;
+
+  /// No description provided for @plannerRiskNoRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} doesn\'t fit in the next 4 weeks'**
+  String plannerRiskNoRoom(String amount);
+
+  /// No description provided for @plannerRiskLate.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} is planned after the due date'**
+  String plannerRiskLate(String amount);
+
+  /// No description provided for @plannerTasksToPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks to plan'**
+  String get plannerTasksToPlan;
+
+  /// No description provided for @plannerLoadingTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading tasks from ZT Tasks…'**
+  String get plannerLoadingTasks;
+
+  /// No description provided for @plannerNoOpenTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no open tasks in ZT Tasks.'**
+  String get plannerNoOpenTasks;
+
+  /// No description provided for @plannerNoTasksSwitchedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'No task is switched on yet. Switch on the tasks you want planned.'**
+  String get plannerNoTasksSwitchedOn;
+
+  /// No description provided for @plannerOtherTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Other tasks ({count})'**
+  String plannerOtherTasks(int count);
+
+  /// No description provided for @plannerWorkHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Work hours'**
+  String get plannerWorkHours;
+
+  /// No description provided for @plannerPersonalHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal hours'**
+  String get plannerPersonalHours;
+
+  /// No description provided for @plannerWhichTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Which tasks to plan'**
+  String get plannerWhichTasks;
+
+  /// No description provided for @plannerAllTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'All tasks'**
+  String get plannerAllTasks;
+
+  /// No description provided for @plannerAllTasksHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Every open task in ZT Tasks, except the ones you switch off.'**
+  String get plannerAllTasksHint;
+
+  /// No description provided for @plannerOnlySwitchedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Only tasks I switch on'**
+  String get plannerOnlySwitchedOn;
+
+  /// No description provided for @plannerOnlySwitchedOnHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is planned until you switch a task on.'**
+  String get plannerOnlySwitchedOnHint;
+
+  /// No description provided for @plannerUsualLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual task length'**
+  String get plannerUsualLength;
+
+  /// No description provided for @plannerShortestBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Shortest block'**
+  String get plannerShortestBlock;
+
+  /// No description provided for @plannerLongestBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Longest block'**
+  String get plannerLongestBlock;
+
+  /// No description provided for @plannerBreakAfterMeetings.
+  ///
+  /// In en, this message translates to:
+  /// **'Break after meetings'**
+  String get plannerBreakAfterMeetings;
+
+  /// No description provided for @plannerNoBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get plannerNoBreak;
+
+  /// No description provided for @plannerMostPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Most planned time per day'**
+  String get plannerMostPerDay;
+
+  /// No description provided for @plannerBusyCalendars.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendars that count as busy'**
+  String get plannerBusyCalendars;
+
+  /// No description provided for @plannerNoBusyCalendars.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get plannerNoBusyCalendars;
+
+  /// No description provided for @plannerPassedCountAsDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocks that pass count as done'**
+  String get plannerPassedCountAsDone;
+
+  /// No description provided for @plannerPassedCountAsDoneOn.
+  ///
+  /// In en, this message translates to:
+  /// **'A block whose time has passed is marked done.'**
+  String get plannerPassedCountAsDoneOn;
+
+  /// No description provided for @plannerPassedCountAsDoneOff.
+  ///
+  /// In en, this message translates to:
+  /// **'A block that passed waits for the rest of the day, then its time is planned again.'**
+  String get plannerPassedCountAsDoneOff;
+
+  /// No description provided for @plannerRemindAtStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify me when a block starts'**
+  String get plannerRemindAtStart;
+
+  /// No description provided for @plannerTidyUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Tidy up my week'**
+  String get plannerTidyUp;
+
+  /// No description provided for @plannerTidyUpHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Plans every block afresh, as early as it fits.'**
+  String get plannerTidyUpHint;
+
+  /// No description provided for @plannerTidiedUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning your week again'**
+  String get plannerTidiedUp;
+
+  /// No description provided for @plannerTurnOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off the Planner'**
+  String get plannerTurnOff;
+
+  /// No description provided for @plannerTurnOffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off the Planner?'**
+  String get plannerTurnOffTitle;
+
+  /// No description provided for @plannerTurnOffBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned blocks that aren\'t done are removed from your calendar. Your tasks stay as they are in ZT Tasks, and your Planner settings are kept.'**
+  String get plannerTurnOffBody;
+
+  /// No description provided for @plannerTaskLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Length'**
+  String get plannerTaskLength;
+
+  /// No description provided for @plannerLengthGuess.
+  ///
+  /// In en, this message translates to:
+  /// **'{length} (guess)'**
+  String plannerLengthGuess(String length);
+
+  /// No description provided for @plannerPlanIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan it in'**
+  String get plannerPlanIn;
+
+  /// No description provided for @plannerNothingPlanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is planned in the next 7 days.'**
+  String get plannerNothingPlanned;
+
+  /// No description provided for @plannerPlannedTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} planned'**
+  String plannerPlannedTotal(String amount);
+
+  /// No description provided for @plannerDailyLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'At most {amount} a day'**
+  String plannerDailyLimit(String amount);
+
+  /// No description provided for @plannerDoneOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} done'**
+  String plannerDoneOf(String amount);
+
+  /// No description provided for @plannerNotPlannedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'not planned yet'**
+  String get plannerNotPlannedYet;
+
+  /// No description provided for @plannerNextBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'next: {when}'**
+  String plannerNextBlock(String when);
+
+  /// No description provided for @plannerHoursHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The Planner only places blocks inside these hours.'**
+  String get plannerHoursHint;
+
+  /// No description provided for @plannerBusyCalendarsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Events in these calendars keep the Planner away. Untick a calendar whose events you can work through.'**
+  String get plannerBusyCalendarsHint;
+
+  /// No description provided for @plannerHiddenCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden calendars don\'t count'**
+  String get plannerHiddenCalendar;
+
+  /// No description provided for @plannerAllDayBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'All-day events count as busy'**
+  String get plannerAllDayBusy;
+
+  /// No description provided for @plannerAllDayBusyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is planned on a day with an all-day event, such as a holiday.'**
+  String get plannerAllDayBusyHint;
+
+  /// No description provided for @plannerBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get plannerBack;
+
+  /// No description provided for @plannerNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get plannerNext;
+
+  /// No description provided for @plannerTurnOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on the Planner'**
+  String get plannerTurnOn;
+
+  /// No description provided for @plannerStepHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Your hours'**
+  String get plannerStepHours;
+
+  /// No description provided for @plannerStepHoursBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When may the Planner place tasks? Work tasks go into work hours and personal tasks into personal hours.'**
+  String get plannerStepHoursBody;
+
+  /// No description provided for @plannerStepTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Which tasks'**
+  String get plannerStepTasks;
+
+  /// No description provided for @plannerStepTasksBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what the Planner plans. You can change this later.'**
+  String get plannerStepTasksBody;
+
+  /// No description provided for @plannerPickTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks to plan now'**
+  String get plannerPickTasks;
+
+  /// No description provided for @plannerStepDefaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Defaults'**
+  String get plannerStepDefaults;
+
+  /// No description provided for @plannerStepDefaultsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for tasks that don\'t say otherwise. You can set a length for each task.'**
+  String get plannerStepDefaultsBody;
+
+  /// No description provided for @plannerStepPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan'**
+  String get plannerStepPreview;
+
+  /// No description provided for @plannerStepPreviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This is what the Planner would add to your calendar. Nothing is saved until you turn it on.'**
+  String get plannerStepPreviewBody;
+
+  /// No description provided for @plannerPreviewNoTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'There is nothing to plan yet. After you turn the Planner on, switch on the tasks you want planned.'**
+  String get plannerPreviewNoTasks;
+
+  /// No description provided for @plannerPreviewNoRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'No free time was found in your hours in the next 4 weeks.'**
+  String get plannerPreviewNoRoom;
+
+  /// No description provided for @plannerNeedMoreTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Need more time'**
+  String get plannerNeedMoreTime;
+
+  /// No description provided for @plannerDidNotDoIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t do it'**
+  String get plannerDidNotDoIt;
+
+  /// No description provided for @plannerDidNotDoItHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Its time is planned again.'**
+  String get plannerDidNotDoItHint;
+
+  /// No description provided for @plannerFinishedBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished this block?'**
+  String get plannerFinishedBlock;
+
+  /// No description provided for @plannerFinishedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished {title}?'**
+  String plannerFinishedTitle(String title);
+
+  /// No description provided for @plannerMovedAndLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved to {when} and locked there'**
+  String plannerMovedAndLocked(String when);
+
+  /// No description provided for @plannerMarkedDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as done'**
+  String get plannerMarkedDone;
+
+  /// No description provided for @plannerMarkedNotDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as not done'**
+  String get plannerMarkedNotDone;
+
+  /// No description provided for @plannerHowMuchMore.
+  ///
+  /// In en, this message translates to:
+  /// **'How much more time?'**
+  String get plannerHowMuchMore;
+
+  /// No description provided for @plannerAddedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to the task: {amount}'**
+  String plannerAddedTime(String amount);
+
+  /// No description provided for @plannerLaterToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Later today'**
+  String get plannerLaterToday;
+
+  /// No description provided for @plannerLaterThatDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Later that day'**
+  String get plannerLaterThatDay;
+
+  /// No description provided for @plannerTheDayAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'The day after'**
+  String get plannerTheDayAfter;
+
+  /// No description provided for @plannerAWeekLater.
+  ///
+  /// In en, this message translates to:
+  /// **'A week later'**
+  String get plannerAWeekLater;
+
+  /// No description provided for @plannerNotNowUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'When should it be planned again?'**
+  String get plannerNotNowUntil;
+
+  /// No description provided for @plannerPlannedAgainFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Not planned before: {when}'**
+  String plannerPlannedAgainFrom(String when);
+
+  /// No description provided for @plannerPlannedAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Its time will be planned again'**
+  String get plannerPlannedAgain;
+
+  /// No description provided for @plannerBlockOverlaps.
+  ///
+  /// In en, this message translates to:
+  /// **'This block overlaps an event.'**
+  String get plannerBlockOverlaps;
+
+  /// No description provided for @plannerNotDoneAfterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Not done after all'**
+  String get plannerNotDoneAfterAll;
+
+  /// No description provided for @plannerAlreadyDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Already done'**
+  String get plannerAlreadyDone;
+
+  /// No description provided for @plannerAlreadyDoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Frees the time that was planned for it.'**
+  String get plannerAlreadyDoneHint;
+
+  /// No description provided for @plannerNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get plannerNotNow;
+
+  /// No description provided for @plannerUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get plannerUnlock;
+
+  /// No description provided for @plannerLockHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock here'**
+  String get plannerLockHere;
+
+  /// No description provided for @plannerLockHereHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The Planner will not move it.'**
+  String get plannerLockHereHint;
+
+  /// No description provided for @plannerUnlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked. The Planner may move it again.'**
+  String get plannerUnlocked;
+
+  /// No description provided for @plannerLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked at this time'**
+  String get plannerLocked;
+
+  /// No description provided for @plannerTasksAtRisk.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 task is at risk} other{{count} tasks are at risk}}'**
+  String plannerTasksAtRisk(int count);
+
+  /// No description provided for @plannerAtRiskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks at risk'**
+  String get plannerAtRiskTitle;
+
+  /// No description provided for @plannerAtRiskBody.
+  ///
+  /// In en, this message translates to:
+  /// **'These tasks don\'t fit before their due date. Tap one to change its length or its due date, or make room in your calendar.'**
+  String get plannerAtRiskBody;
+
+  /// No description provided for @plannerAtRiskNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Every task fits now.'**
+  String get plannerAtRiskNone;
+
+  /// No description provided for @plannerOpenPlanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the Planner'**
+  String get plannerOpenPlanner;
+
+  /// No description provided for @plannerFixLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the length'**
+  String get plannerFixLength;
+
+  /// No description provided for @plannerFixLengthNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Now {amount}'**
+  String plannerFixLengthNow(String amount);
+
+  /// No description provided for @plannerFixDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the due date'**
+  String get plannerFixDue;
+
+  /// No description provided for @plannerFixStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop planning this task'**
+  String get plannerFixStop;
+
+  /// No description provided for @plannerAskAtEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask when a block ends'**
+  String get plannerAskAtEnd;
+
+  /// No description provided for @plannerAskAtEndHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A notification asks whether you finished. Its buttons work while Calendar is locked.'**
+  String get plannerAskAtEndHint;
+
+  /// No description provided for @markAsDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as done'**
+  String get markAsDone;
+
+  /// No description provided for @markAsNotDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as not done'**
+  String get markAsNotDone;
+
+  /// No description provided for @plannerDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get plannerDone;
+
+  /// No description provided for @plannerHabits.
+  ///
+  /// In en, this message translates to:
+  /// **'Habits'**
+  String get plannerHabits;
+
+  /// No description provided for @plannerNoHabits.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep time for lunch, exercise or anything you do regularly.'**
+  String get plannerNoHabits;
+
+  /// No description provided for @plannerAddHabit.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a habit'**
+  String get plannerAddHabit;
+
+  /// No description provided for @plannerEditHabit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit habit'**
+  String get plannerEditHabit;
+
+  /// No description provided for @plannerHabitLunch.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunch'**
+  String get plannerHabitLunch;
+
+  /// No description provided for @plannerHabitExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise'**
+  String get plannerHabitExercise;
+
+  /// No description provided for @plannerHabitOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get plannerHabitOther;
+
+  /// No description provided for @plannerHabitUntitled.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit'**
+  String get plannerHabitUntitled;
+
+  /// No description provided for @plannerHabitName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get plannerHabitName;
+
+  /// No description provided for @plannerHabitNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For example: Reading'**
+  String get plannerHabitNameHint;
+
+  /// No description provided for @plannerHabitDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Days'**
+  String get plannerHabitDays;
+
+  /// No description provided for @plannerHabitLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Length'**
+  String get plannerHabitLength;
+
+  /// No description provided for @plannerHabitIdeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Best time to start'**
+  String get plannerHabitIdeal;
+
+  /// No description provided for @plannerHabitWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'Only between'**
+  String get plannerHabitWindow;
+
+  /// No description provided for @plannerHabitWindowTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Too short for the habit\'s length.'**
+  String get plannerHabitWindowTooShort;
+
+  /// No description provided for @plannerHabitBetween.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} to {to}'**
+  String plannerHabitBetween(String from, String to);
+
+  /// No description provided for @plannerHabitFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get plannerHabitFrom;
+
+  /// No description provided for @plannerHabitTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get plannerHabitTo;
+
+  /// No description provided for @plannerHabitNoRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'When there\'s no room'**
+  String get plannerHabitNoRoom;
+
+  /// No description provided for @plannerHabitSkipDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip that day'**
+  String get plannerHabitSkipDay;
+
+  /// No description provided for @plannerHabitShortenTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Shorten it, down to {length}'**
+  String plannerHabitShortenTo(String length);
+
+  /// No description provided for @plannerAnyTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Any time'**
+  String get plannerAnyTime;
+
+  /// No description provided for @plannerHabitPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get plannerHabitPaused;
+
+  /// No description provided for @plannerHabitPausedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept, but not planned until you switch this off.'**
+  String get plannerHabitPausedHint;
+
+  /// No description provided for @plannerHabitPausedShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get plannerHabitPausedShort;
+
+  /// No description provided for @plannerDeleteHabitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this habit?'**
+  String get plannerDeleteHabitTitle;
+
+  /// No description provided for @plannerDeleteHabitBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Its coming times are removed from the calendar. Past ones stay.'**
+  String get plannerDeleteHabitBody;
+
+  /// No description provided for @plannerEveryDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day'**
+  String get plannerEveryDay;
+
+  /// No description provided for @plannerAround.
+  ///
+  /// In en, this message translates to:
+  /// **'around {time}'**
+  String plannerAround(String time);
+
+  /// No description provided for @plannerSkipToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip today'**
+  String get plannerSkipToday;
+
+  /// No description provided for @plannerSkipTodayHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Frees the time. It isn\'t planned again today.'**
+  String get plannerSkipTodayHint;
+
+  /// No description provided for @plannerHabitSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get plannerHabitSkipped;
+
+  /// No description provided for @plannerHabitSkippedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get plannerHabitSkippedToday;
+
+  /// No description provided for @plannerHabitKeptAfterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Did it after all'**
+  String get plannerHabitKeptAfterAll;
+
+  /// No description provided for @plannerHabitSkippedAfterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped it after all'**
+  String get plannerHabitSkippedAfterAll;
+
+  /// No description provided for @plannerFocusGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus time each week'**
+  String get plannerFocusGoal;
+
+  /// No description provided for @plannerFocusOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off. Keeps time free of meetings for deep work.'**
+  String get plannerFocusOff;
+
+  /// No description provided for @plannerFocusOffShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get plannerFocusOffShort;
+
+  /// No description provided for @plannerFocusPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} a week, in work hours'**
+  String plannerFocusPerWeek(String amount);
+
+  /// No description provided for @plannerFocusBlockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus time'**
+  String get plannerFocusBlockTitle;
+
+  /// No description provided for @plannerWeekFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus time: {planned} of {goal}'**
+  String plannerWeekFocus(String planned, String goal);
+
+  /// No description provided for @plannerWeekHabits.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 habit time planned} other{{count} habit times planned}}'**
+  String plannerWeekHabits(int count);
+
+  /// No description provided for @plannerLastWeekDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days: {amount} of tasks done'**
+  String plannerLastWeekDone(String amount);
+
+  /// No description provided for @plannerLastWeekHabits.
+  ///
+  /// In en, this message translates to:
+  /// **'habits kept {kept} of {total}'**
+  String plannerLastWeekHabits(int kept, int total);
+
+  /// No description provided for @findTimeForTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a time for a task'**
+  String get findTimeForTask;
+
+  /// No description provided for @findTimePickTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Which task?'**
+  String get findTimePickTask;
+
+  /// No description provided for @findTimeNoTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'No open tasks in ZT Tasks. Add a task there, then come back.'**
+  String get findTimeNoTasks;
+
+  /// No description provided for @findTimeDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {day}'**
+  String findTimeDue(String day);
+
+  /// No description provided for @findTimeFreeTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Free times'**
+  String get findTimeFreeTimes;
+
+  /// No description provided for @findTimeNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No free time in the next two weeks. Try a shorter length or other hours.'**
+  String get findTimeNone;
+
+  /// No description provided for @findTimeAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get findTimeAdd;
+
+  /// No description provided for @findTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The task is added as an event linked to it. It stays where you put it.'**
+  String get findTimeHint;
+
+  /// No description provided for @findTimeAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to your calendar: {when}'**
+  String findTimeAdded(String when);
+
+  /// No description provided for @plannerPlusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The automatic Planner is part of Plus'**
+  String get plannerPlusTitle;
+
+  /// No description provided for @plannerPlusBody.
+  ///
+  /// In en, this message translates to:
+  /// **'With Plus, Calendar plans your tasks, habits and focus time and moves them when your day changes. Plus isn\'t on sale yet. On the free plan, Find a time places one task at a time.'**
+  String get plannerPlusBody;
+
+  /// No description provided for @plannerPausedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The Planner is paused'**
+  String get plannerPausedTitle;
+
+  /// No description provided for @plannerPausedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan no longer includes the Planner (it is part of Plus). Your blocks stay where they are, but nothing moves them now.'**
+  String get plannerPausedBody;
+
+  /// No description provided for @plannerCheckPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Check my plan again'**
+  String get plannerCheckPlan;
+
+  /// No description provided for @plannerAi.
+  ///
+  /// In en, this message translates to:
+  /// **'AI helper'**
+  String get plannerAi;
+
+  /// No description provided for @plannerAiIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Off unless you switch it on. Our server keeps only how many requests you made, never what was sent.'**
+  String get plannerAiIntro;
+
+  /// No description provided for @plannerAiGuess.
+  ///
+  /// In en, this message translates to:
+  /// **'Guess task lengths'**
+  String get plannerAiGuess;
+
+  /// No description provided for @plannerAiGuessHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends a task\'s title when you ask for a guess.'**
+  String get plannerAiGuessHint;
+
+  /// No description provided for @plannerAiRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the Planner'**
+  String get plannerAiRequests;
+
+  /// No description provided for @plannerAiRequestsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Say what you need in a sentence, like \"I\'m sick today, move everything\".'**
+  String get plannerAiRequestsHint;
+
+  /// No description provided for @plannerAiHideTitles.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide titles'**
+  String get plannerAiHideTitles;
+
+  /// No description provided for @plannerAiHideTitlesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Titles go as labels (Task A, Event B) and are put back on this phone.'**
+  String get plannerAiHideTitlesHint;
+
+  /// No description provided for @plannerAiUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Used this month: {used} of {limit}'**
+  String plannerAiUsed(int used, int limit);
+
+  /// No description provided for @plannerAiConsentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send this to the AI helper?'**
+  String get plannerAiConsentTitle;
+
+  /// No description provided for @plannerAiConsentGuess.
+  ///
+  /// In en, this message translates to:
+  /// **'When you ask for a guess, the task\'s title goes to our server and on to Anthropic\'s Claude, which guesses how long it takes. Our server keeps only how many requests you made, never the text.'**
+  String get plannerAiConsentGuess;
+
+  /// No description provided for @plannerAiConsentRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'When you ask the Planner, your sentence, your open tasks, and your blocks and events for the next 2 weeks (titles and times) go to our server and on to Anthropic\'s Claude. Our server keeps only how many requests you made, never the text. \"Hide titles\" sends labels in place of titles.'**
+  String get plannerAiConsentRequests;
+
+  /// No description provided for @plannerAiSwitchOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch on'**
+  String get plannerAiSwitchOn;
+
+  /// No description provided for @plannerAiAskHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For example: Finish the report before Thursday'**
+  String get plannerAiAskHint;
+
+  /// No description provided for @plannerAiSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get plannerAiSend;
+
+  /// No description provided for @plannerAiThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Asking the AI helper…'**
+  String get plannerAiThinking;
+
+  /// No description provided for @plannerAiNoChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'The AI helper found nothing to change. Try saying it another way.'**
+  String get plannerAiNoChanges;
+
+  /// No description provided for @plannerAiQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'The AI helper asks'**
+  String get plannerAiQuestion;
+
+  /// No description provided for @plannerAiCannot.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t do'**
+  String get plannerAiCannot;
+
+  /// No description provided for @plannerAiChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested changes'**
+  String get plannerAiChanges;
+
+  /// No description provided for @plannerAiCheckHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing changes until you tap Apply.'**
+  String get plannerAiCheckHint;
+
+  /// No description provided for @plannerAiApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get plannerAiApply;
+
+  /// No description provided for @plannerAiApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes applied'**
+  String get plannerAiApplied;
+
+  /// No description provided for @plannerAiUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes undone'**
+  String get plannerAiUndone;
+
+  /// No description provided for @plannerAiPreviewSame.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan stays as it is.'**
+  String get plannerAiPreviewSame;
+
+  /// No description provided for @plannerAiPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan: {moved} moved, {added} added, {removed} removed.'**
+  String plannerAiPreview(int moved, int added, int removed);
+
+  /// No description provided for @plannerAiSetLength.
+  ///
+  /// In en, this message translates to:
+  /// **'{task}: takes {length}'**
+  String plannerAiSetLength(String task, String length);
+
+  /// No description provided for @plannerAiSetPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'{task}: priority {priority}'**
+  String plannerAiSetPriority(String task, String priority);
+
+  /// No description provided for @plannerAiPriorityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'high'**
+  String get plannerAiPriorityHigh;
+
+  /// No description provided for @plannerAiPriorityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'medium'**
+  String get plannerAiPriorityMedium;
+
+  /// No description provided for @plannerAiPriorityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'low'**
+  String get plannerAiPriorityLow;
+
+  /// No description provided for @plannerAiSetDue.
+  ///
+  /// In en, this message translates to:
+  /// **'{task}: due {day}'**
+  String plannerAiSetDue(String task, String day);
+
+  /// No description provided for @plannerAiNotBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'{task}: not before {day}'**
+  String plannerAiNotBefore(String task, String day);
+
+  /// No description provided for @plannerAiLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep {block} where it is ({when})'**
+  String plannerAiLock(String block, String when);
+
+  /// No description provided for @plannerAiUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Let the Planner move {block} ({when})'**
+  String plannerAiUnlock(String block, String when);
+
+  /// No description provided for @plannerAiMarkDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{block} ({when}) is done'**
+  String plannerAiMarkDone(String block, String when);
+
+  /// No description provided for @plannerAiBlockOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep free: {when} ({title})'**
+  String plannerAiBlockOut(String when, String title);
+
+  /// No description provided for @plannerAiBusyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Busy'**
+  String get plannerAiBusyTitle;
+
+  /// No description provided for @plannerAiSetHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} on {weekday}: {from} to {to}'**
+  String plannerAiSetHours(
+    String hours,
+    String weekday,
+    String from,
+    String to,
+  );
+
+  /// No description provided for @plannerAiNoHours.
+  ///
+  /// In en, this message translates to:
+  /// **'No {hours} on {weekday}'**
+  String plannerAiNoHours(String hours, String weekday);
+
+  /// No description provided for @plannerAiAddHabit.
+  ///
+  /// In en, this message translates to:
+  /// **'New habit: {title}, {details}'**
+  String plannerAiAddHabit(String title, String details);
+
+  /// No description provided for @plannerAiGuessButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Guess the length'**
+  String get plannerAiGuessButton;
+
+  /// No description provided for @plannerAiGuessed.
+  ///
+  /// In en, this message translates to:
+  /// **'Guessed: {length}'**
+  String plannerAiGuessed(String length);
+
+  /// No description provided for @plannerAiGuessLengths.
+  ///
+  /// In en, this message translates to:
+  /// **'Guess missing lengths'**
+  String get plannerAiGuessLengths;
+
+  /// No description provided for @plannerAiGuessLengthsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 planned task has no length} other{{count} planned tasks have no length}}'**
+  String plannerAiGuessLengthsHint(int count);
+
+  /// No description provided for @plannerAiGuessesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guessed lengths'**
+  String get plannerAiGuessesTitle;
+
+  /// No description provided for @plannerAiErrorOff.
+  ///
+  /// In en, this message translates to:
+  /// **'The AI helper isn\'t available right now.'**
+  String get plannerAiErrorOff;
+
+  /// No description provided for @plannerAiErrorLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve used this month\'s AI requests.'**
+  String get plannerAiErrorLimit;
+
+  /// No description provided for @plannerAiErrorRefused.
+  ///
+  /// In en, this message translates to:
+  /// **'The AI helper can\'t help with that.'**
+  String get plannerAiErrorRefused;
+
+  /// No description provided for @plannerAiErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection. Try again when you\'re online.'**
+  String get plannerAiErrorNetwork;
+
+  /// No description provided for @plannerAiErrorOther.
+  ///
+  /// In en, this message translates to:
+  /// **'The AI helper couldn\'t answer. Try again in a moment.'**
+  String get plannerAiErrorOther;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

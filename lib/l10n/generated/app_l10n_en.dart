@@ -632,7 +632,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get calendarDownloadsItFromThat =>
-      'Calendar downloads it from that address (the site sees a download from your phone, nothing about your account) and keeps an encrypted copy, refreshed twice a day. Its events are read-only.';
+      'Calendar downloads it from that address (the site sees a download from your phone, nothing about your account) and keeps an encrypted copy, refreshed every few hours while Calendar is open. Its events are read-only.';
 
   @override
   String get subscribe => 'Subscribe';
@@ -1943,4 +1943,903 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get widgetNextMonth => 'Next month';
+
+  @override
+  String get leaveEmptyForCalendarsOwnName =>
+      'Leave empty to use the calendar\'s own name';
+
+  @override
+  String get whereDoIFindTheLink => 'Where do I find the link?';
+
+  @override
+  String get googleOutlookOrIcloud => 'Google Calendar, Outlook or iCloud';
+
+  @override
+  String get getALinkFromAnotherCalendar => 'Get a link from another calendar';
+
+  @override
+  String get feedHelpGoogleTitle => 'Google Calendar';
+
+  @override
+  String get feedHelpGoogle =>
+      'On a computer, open calendar.google.com and click the gear, then Settings. Under \"Settings for my calendars\" pick the calendar and open \"Integrate calendar\". Copy \"Secret address in iCal format\". Google updates this link every few hours, so a new event can take a while to appear.';
+
+  @override
+  String get feedHelpOutlookTitle => 'Outlook.com or Microsoft 365';
+
+  @override
+  String get feedHelpOutlook =>
+      'In Outlook on the web, open Settings, then Calendar, then Shared calendars. Under \"Publish a calendar\" pick the calendar and \"Can view all details\", click Publish, and copy the ICS link.';
+
+  @override
+  String get feedHelpIcloudTitle => 'iCloud (Apple)';
+
+  @override
+  String get feedHelpIcloud =>
+      'On an iPhone, open Calendar and tap Calendars. Tap the info button next to the calendar, turn on \"Public Calendar\" and tap \"Share Link\". Anyone with a public iCloud link can open it.';
+
+  @override
+  String get feedHelpPrivacy =>
+      'Keep these links private: anyone who has one can see that calendar. ZT Calendar stores the link encrypted and downloads it straight from your phone. Subscribed calendars are read-only here. To move events over for good, export a file from the other app and use Import instead.';
+
+  @override
+  String get planner => 'Planner';
+
+  @override
+  String get plannedCalendarName => 'Planned';
+
+  @override
+  String plannerPartOf(String title, int part, int total) {
+    return '$title ($part of $total)';
+  }
+
+  @override
+  String plannerHoursMinutes(int hours, int minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
+  String get plannerReasonEarliest =>
+      'This is the earliest free time in your hours.';
+
+  @override
+  String get plannerReasonDeadline =>
+      'Placed here to finish before the due date.';
+
+  @override
+  String get plannerReasonLate =>
+      'It doesn\'t fit before the due date. This is the earliest time left.';
+
+  @override
+  String get plannerReasonLocked => 'You locked it at this time.';
+
+  @override
+  String get plannerReasonDone => 'Marked as done.';
+
+  @override
+  String get plannerNoHours => 'No hours set';
+
+  @override
+  String get plannerHoursEndFirst => 'The end has to be after the start.';
+
+  @override
+  String get plannerHoursOverlap =>
+      'These hours overlap other hours on that day.';
+
+  @override
+  String get plannerDayOff => 'Off';
+
+  @override
+  String get plannerTaskFinishedSaved => 'Task finished. Saved in ZT Tasks.';
+
+  @override
+  String get plannerBlockGone => 'This block is no longer planned.';
+
+  @override
+  String plannerBlockPart(int part, int total) {
+    return 'Part $part of $total';
+  }
+
+  @override
+  String get plannerBlockMoves =>
+      'The Planner moves this block when your calendar changes.';
+
+  @override
+  String get plannerTaskFinished => 'Task finished';
+
+  @override
+  String plannerCouldNotPlan(String error) {
+    return 'Could not plan: $error';
+  }
+
+  @override
+  String get plannerIntroTitle => 'Let Calendar plan your tasks';
+
+  @override
+  String get plannerIntroBody =>
+      'The Planner takes tasks from ZT Tasks and fits them into the free time around your events. When a meeting moves or a new one arrives, it plans again, and it tells you when a task no longer fits before its due date.';
+
+  @override
+  String get plannerIntroPrivacy =>
+      'Everything is worked out on this phone. Your tasks and events stay end-to-end encrypted, and no AI is involved.';
+
+  @override
+  String get plannerSetUp => 'Set up the Planner';
+
+  @override
+  String get plannerNext7Days => 'Next 7 days';
+
+  @override
+  String get plannerWaitingForSync =>
+      'Waiting for your calendar and tasks to finish syncing…';
+
+  @override
+  String plannerRiskNoRoom(String amount) {
+    return '$amount doesn\'t fit in the next 4 weeks';
+  }
+
+  @override
+  String plannerRiskLate(String amount) {
+    return '$amount is planned after the due date';
+  }
+
+  @override
+  String get plannerTasksToPlan => 'Tasks to plan';
+
+  @override
+  String get plannerLoadingTasks => 'Loading tasks from ZT Tasks…';
+
+  @override
+  String get plannerNoOpenTasks => 'There are no open tasks in ZT Tasks.';
+
+  @override
+  String get plannerNoTasksSwitchedOn =>
+      'No task is switched on yet. Switch on the tasks you want planned.';
+
+  @override
+  String plannerOtherTasks(int count) {
+    return 'Other tasks ($count)';
+  }
+
+  @override
+  String get plannerWorkHours => 'Work hours';
+
+  @override
+  String get plannerPersonalHours => 'Personal hours';
+
+  @override
+  String get plannerWhichTasks => 'Which tasks to plan';
+
+  @override
+  String get plannerAllTasks => 'All tasks';
+
+  @override
+  String get plannerAllTasksHint =>
+      'Every open task in ZT Tasks, except the ones you switch off.';
+
+  @override
+  String get plannerOnlySwitchedOn => 'Only tasks I switch on';
+
+  @override
+  String get plannerOnlySwitchedOnHint =>
+      'Nothing is planned until you switch a task on.';
+
+  @override
+  String get plannerUsualLength => 'Usual task length';
+
+  @override
+  String get plannerShortestBlock => 'Shortest block';
+
+  @override
+  String get plannerLongestBlock => 'Longest block';
+
+  @override
+  String get plannerBreakAfterMeetings => 'Break after meetings';
+
+  @override
+  String get plannerNoBreak => 'None';
+
+  @override
+  String get plannerMostPerDay => 'Most planned time per day';
+
+  @override
+  String get plannerBusyCalendars => 'Calendars that count as busy';
+
+  @override
+  String get plannerNoBusyCalendars => 'None';
+
+  @override
+  String get plannerPassedCountAsDone => 'Blocks that pass count as done';
+
+  @override
+  String get plannerPassedCountAsDoneOn =>
+      'A block whose time has passed is marked done.';
+
+  @override
+  String get plannerPassedCountAsDoneOff =>
+      'A block that passed waits for the rest of the day, then its time is planned again.';
+
+  @override
+  String get plannerRemindAtStart => 'Notify me when a block starts';
+
+  @override
+  String get plannerTidyUp => 'Tidy up my week';
+
+  @override
+  String get plannerTidyUpHint =>
+      'Plans every block afresh, as early as it fits.';
+
+  @override
+  String get plannerTidiedUp => 'Planning your week again';
+
+  @override
+  String get plannerTurnOff => 'Turn off the Planner';
+
+  @override
+  String get plannerTurnOffTitle => 'Turn off the Planner?';
+
+  @override
+  String get plannerTurnOffBody =>
+      'Planned blocks that aren\'t done are removed from your calendar. Your tasks stay as they are in ZT Tasks, and your Planner settings are kept.';
+
+  @override
+  String get plannerTaskLength => 'Length';
+
+  @override
+  String plannerLengthGuess(String length) {
+    return '$length (guess)';
+  }
+
+  @override
+  String get plannerPlanIn => 'Plan it in';
+
+  @override
+  String get plannerNothingPlanned => 'Nothing is planned in the next 7 days.';
+
+  @override
+  String plannerPlannedTotal(String amount) {
+    return '$amount planned';
+  }
+
+  @override
+  String plannerDailyLimit(String amount) {
+    return 'At most $amount a day';
+  }
+
+  @override
+  String plannerDoneOf(String amount) {
+    return '$amount done';
+  }
+
+  @override
+  String get plannerNotPlannedYet => 'not planned yet';
+
+  @override
+  String plannerNextBlock(String when) {
+    return 'next: $when';
+  }
+
+  @override
+  String get plannerHoursHint =>
+      'The Planner only places blocks inside these hours.';
+
+  @override
+  String get plannerBusyCalendarsHint =>
+      'Events in these calendars keep the Planner away. Untick a calendar whose events you can work through.';
+
+  @override
+  String get plannerHiddenCalendar => 'Hidden calendars don\'t count';
+
+  @override
+  String get plannerAllDayBusy => 'All-day events count as busy';
+
+  @override
+  String get plannerAllDayBusyHint =>
+      'Nothing is planned on a day with an all-day event, such as a holiday.';
+
+  @override
+  String get plannerBack => 'Back';
+
+  @override
+  String get plannerNext => 'Next';
+
+  @override
+  String get plannerTurnOn => 'Turn on the Planner';
+
+  @override
+  String get plannerStepHours => 'Your hours';
+
+  @override
+  String get plannerStepHoursBody =>
+      'When may the Planner place tasks? Work tasks go into work hours and personal tasks into personal hours.';
+
+  @override
+  String get plannerStepTasks => 'Which tasks';
+
+  @override
+  String get plannerStepTasksBody =>
+      'Choose what the Planner plans. You can change this later.';
+
+  @override
+  String get plannerPickTasks => 'Tasks to plan now';
+
+  @override
+  String get plannerStepDefaults => 'Defaults';
+
+  @override
+  String get plannerStepDefaultsBody =>
+      'Used for tasks that don\'t say otherwise. You can set a length for each task.';
+
+  @override
+  String get plannerStepPreview => 'Your plan';
+
+  @override
+  String get plannerStepPreviewBody =>
+      'This is what the Planner would add to your calendar. Nothing is saved until you turn it on.';
+
+  @override
+  String get plannerPreviewNoTasks =>
+      'There is nothing to plan yet. After you turn the Planner on, switch on the tasks you want planned.';
+
+  @override
+  String get plannerPreviewNoRoom =>
+      'No free time was found in your hours in the next 4 weeks.';
+
+  @override
+  String get plannerNeedMoreTime => 'Need more time';
+
+  @override
+  String get plannerDidNotDoIt => 'Didn\'t do it';
+
+  @override
+  String get plannerDidNotDoItHint => 'Its time is planned again.';
+
+  @override
+  String get plannerFinishedBlock => 'Finished this block?';
+
+  @override
+  String plannerFinishedTitle(String title) {
+    return 'Finished $title?';
+  }
+
+  @override
+  String plannerMovedAndLocked(String when) {
+    return 'Moved to $when and locked there';
+  }
+
+  @override
+  String get plannerMarkedDone => 'Marked as done';
+
+  @override
+  String get plannerMarkedNotDone => 'Marked as not done';
+
+  @override
+  String get plannerHowMuchMore => 'How much more time?';
+
+  @override
+  String plannerAddedTime(String amount) {
+    return 'Added to the task: $amount';
+  }
+
+  @override
+  String get plannerLaterToday => 'Later today';
+
+  @override
+  String get plannerLaterThatDay => 'Later that day';
+
+  @override
+  String get plannerTheDayAfter => 'The day after';
+
+  @override
+  String get plannerAWeekLater => 'A week later';
+
+  @override
+  String get plannerNotNowUntil => 'When should it be planned again?';
+
+  @override
+  String plannerPlannedAgainFrom(String when) {
+    return 'Not planned before: $when';
+  }
+
+  @override
+  String get plannerPlannedAgain => 'Its time will be planned again';
+
+  @override
+  String get plannerBlockOverlaps => 'This block overlaps an event.';
+
+  @override
+  String get plannerNotDoneAfterAll => 'Not done after all';
+
+  @override
+  String get plannerAlreadyDone => 'Already done';
+
+  @override
+  String get plannerAlreadyDoneHint =>
+      'Frees the time that was planned for it.';
+
+  @override
+  String get plannerNotNow => 'Not now';
+
+  @override
+  String get plannerUnlock => 'Unlock';
+
+  @override
+  String get plannerLockHere => 'Lock here';
+
+  @override
+  String get plannerLockHereHint => 'The Planner will not move it.';
+
+  @override
+  String get plannerUnlocked => 'Unlocked. The Planner may move it again.';
+
+  @override
+  String get plannerLocked => 'Locked at this time';
+
+  @override
+  String plannerTasksAtRisk(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tasks are at risk',
+      one: '1 task is at risk',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get plannerAtRiskTitle => 'Tasks at risk';
+
+  @override
+  String get plannerAtRiskBody =>
+      'These tasks don\'t fit before their due date. Tap one to change its length or its due date, or make room in your calendar.';
+
+  @override
+  String get plannerAtRiskNone => 'Every task fits now.';
+
+  @override
+  String get plannerOpenPlanner => 'Open the Planner';
+
+  @override
+  String get plannerFixLength => 'Change the length';
+
+  @override
+  String plannerFixLengthNow(String amount) {
+    return 'Now $amount';
+  }
+
+  @override
+  String get plannerFixDue => 'Move the due date';
+
+  @override
+  String get plannerFixStop => 'Stop planning this task';
+
+  @override
+  String get plannerAskAtEnd => 'Ask when a block ends';
+
+  @override
+  String get plannerAskAtEndHint =>
+      'A notification asks whether you finished. Its buttons work while Calendar is locked.';
+
+  @override
+  String get markAsDone => 'Mark as done';
+
+  @override
+  String get markAsNotDone => 'Mark as not done';
+
+  @override
+  String get plannerDone => 'Done';
+
+  @override
+  String get plannerHabits => 'Habits';
+
+  @override
+  String get plannerNoHabits =>
+      'Keep time for lunch, exercise or anything you do regularly.';
+
+  @override
+  String get plannerAddHabit => 'Add a habit';
+
+  @override
+  String get plannerEditHabit => 'Edit habit';
+
+  @override
+  String get plannerHabitLunch => 'Lunch';
+
+  @override
+  String get plannerHabitExercise => 'Exercise';
+
+  @override
+  String get plannerHabitOther => 'Something else';
+
+  @override
+  String get plannerHabitUntitled => 'Habit';
+
+  @override
+  String get plannerHabitName => 'Name';
+
+  @override
+  String get plannerHabitNameHint => 'For example: Reading';
+
+  @override
+  String get plannerHabitDays => 'Days';
+
+  @override
+  String get plannerHabitLength => 'Length';
+
+  @override
+  String get plannerHabitIdeal => 'Best time to start';
+
+  @override
+  String get plannerHabitWindow => 'Only between';
+
+  @override
+  String get plannerHabitWindowTooShort => 'Too short for the habit\'s length.';
+
+  @override
+  String plannerHabitBetween(String from, String to) {
+    return '$from to $to';
+  }
+
+  @override
+  String get plannerHabitFrom => 'From';
+
+  @override
+  String get plannerHabitTo => 'To';
+
+  @override
+  String get plannerHabitNoRoom => 'When there\'s no room';
+
+  @override
+  String get plannerHabitSkipDay => 'Skip that day';
+
+  @override
+  String plannerHabitShortenTo(String length) {
+    return 'Shorten it, down to $length';
+  }
+
+  @override
+  String get plannerAnyTime => 'Any time';
+
+  @override
+  String get plannerHabitPaused => 'Pause';
+
+  @override
+  String get plannerHabitPausedHint =>
+      'Kept, but not planned until you switch this off.';
+
+  @override
+  String get plannerHabitPausedShort => 'Paused';
+
+  @override
+  String get plannerDeleteHabitTitle => 'Delete this habit?';
+
+  @override
+  String get plannerDeleteHabitBody =>
+      'Its coming times are removed from the calendar. Past ones stay.';
+
+  @override
+  String get plannerEveryDay => 'Every day';
+
+  @override
+  String plannerAround(String time) {
+    return 'around $time';
+  }
+
+  @override
+  String get plannerSkipToday => 'Skip today';
+
+  @override
+  String get plannerSkipTodayHint =>
+      'Frees the time. It isn\'t planned again today.';
+
+  @override
+  String get plannerHabitSkipped => 'Skipped';
+
+  @override
+  String get plannerHabitSkippedToday => 'Skipped';
+
+  @override
+  String get plannerHabitKeptAfterAll => 'Did it after all';
+
+  @override
+  String get plannerHabitSkippedAfterAll => 'Skipped it after all';
+
+  @override
+  String get plannerFocusGoal => 'Focus time each week';
+
+  @override
+  String get plannerFocusOff =>
+      'Off. Keeps time free of meetings for deep work.';
+
+  @override
+  String get plannerFocusOffShort => 'Off';
+
+  @override
+  String plannerFocusPerWeek(String amount) {
+    return '$amount a week, in work hours';
+  }
+
+  @override
+  String get plannerFocusBlockTitle => 'Focus time';
+
+  @override
+  String plannerWeekFocus(String planned, String goal) {
+    return 'Focus time: $planned of $goal';
+  }
+
+  @override
+  String plannerWeekHabits(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count habit times planned',
+      one: '1 habit time planned',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String plannerLastWeekDone(String amount) {
+    return 'Last 7 days: $amount of tasks done';
+  }
+
+  @override
+  String plannerLastWeekHabits(int kept, int total) {
+    return 'habits kept $kept of $total';
+  }
+
+  @override
+  String get findTimeForTask => 'Find a time for a task';
+
+  @override
+  String get findTimePickTask => 'Which task?';
+
+  @override
+  String get findTimeNoTasks =>
+      'No open tasks in ZT Tasks. Add a task there, then come back.';
+
+  @override
+  String findTimeDue(String day) {
+    return 'Due $day';
+  }
+
+  @override
+  String get findTimeFreeTimes => 'Free times';
+
+  @override
+  String get findTimeNone =>
+      'No free time in the next two weeks. Try a shorter length or other hours.';
+
+  @override
+  String get findTimeAdd => 'Add';
+
+  @override
+  String get findTimeHint =>
+      'The task is added as an event linked to it. It stays where you put it.';
+
+  @override
+  String findTimeAdded(String when) {
+    return 'Added to your calendar: $when';
+  }
+
+  @override
+  String get plannerPlusTitle => 'The automatic Planner is part of Plus';
+
+  @override
+  String get plannerPlusBody =>
+      'With Plus, Calendar plans your tasks, habits and focus time and moves them when your day changes. Plus isn\'t on sale yet. On the free plan, Find a time places one task at a time.';
+
+  @override
+  String get plannerPausedTitle => 'The Planner is paused';
+
+  @override
+  String get plannerPausedBody =>
+      'Your plan no longer includes the Planner (it is part of Plus). Your blocks stay where they are, but nothing moves them now.';
+
+  @override
+  String get plannerCheckPlan => 'Check my plan again';
+
+  @override
+  String get plannerAi => 'AI helper';
+
+  @override
+  String get plannerAiIntro =>
+      'Off unless you switch it on. Our server keeps only how many requests you made, never what was sent.';
+
+  @override
+  String get plannerAiGuess => 'Guess task lengths';
+
+  @override
+  String get plannerAiGuessHint =>
+      'Sends a task\'s title when you ask for a guess.';
+
+  @override
+  String get plannerAiRequests => 'Ask the Planner';
+
+  @override
+  String get plannerAiRequestsHint =>
+      'Say what you need in a sentence, like \"I\'m sick today, move everything\".';
+
+  @override
+  String get plannerAiHideTitles => 'Hide titles';
+
+  @override
+  String get plannerAiHideTitlesHint =>
+      'Titles go as labels (Task A, Event B) and are put back on this phone.';
+
+  @override
+  String plannerAiUsed(int used, int limit) {
+    return 'Used this month: $used of $limit';
+  }
+
+  @override
+  String get plannerAiConsentTitle => 'Send this to the AI helper?';
+
+  @override
+  String get plannerAiConsentGuess =>
+      'When you ask for a guess, the task\'s title goes to our server and on to Anthropic\'s Claude, which guesses how long it takes. Our server keeps only how many requests you made, never the text.';
+
+  @override
+  String get plannerAiConsentRequests =>
+      'When you ask the Planner, your sentence, your open tasks, and your blocks and events for the next 2 weeks (titles and times) go to our server and on to Anthropic\'s Claude. Our server keeps only how many requests you made, never the text. \"Hide titles\" sends labels in place of titles.';
+
+  @override
+  String get plannerAiSwitchOn => 'Switch on';
+
+  @override
+  String get plannerAiAskHint =>
+      'For example: Finish the report before Thursday';
+
+  @override
+  String get plannerAiSend => 'Send';
+
+  @override
+  String get plannerAiThinking => 'Asking the AI helper…';
+
+  @override
+  String get plannerAiNoChanges =>
+      'The AI helper found nothing to change. Try saying it another way.';
+
+  @override
+  String get plannerAiQuestion => 'The AI helper asks';
+
+  @override
+  String get plannerAiCannot => 'Can\'t do';
+
+  @override
+  String get plannerAiChanges => 'Suggested changes';
+
+  @override
+  String get plannerAiCheckHint => 'Nothing changes until you tap Apply.';
+
+  @override
+  String get plannerAiApply => 'Apply';
+
+  @override
+  String get plannerAiApplied => 'Changes applied';
+
+  @override
+  String get plannerAiUndone => 'Changes undone';
+
+  @override
+  String get plannerAiPreviewSame => 'The plan stays as it is.';
+
+  @override
+  String plannerAiPreview(int moved, int added, int removed) {
+    return 'The plan: $moved moved, $added added, $removed removed.';
+  }
+
+  @override
+  String plannerAiSetLength(String task, String length) {
+    return '$task: takes $length';
+  }
+
+  @override
+  String plannerAiSetPriority(String task, String priority) {
+    return '$task: priority $priority';
+  }
+
+  @override
+  String get plannerAiPriorityHigh => 'high';
+
+  @override
+  String get plannerAiPriorityMedium => 'medium';
+
+  @override
+  String get plannerAiPriorityLow => 'low';
+
+  @override
+  String plannerAiSetDue(String task, String day) {
+    return '$task: due $day';
+  }
+
+  @override
+  String plannerAiNotBefore(String task, String day) {
+    return '$task: not before $day';
+  }
+
+  @override
+  String plannerAiLock(String block, String when) {
+    return 'Keep $block where it is ($when)';
+  }
+
+  @override
+  String plannerAiUnlock(String block, String when) {
+    return 'Let the Planner move $block ($when)';
+  }
+
+  @override
+  String plannerAiMarkDone(String block, String when) {
+    return '$block ($when) is done';
+  }
+
+  @override
+  String plannerAiBlockOut(String when, String title) {
+    return 'Keep free: $when ($title)';
+  }
+
+  @override
+  String get plannerAiBusyTitle => 'Busy';
+
+  @override
+  String plannerAiSetHours(
+    String hours,
+    String weekday,
+    String from,
+    String to,
+  ) {
+    return '$hours on $weekday: $from to $to';
+  }
+
+  @override
+  String plannerAiNoHours(String hours, String weekday) {
+    return 'No $hours on $weekday';
+  }
+
+  @override
+  String plannerAiAddHabit(String title, String details) {
+    return 'New habit: $title, $details';
+  }
+
+  @override
+  String get plannerAiGuessButton => 'Guess the length';
+
+  @override
+  String plannerAiGuessed(String length) {
+    return 'Guessed: $length';
+  }
+
+  @override
+  String get plannerAiGuessLengths => 'Guess missing lengths';
+
+  @override
+  String plannerAiGuessLengthsHint(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count planned tasks have no length',
+      one: '1 planned task has no length',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get plannerAiGuessesTitle => 'Guessed lengths';
+
+  @override
+  String get plannerAiErrorOff => 'The AI helper isn\'t available right now.';
+
+  @override
+  String get plannerAiErrorLimit => 'You\'ve used this month\'s AI requests.';
+
+  @override
+  String get plannerAiErrorRefused => 'The AI helper can\'t help with that.';
+
+  @override
+  String get plannerAiErrorNetwork =>
+      'No connection. Try again when you\'re online.';
+
+  @override
+  String get plannerAiErrorOther =>
+      'The AI helper couldn\'t answer. Try again in a moment.';
 }

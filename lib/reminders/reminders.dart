@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui' show DartPluginRegistrant;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -7,6 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import '../model/calendar_event.dart';
+import '../planner/planner_answers.dart';
+import '../planner/planner_model.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// One reminder the OS should show at [at], for one occurrence of an event.
@@ -21,6 +24,7 @@ class ScheduledReminder {
     this.hasPlace = false,
     this.hasNote = false,
     this.hasGuests = false,
+    this.planEnd = false,
   });
 
   final String eventId;
@@ -42,7 +46,11 @@ class ScheduledReminder {
   final bool hasNote;
   final bool hasGuests;
 
-  List<String> get actions => [
+  /// The question a Planner block asks when it ends ("Finished ...?"),
+  /// with its own buttons, instead of a reminder before an event.
+  final bool planEnd;
+
+  List<String> get actions => planEnd ? ReminderAction.planEndActions : [
     ReminderAction.snooze,
     if (hasPlace) ReminderAction.map,
     if (hasNote) ReminderAction.note,
@@ -98,11 +106,35 @@ abstract final class ReminderAction {
   static const note = 'note';
   static const late = 'late';
 
+  /// On the question a Planner block asks when it ends.
+  static const planDone = 'plan-done';
+  static const planMore = 'plan-more';
+  static const planSkip = 'plan-skip';
+  static const planEndActions = [planDone, planMore, planSkip];
+
   static Map<String, String> get labels => {
     snooze: currentL10n.snooze10Min,
     map: currentL10n.map,
     note: currentL10n.note,
     late: currentL10n.runningLate,
+    planDone: currentL10n.plannerDone,
+    planMore: currentL10n.plannerNeedMoreTime,
+    planSkip: currentL10n.plannerDidNotDoIt,
+  };
+
+  /// Buttons that do their work without opening the app, so they work
+  /// while Calendar is locked: Snooze, and a block's answers (kept on the
+  /// phone until the next unlock). The others need the unlocked app, since
+  /// the place, note and guests stay in the vault.
+  static bool inBackground(String action) =>
+      action == snooze || planEndActions.contains(action);
+
+  /// The Planner answer a button stands for, or null for other buttons.
+  static PlanAnswerKind? planAnswer(String? action) => switch (action) {
+    planDone => PlanAnswerKind.done,
+    planMore => PlanAnswerKind.more,
+    planSkip => PlanAnswerKind.skip,
+    _ => null,
   };
 
   static const snoozeFor = Duration(minutes: 10);
@@ -185,13 +217,39 @@ List<ScheduledReminder> remindersFor(
   Set<String> hiddenCalendars = const {},
   Duration horizon = const Duration(days: 30),
   int max = 150,
+  bool askAtBlockEnd = false,
+  String Function(CalendarEvent block)? blockEndTitle,
+  String Function(CalendarEvent block)? blockEndBody,
 }) {
   final out = <ScheduledReminder>[];
   final until = now.add(horizon);
   for (final e in events) {
-    if (e.reminders.isEmpty || hiddenCalendars.contains(e.calendarId)) {
-      continue;
+    if (hiddenCalendars.contains(e.calendarId)) continue;
+    // A task's Planner block that isn't done asks "Finished?" when it
+    // ends. Habits aren't asked about: one that passes counts as kept.
+    final mark = PlanMark.of(e);
+    if (askAtBlockEnd &&
+        !e.allDay &&
+        e.end.isAfter(now) &&
+        e.end.isBefore(until) &&
+        mark != null &&
+        !mark.done &&
+        !mark.isHabit) {
+      out.add(
+        ScheduledReminder(
+          eventId: e.id,
+          occurrence: e.start,
+          at: e.end,
+          title: blockEndTitle?.call(e) ?? currentL10n.plannerFinishedBlock,
+          body: blockEndBody?.call(e) ?? '',
+          planEnd: true,
+        ),
+      );
     }
+    // A habit skipped for the day doesn't remind (its reminders stay on
+    // the block, so "keep it after all" brings them back).
+    if (mark != null && mark.skipped) continue;
+    if (e.reminders.isEmpty) continue;
     final longest = e.reminders.reduce((a, b) => a > b ? a : b);
     // Occurrences whose earliest reminder could fall in [now, until).
     // (All-day reminders fire up to 9 hours after their start.)
@@ -295,9 +353,7 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
           AndroidNotificationAction(
             a,
             ReminderAction.labels[a] ?? a,
-            // Snooze happens without opening the app; the others need the
-            // unlocked app (the place, note and guests stay in the vault).
-            showsUserInterface: a != ReminderAction.snooze,
+            showsUserInterface: !ReminderAction.inBackground(a),
             cancelNotification: true,
           ),
       ],
@@ -330,6 +386,10 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
       onDidReceiveNotificationResponse: (response) {
         if (response.actionId == ReminderAction.snooze) {
           snoozeReminder(_plugin, response).ignore();
+          return;
+        }
+        if (planAnswerOf(response) case final answer?) {
+          recordPlanAnswer(answer).ignore();
           return;
         }
         final tap = _tapFrom(response);
@@ -455,9 +515,24 @@ Future<void> snoozeReminder(
   );
 }
 
-/// Snooze pressed while the app isn't running (a separate isolate).
+/// The answer a button on a block's "Finished?" notification gave, or null
+/// for any other button or tap.
+PlanAnswer? planAnswerOf(NotificationResponse response) {
+  final kind = ReminderAction.planAnswer(response.actionId);
+  final payload = kind == null ? null : ReminderPayload.parse(response.payload);
+  return kind == null || payload == null ? null : PlanAnswer(payload.eventId, kind);
+}
+
+/// Snooze or a block's answer pressed while the app isn't in front (a
+/// separate isolate, with no access to the vault).
 @pragma('vm:entry-point')
 void onReminderButtonInBackground(NotificationResponse response) {
+  if (planAnswerOf(response) case final answer?) {
+    // This isolate starts without the plugins' Dart side registered.
+    DartPluginRegistrant.ensureInitialized();
+    recordPlanAnswer(answer).ignore();
+    return;
+  }
   if (response.actionId != ReminderAction.snooze) return;
   final plugin = FlutterLocalNotificationsPlugin();
   plugin

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
+import 'package:zt_scheduler/zt_scheduler.dart' show PastBlocks;
 
 import '../caldav/caldav_bridge.dart';
 import '../data/calendar_store.dart';
@@ -16,6 +17,8 @@ import '../data/phone_calendar_sync.dart';
 import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
+import '../planner/planner_controller.dart';
+import '../planner/planner_model.dart';
 import '../platform/channels.dart';
 import '../reminders/reminders.dart';
 import '../ui/guest_actions.dart';
@@ -25,6 +28,7 @@ import '../ui/linked_pickers.dart';
 import '../ui/event_details_page.dart';
 import '../ui/home_page.dart';
 import '../ui/navigation.dart';
+import '../ui/planner_widgets.dart';
 import '../util/format.dart';
 import '../booking/booking_pages.dart';
 import '../booking/booking_sync.dart';
@@ -34,6 +38,7 @@ import '../widget/up_next_widget.dart';
 import 'auth_providers.dart';
 import 'calendar_settings.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
+import 'email_links.dart';
 
 /// Routes between the shared account screens and the calendar.
 ///
@@ -120,7 +125,7 @@ class _AppGateState extends ConsumerState<AppGate> with WidgetsBindingObserver {
   }
 
   void _forgotPassword() => Navigator.of(context).push(
-    MaterialPageRoute<void>(builder: (_) => const ZtForgotPasswordScreen()),
+    MaterialPageRoute<void>(builder: (_) => ZtForgotPasswordScreen(redirectTo: EmailLinks.passwordReset)),
   );
 
   @override
@@ -176,7 +181,7 @@ class _AppGateState extends ConsumerState<AppGate> with WidgetsBindingObserver {
     });
     final user = ref.watch(currentUserProvider);
     if (user == null || _signingIn) {
-      return ZtSignInScreen(onUnlocked: _onUnlocked, onForgotPassword: _forgotPassword);
+      return ZtSignInScreen(emailRedirectTo: EmailLinks.confirmed, onUnlocked: _onUnlocked, onForgotPassword: _forgotPassword);
     }
 
     if (ref.watch(vaultControllerProvider) is VaultLocked) {
@@ -209,6 +214,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
   StreamSubscription<void>? _bookings;
   Timer? _debounce;
   Timer? _hourly;
+  AppLifecycleListener? _lifecycle;
   String? _lastPhonePayload;
 
   @override
@@ -232,6 +238,15 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
       _schedule();
       _refreshFeeds();
     });
+    // Coming back to Calendar fetches subscribed calendars that are due,
+    // so a Google or Outlook link is fresh when you look.
+    _lifecycle = AppLifecycleListener(
+      onResume: () {
+        _refreshFeeds();
+        // Time passed while Calendar was away: blocks may have ended.
+        ref.read(plannerControllerProvider.notifier).schedule();
+      },
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _schedule();
       _takeFiles();
@@ -274,6 +289,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     _bookings?.cancel();
     _debounce?.cancel();
     _hourly?.cancel();
+    _lifecycle?.dispose();
     super.dispose();
   }
 
@@ -337,11 +353,24 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     final settings = ref.read(calendarSettingsProvider);
     final calendars = ref.read(calendarsProvider).value ?? const [ZtCalendarInfo.personal];
     final now = DateTime.now();
+    final planner = ref.read(plannerSettingsProvider).value ?? const PlannerSettings();
+    final l = context.l10n;
     final reminders = remindersFor(
       events,
       now: now,
       showTitles: settings.notificationTitles,
       hiddenCalendars: {for (final c in calendars) if (c.hidden) c.id},
+      // A block asks "Finished?" when it ends, unless blocks that pass
+      // count as done anyway.
+      askAtBlockEnd: planner.enabled &&
+          planner.askAtEnd &&
+          planner.pastBlocks != PastBlocks.countAsDone,
+      blockEndTitle: (b) => settings.notificationTitles && b.title.trim().isNotEmpty
+          ? l.plannerFinishedTitle(b.title.trim())
+          : l.plannerFinishedBlock,
+      blockEndBody: (b) =>
+          '${formatPlanMinutes(l, b.duration.inMinutes)} · '
+          '${formatSpan(context, b.start, b.end, false)}',
       bodyFor: (e, start) {
         final end = e.allDay
             ? addDays(dayOf(start), (e.duration.inHours / 24).round())
@@ -523,12 +552,15 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     ref.watch(ztSpacesProvider);
     // The desktop calendar bridge, when the user turned it on (K16).
     ref.watch(desktopBridgeProvider);
+    // The Planner, when it is on: plans again as events and tasks change.
+    ref.watch(plannerControllerProvider);
     ref.listen(eventsProvider, (_, _) => _schedule());
     ref.listen(sharedEventsProvider, (_, _) => _schedule());
     ref.listen(linkedTasksProvider, (_, _) => _schedule());
     ref.listen(calendarsProvider, (_, _) => _schedule());
     ref.listen(feedsProvider, (_, _) => _schedule());
     ref.listen(calendarSettingsProvider, (_, _) => _schedule());
+    ref.listen(plannerSettingsProvider, (_, _) => _schedule());
     ref.listen(linkedContactsProvider, (_, _) => _schedule());
     // Reminders and the widget carry text in the app's language. The
     // debounce lets the new language load first.

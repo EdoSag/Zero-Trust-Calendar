@@ -547,15 +547,21 @@ class _TimedBlock extends ConsumerWidget {
   final ValueChanged<Offset> onDragUpdate;
   final VoidCallback onDragEnd;
 
-  /// Your own events move; tasks, birthdays and subscribed calendars don't.
+  /// Your own events move; tasks, birthdays and subscribed calendars
+  /// don't. A Planner block moves too, and is then locked where it was put;
+  /// a block that is done is history and stays.
   bool get _movable =>
-      entry.kind == EntryKind.event && !(entry.event?.readOnly ?? true);
+      entry.kind == EntryKind.event &&
+      !(entry.plan?.done ?? false) &&
+      !(entry.event?.readOnly ?? true);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final color = eventColor(entry.color);
     final fg = onColor(color);
-    final isTask = entry.kind == EntryKind.task;
+    // Tasks and the Planner's blocks are drawn light, so fixed events
+    // stand out from what can still move.
+    final isTask = entry.kind == EntryKind.task || entry.plan != null;
     final block = _block(context, ref, color, fg, isTask);
     if (!_movable) return block;
     return Stack(
@@ -615,7 +621,10 @@ class _TimedBlock extends ConsumerWidget {
       excludeSemantics: true,
       child: Material(
         color: isTask ? color.withValues(alpha: 0.25) : color,
-        borderRadius: BorderRadius.circular(6),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6),
+          side: entry.plan != null ? BorderSide(color: color) : BorderSide.none,
+        ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () => openEntry(context, ref, entry),
@@ -627,23 +636,37 @@ class _TimedBlock extends ConsumerWidget {
                 final textColor = isTask
                     ? Theme.of(context).colorScheme.onSurface
                     : fg;
+                final mark = entry.plan == null ? null : entryIcon(entry);
+                final title = Text(
+                  entry.title,
+                  maxLines: tall ? 2 : 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: compact ? 11 : 12.5,
+                    fontWeight: FontWeight.w600,
+                    height: 1.15,
+                    decoration: (entry.task?.completed ?? false)
+                        ? TextDecoration.lineThrough
+                        : entryDecoration(entry),
+                  ),
+                );
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      entry.title,
-                      maxLines: tall ? 2 : 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: compact ? 11 : 12.5,
-                        fontWeight: FontWeight.w600,
-                        height: 1.15,
-                        decoration: isTask && (entry.task?.completed ?? false)
-                            ? TextDecoration.lineThrough
-                            : null,
-                      ),
-                    ),
+                    if (mark != null && c.maxWidth > 44)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsetsDirectional.only(end: 3, top: 1),
+                            child: Icon(mark, size: 12, color: textColor),
+                          ),
+                          Expanded(child: title),
+                        ],
+                      )
+                    else
+                      title,
                     if (tall && !compact)
                       Text(
                         [

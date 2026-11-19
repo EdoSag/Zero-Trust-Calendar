@@ -56,6 +56,50 @@ account, settings and look as the other Zero-Trust apps, built on
 - **Video calls and attachments:** a meeting link with a Join button
   (found automatically in imported invitations), and encrypted file
   attachments (25 MB each).
+- **Planner** (menu > Planner, off until you set it up): fits your ZT Tasks
+  tasks into the free time around your events and plans again when your
+  calendar or your tasks change. You choose your work and personal hours,
+  which tasks it plans ("Only tasks I switch on" or "All tasks"), the usual
+  task length, block sizes, the break after meetings and the most planned
+  time per day; a preview shows the plan before anything is saved. Blocks
+  are ordinary encrypted events in a "Planned" calendar, so they sync, get
+  reminders and show in every view and widget, marked and numbered ("Write
+  report (1 of 3)"). Tap a block to mark it done (the last part ticks the
+  task off in ZT Tasks), ask for more time, say "Not now", lock it where it
+  is or move it; a block you drag is locked where you drop it. When a block
+  ends, a notification asks whether you finished, and its buttons work
+  while Calendar is locked: the answer is kept on the phone (a block id
+  and the button, nothing else) and applied at the next unlock. A task
+  that no longer fits before its due date shows in a banner on the
+  calendar, with quick fixes. **Habits** keep time for things you do
+  regularly (lunch, exercise, or your own): the days, the length, the best
+  time and the window it must fit in; each day it gets the free time
+  nearest its best time, is shortened or skipped when there's no room, and
+  "Skip today" frees the time. A weekly **focus time** goal keeps time in
+  your work hours free of meetings. The Planner screen shows the week:
+  task time per day, focus time against the goal, and the last seven days
+  (task time done, habits kept). Everything is worked out on the phone by the
+  `zt_scheduler` package of Zero-Trust-Core: no server, no AI. It plans
+  while Calendar is unlocked. The automatic Planner is part of Plus (plan
+  feature `planner`, checked on the phone; when the plan can't be checked,
+  offline, nothing is held back). On the free plan **Find a time for a
+  task** suggests the earliest free time on each of the next days, in work
+  hours, personal hours or any time, and adds the task as an ordinary event
+  linked to it.
+- **AI helper** (Plus, optional, hidden until the server switches it on;
+  each part off until you switch it on, after a screen that says what is
+  sent): **Guess task lengths** sends a task's title and gets back minutes;
+  **Ask the Planner** turns one sentence ("I'm sick today, move
+  everything") into changes from a fixed menu (a task's length, priority,
+  due date or "not before"; lock, release or mark a block done; keep a time
+  free; change one day's hours; add a habit). Every change is shown with a
+  check box and what it does to the plan, nothing is applied until you tap
+  Apply, and Undo puts it back. **Hide titles** sends labels (Task A, Event
+  B) instead of titles. The request goes to the `planner-ai` function of
+  Zero-Trust-Core, which checks the plan and a monthly limit and keeps only
+  counts, never the text. The Planner itself still places every block.
+- **Mark as done:** any event of yours can be ticked off on its page, and
+  is then shown crossed out (a repeating event one day at a time).
 - **Show on this phone** (optional, per calendar, off by default): copies
   events into Android's own calendar so Wear OS, Android Auto and other
   apps can see them.

@@ -196,7 +196,7 @@
   "chooseFile": "Choose file",
   "chooseAnIcsOrZip": "Choose an .ics or .zip file",
   "subscribeToACalendar": "Subscribe to a calendar",
-  "calendarDownloadsItFromThat": "Calendar downloads it from that address (the site sees a download from your phone, nothing about your account) and keeps an encrypted copy, refreshed twice a day. Its events are read-only.",
+  "calendarDownloadsItFromThat": "Calendar downloads it from that address (the site sees a download from your phone, nothing about your account) and keeps an encrypted copy, refreshed every few hours while Calendar is open. Its events are read-only.",
   "subscribe": "Subscribe",
   "holidaysAndSubscriptions": "Holidays and subscriptions",
   "subscribeByLink": "Subscribe by link",
@@ -1261,5 +1261,621 @@
   },
   "widgetNothingElseToday": "Nothing else today",
   "widgetPreviousMonth": "Previous month",
-  "widgetNextMonth": "Next month"
+  "widgetNextMonth": "Next month",
+  "leaveEmptyForCalendarsOwnName": "Leave empty to use the calendar's own name",
+  "whereDoIFindTheLink": "Where do I find the link?",
+  "googleOutlookOrIcloud": "Google Calendar, Outlook or iCloud",
+  "getALinkFromAnotherCalendar": "Get a link from another calendar",
+  "feedHelpGoogleTitle": "Google Calendar",
+  "feedHelpGoogle": "On a computer, open calendar.google.com and click the gear, then Settings. Under \"Settings for my calendars\" pick the calendar and open \"Integrate calendar\". Copy \"Secret address in iCal format\". Google updates this link every few hours, so a new event can take a while to appear.",
+  "feedHelpOutlookTitle": "Outlook.com or Microsoft 365",
+  "feedHelpOutlook": "In Outlook on the web, open Settings, then Calendar, then Shared calendars. Under \"Publish a calendar\" pick the calendar and \"Can view all details\", click Publish, and copy the ICS link.",
+  "feedHelpIcloudTitle": "iCloud (Apple)",
+  "feedHelpIcloud": "On an iPhone, open Calendar and tap Calendars. Tap the info button next to the calendar, turn on \"Public Calendar\" and tap \"Share Link\". Anyone with a public iCloud link can open it.",
+  "feedHelpPrivacy": "Keep these links private: anyone who has one can see that calendar. ZT Calendar stores the link encrypted and downloads it straight from your phone. Subscribed calendars are read-only here. To move events over for good, export a file from the other app and use Import instead.",
+  "planner": "Planner",
+  "plannedCalendarName": "Planned",
+  "plannerPartOf": "{title} ({part} of {total})",
+  "@plannerPartOf": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "part": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerHoursMinutes": "{hours} h {minutes} min",
+  "@plannerHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerReasonEarliest": "This is the earliest free time in your hours.",
+  "plannerReasonDeadline": "Placed here to finish before the due date.",
+  "plannerReasonLate": "It doesn't fit before the due date. This is the earliest time left.",
+  "plannerReasonLocked": "You locked it at this time.",
+  "plannerReasonDone": "Marked as done.",
+  "plannerNoHours": "No hours set",
+  "plannerHoursEndFirst": "The end has to be after the start.",
+  "plannerHoursOverlap": "These hours overlap other hours on that day.",
+  "plannerDayOff": "Off",
+  "plannerTaskFinishedSaved": "Task finished. Saved in ZT Tasks.",
+  "plannerBlockGone": "This block is no longer planned.",
+  "plannerBlockPart": "Part {part} of {total}",
+  "@plannerBlockPart": {
+    "placeholders": {
+      "part": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerBlockMoves": "The Planner moves this block when your calendar changes.",
+  "plannerTaskFinished": "Task finished",
+  "plannerCouldNotPlan": "Could not plan: {error}",
+  "@plannerCouldNotPlan": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerIntroTitle": "Let Calendar plan your tasks",
+  "plannerIntroBody": "The Planner takes tasks from ZT Tasks and fits them into the free time around your events. When a meeting moves or a new one arrives, it plans again, and it tells you when a task no longer fits before its due date.",
+  "plannerIntroPrivacy": "Everything is worked out on this phone. Your tasks and events stay end-to-end encrypted, and no AI is involved.",
+  "plannerSetUp": "Set up the Planner",
+  "plannerNext7Days": "Next 7 days",
+  "plannerWaitingForSync": "Waiting for your calendar and tasks to finish syncing…",
+  "plannerRiskNoRoom": "{amount} doesn't fit in the next 4 weeks",
+  "@plannerRiskNoRoom": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerRiskLate": "{amount} is planned after the due date",
+  "@plannerRiskLate": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerTasksToPlan": "Tasks to plan",
+  "plannerLoadingTasks": "Loading tasks from ZT Tasks…",
+  "plannerNoOpenTasks": "There are no open tasks in ZT Tasks.",
+  "plannerNoTasksSwitchedOn": "No task is switched on yet. Switch on the tasks you want planned.",
+  "plannerOtherTasks": "Other tasks ({count})",
+  "@plannerOtherTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerWorkHours": "Work hours",
+  "plannerPersonalHours": "Personal hours",
+  "plannerWhichTasks": "Which tasks to plan",
+  "plannerAllTasks": "All tasks",
+  "plannerAllTasksHint": "Every open task in ZT Tasks, except the ones you switch off.",
+  "plannerOnlySwitchedOn": "Only tasks I switch on",
+  "plannerOnlySwitchedOnHint": "Nothing is planned until you switch a task on.",
+  "plannerUsualLength": "Usual task length",
+  "plannerShortestBlock": "Shortest block",
+  "plannerLongestBlock": "Longest block",
+  "plannerBreakAfterMeetings": "Break after meetings",
+  "plannerNoBreak": "None",
+  "plannerMostPerDay": "Most planned time per day",
+  "plannerBusyCalendars": "Calendars that count as busy",
+  "plannerNoBusyCalendars": "None",
+  "plannerPassedCountAsDone": "Blocks that pass count as done",
+  "plannerPassedCountAsDoneOn": "A block whose time has passed is marked done.",
+  "plannerPassedCountAsDoneOff": "A block that passed waits for the rest of the day, then its time is planned again.",
+  "plannerRemindAtStart": "Notify me when a block starts",
+  "plannerTidyUp": "Tidy up my week",
+  "plannerTidyUpHint": "Plans every block afresh, as early as it fits.",
+  "plannerTidiedUp": "Planning your week again",
+  "plannerTurnOff": "Turn off the Planner",
+  "plannerTurnOffTitle": "Turn off the Planner?",
+  "plannerTurnOffBody": "Planned blocks that aren't done are removed from your calendar. Your tasks stay as they are in ZT Tasks, and your Planner settings are kept.",
+  "plannerTaskLength": "Length",
+  "plannerLengthGuess": "{length} (guess)",
+  "@plannerLengthGuess": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerPlanIn": "Plan it in",
+  "plannerNothingPlanned": "Nothing is planned in the next 7 days.",
+  "plannerPlannedTotal": "{amount} planned",
+  "@plannerPlannedTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerDailyLimit": "At most {amount} a day",
+  "@plannerDailyLimit": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerDoneOf": "{amount} done",
+  "@plannerDoneOf": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerNotPlannedYet": "not planned yet",
+  "plannerNextBlock": "next: {when}",
+  "@plannerNextBlock": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerHoursHint": "The Planner only places blocks inside these hours.",
+  "plannerBusyCalendarsHint": "Events in these calendars keep the Planner away. Untick a calendar whose events you can work through.",
+  "plannerHiddenCalendar": "Hidden calendars don't count",
+  "plannerAllDayBusy": "All-day events count as busy",
+  "plannerAllDayBusyHint": "Nothing is planned on a day with an all-day event, such as a holiday.",
+  "plannerBack": "Back",
+  "plannerNext": "Next",
+  "plannerTurnOn": "Turn on the Planner",
+  "plannerStepHours": "Your hours",
+  "plannerStepHoursBody": "When may the Planner place tasks? Work tasks go into work hours and personal tasks into personal hours.",
+  "plannerStepTasks": "Which tasks",
+  "plannerStepTasksBody": "Choose what the Planner plans. You can change this later.",
+  "plannerPickTasks": "Tasks to plan now",
+  "plannerStepDefaults": "Defaults",
+  "plannerStepDefaultsBody": "Used for tasks that don't say otherwise. You can set a length for each task.",
+  "plannerStepPreview": "Your plan",
+  "plannerStepPreviewBody": "This is what the Planner would add to your calendar. Nothing is saved until you turn it on.",
+  "plannerPreviewNoTasks": "There is nothing to plan yet. After you turn the Planner on, switch on the tasks you want planned.",
+  "plannerPreviewNoRoom": "No free time was found in your hours in the next 4 weeks.",
+  "plannerNeedMoreTime": "Need more time",
+  "plannerDidNotDoIt": "Didn't do it",
+  "plannerDidNotDoItHint": "Its time is planned again.",
+  "plannerFinishedBlock": "Finished this block?",
+  "plannerFinishedTitle": "Finished {title}?",
+  "@plannerFinishedTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerMovedAndLocked": "Moved to {when} and locked there",
+  "@plannerMovedAndLocked": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerMarkedDone": "Marked as done",
+  "plannerMarkedNotDone": "Marked as not done",
+  "plannerHowMuchMore": "How much more time?",
+  "plannerAddedTime": "Added to the task: {amount}",
+  "@plannerAddedTime": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerLaterToday": "Later today",
+  "plannerLaterThatDay": "Later that day",
+  "plannerTheDayAfter": "The day after",
+  "plannerAWeekLater": "A week later",
+  "plannerNotNowUntil": "When should it be planned again?",
+  "plannerPlannedAgainFrom": "Not planned before: {when}",
+  "@plannerPlannedAgainFrom": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerPlannedAgain": "Its time will be planned again",
+  "plannerBlockOverlaps": "This block overlaps an event.",
+  "plannerNotDoneAfterAll": "Not done after all",
+  "plannerAlreadyDone": "Already done",
+  "plannerAlreadyDoneHint": "Frees the time that was planned for it.",
+  "plannerNotNow": "Not now",
+  "plannerUnlock": "Unlock",
+  "plannerLockHere": "Lock here",
+  "plannerLockHereHint": "The Planner will not move it.",
+  "plannerUnlocked": "Unlocked. The Planner may move it again.",
+  "plannerLocked": "Locked at this time",
+  "plannerTasksAtRisk": "{count, plural, =1{1 task is at risk} other{{count} tasks are at risk}}",
+  "@plannerTasksAtRisk": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerAtRiskTitle": "Tasks at risk",
+  "plannerAtRiskBody": "These tasks don't fit before their due date. Tap one to change its length or its due date, or make room in your calendar.",
+  "plannerAtRiskNone": "Every task fits now.",
+  "plannerOpenPlanner": "Open the Planner",
+  "plannerFixLength": "Change the length",
+  "plannerFixLengthNow": "Now {amount}",
+  "@plannerFixLengthNow": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerFixDue": "Move the due date",
+  "plannerFixStop": "Stop planning this task",
+  "plannerAskAtEnd": "Ask when a block ends",
+  "plannerAskAtEndHint": "A notification asks whether you finished. Its buttons work while Calendar is locked.",
+  "markAsDone": "Mark as done",
+  "markAsNotDone": "Mark as not done",
+  "plannerDone": "Done",
+  "plannerHabits": "Habits",
+  "plannerNoHabits": "Keep time for lunch, exercise or anything you do regularly.",
+  "plannerAddHabit": "Add a habit",
+  "plannerEditHabit": "Edit habit",
+  "plannerHabitLunch": "Lunch",
+  "plannerHabitExercise": "Exercise",
+  "plannerHabitOther": "Something else",
+  "plannerHabitUntitled": "Habit",
+  "plannerHabitName": "Name",
+  "plannerHabitNameHint": "For example: Reading",
+  "plannerHabitDays": "Days",
+  "plannerHabitLength": "Length",
+  "plannerHabitIdeal": "Best time to start",
+  "plannerHabitWindow": "Only between",
+  "plannerHabitWindowTooShort": "Too short for the habit's length.",
+  "plannerHabitBetween": "{from} to {to}",
+  "@plannerHabitBetween": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerHabitFrom": "From",
+  "plannerHabitTo": "To",
+  "plannerHabitNoRoom": "When there's no room",
+  "plannerHabitSkipDay": "Skip that day",
+  "plannerHabitShortenTo": "Shorten it, down to {length}",
+  "@plannerHabitShortenTo": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAnyTime": "Any time",
+  "plannerHabitPaused": "Pause",
+  "plannerHabitPausedHint": "Kept, but not planned until you switch this off.",
+  "plannerHabitPausedShort": "Paused",
+  "plannerDeleteHabitTitle": "Delete this habit?",
+  "plannerDeleteHabitBody": "Its coming times are removed from the calendar. Past ones stay.",
+  "plannerEveryDay": "Every day",
+  "plannerAround": "around {time}",
+  "@plannerAround": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerSkipToday": "Skip today",
+  "plannerSkipTodayHint": "Frees the time. It isn't planned again today.",
+  "plannerHabitSkipped": "Skipped",
+  "plannerHabitSkippedToday": "Skipped",
+  "plannerHabitKeptAfterAll": "Did it after all",
+  "plannerHabitSkippedAfterAll": "Skipped it after all",
+  "plannerFocusGoal": "Focus time each week",
+  "plannerFocusOff": "Off. Keeps time free of meetings for deep work.",
+  "plannerFocusOffShort": "Off",
+  "plannerFocusPerWeek": "{amount} a week, in work hours",
+  "@plannerFocusPerWeek": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerFocusBlockTitle": "Focus time",
+  "plannerWeekFocus": "Focus time: {planned} of {goal}",
+  "@plannerWeekFocus": {
+    "placeholders": {
+      "planned": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerWeekHabits": "{count, plural, =1{1 habit time planned} other{{count} habit times planned}}",
+  "@plannerWeekHabits": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerLastWeekDone": "Last 7 days: {amount} of tasks done",
+  "@plannerLastWeekDone": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerLastWeekHabits": "habits kept {kept} of {total}",
+  "@plannerLastWeekHabits": {
+    "placeholders": {
+      "kept": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "findTimeForTask": "Find a time for a task",
+  "findTimePickTask": "Which task?",
+  "findTimeNoTasks": "No open tasks in ZT Tasks. Add a task there, then come back.",
+  "findTimeDue": "Due {day}",
+  "@findTimeDue": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "findTimeFreeTimes": "Free times",
+  "findTimeNone": "No free time in the next two weeks. Try a shorter length or other hours.",
+  "findTimeAdd": "Add",
+  "findTimeHint": "The task is added as an event linked to it. It stays where you put it.",
+  "findTimeAdded": "Added to your calendar: {when}",
+  "@findTimeAdded": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerPlusTitle": "The automatic Planner is part of Plus",
+  "plannerPlusBody": "With Plus, Calendar plans your tasks, habits and focus time and moves them when your day changes. Plus isn't on sale yet. On the free plan, Find a time places one task at a time.",
+  "plannerPausedTitle": "The Planner is paused",
+  "plannerPausedBody": "Your plan no longer includes the Planner (it is part of Plus). Your blocks stay where they are, but nothing moves them now.",
+  "plannerCheckPlan": "Check my plan again",
+  "plannerAi": "AI helper",
+  "plannerAiIntro": "Off unless you switch it on. Our server keeps only how many requests you made, never what was sent.",
+  "plannerAiGuess": "Guess task lengths",
+  "plannerAiGuessHint": "Sends a task's title when you ask for a guess.",
+  "plannerAiRequests": "Ask the Planner",
+  "plannerAiRequestsHint": "Say what you need in a sentence, like \"I'm sick today, move everything\".",
+  "plannerAiHideTitles": "Hide titles",
+  "plannerAiHideTitlesHint": "Titles go as labels (Task A, Event B) and are put back on this phone.",
+  "plannerAiUsed": "Used this month: {used} of {limit}",
+  "@plannerAiUsed": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerAiConsentTitle": "Send this to the AI helper?",
+  "plannerAiConsentGuess": "When you ask for a guess, the task's title goes to our server and on to Anthropic's Claude, which guesses how long it takes. Our server keeps only how many requests you made, never the text.",
+  "plannerAiConsentRequests": "When you ask the Planner, your sentence, your open tasks, and your blocks and events for the next 2 weeks (titles and times) go to our server and on to Anthropic's Claude. Our server keeps only how many requests you made, never the text. \"Hide titles\" sends labels in place of titles.",
+  "plannerAiSwitchOn": "Switch on",
+  "plannerAiAskHint": "For example: Finish the report before Thursday",
+  "plannerAiSend": "Send",
+  "plannerAiThinking": "Asking the AI helper…",
+  "plannerAiNoChanges": "The AI helper found nothing to change. Try saying it another way.",
+  "plannerAiQuestion": "The AI helper asks",
+  "plannerAiCannot": "Can't do",
+  "plannerAiChanges": "Suggested changes",
+  "plannerAiCheckHint": "Nothing changes until you tap Apply.",
+  "plannerAiApply": "Apply",
+  "plannerAiApplied": "Changes applied",
+  "plannerAiUndone": "Changes undone",
+  "plannerAiPreviewSame": "The plan stays as it is.",
+  "plannerAiPreview": "The plan: {moved} moved, {added} added, {removed} removed.",
+  "@plannerAiPreview": {
+    "placeholders": {
+      "moved": {
+        "type": "int"
+      },
+      "added": {
+        "type": "int"
+      },
+      "removed": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerAiSetLength": "{task}: takes {length}",
+  "@plannerAiSetLength": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      },
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiSetPriority": "{task}: priority {priority}",
+  "@plannerAiSetPriority": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      },
+      "priority": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiPriorityHigh": "high",
+  "plannerAiPriorityMedium": "medium",
+  "plannerAiPriorityLow": "low",
+  "plannerAiSetDue": "{task}: due {day}",
+  "@plannerAiSetDue": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiNotBefore": "{task}: not before {day}",
+  "@plannerAiNotBefore": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiLock": "Keep {block} where it is ({when})",
+  "@plannerAiLock": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiUnlock": "Let the Planner move {block} ({when})",
+  "@plannerAiUnlock": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiMarkDone": "{block} ({when}) is done",
+  "@plannerAiMarkDone": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiBlockOut": "Keep free: {when} ({title})",
+  "@plannerAiBlockOut": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiBusyTitle": "Busy",
+  "plannerAiSetHours": "{hours} on {weekday}: {from} to {to}",
+  "@plannerAiSetHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "weekday": {
+        "type": "String"
+      },
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiNoHours": "No {hours} on {weekday}",
+  "@plannerAiNoHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiAddHabit": "New habit: {title}, {details}",
+  "@plannerAiAddHabit": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiGuessButton": "Guess the length",
+  "plannerAiGuessed": "Guessed: {length}",
+  "@plannerAiGuessed": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiGuessLengths": "Guess missing lengths",
+  "plannerAiGuessLengthsHint": "{count, plural, =1{1 planned task has no length} other{{count} planned tasks have no length}}",
+  "@plannerAiGuessLengthsHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerAiGuessesTitle": "Guessed lengths",
+  "plannerAiErrorOff": "The AI helper isn't available right now.",
+  "plannerAiErrorLimit": "You've used this month's AI requests.",
+  "plannerAiErrorRefused": "The AI helper can't help with that.",
+  "plannerAiErrorNetwork": "No connection. Try again when you're online.",
+  "plannerAiErrorOther": "The AI helper couldn't answer. Try again in a moment."
 }

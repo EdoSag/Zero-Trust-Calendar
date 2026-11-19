@@ -352,6 +352,7 @@ class CalendarEvent {
     int? inviteSequence,
     bool? readOnly,
     DateTime? createdAt,
+    Map<String, Object?>? extra,
   }) => CalendarEvent(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -384,7 +385,7 @@ class CalendarEvent {
     readOnly: readOnly ?? this.readOnly,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt,
-    extra: extra,
+    extra: extra ?? this.extra,
   );
 }
 

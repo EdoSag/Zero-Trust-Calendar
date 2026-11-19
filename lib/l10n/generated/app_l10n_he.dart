@@ -622,7 +622,7 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get calendarDownloadsItFromThat =>
-      'היומן מוריד אותו מהכתובת הזו (האתר רואה הורדה מהטלפון שלך, שום דבר על החשבון) ושומר עותק מוצפן שמתרענן פעמיים ביום. האירועים שלו לקריאה בלבד.';
+      'היומן מוריד אותו מהכתובת הזו (האתר רואה הורדה מהטלפון שלך, שום דבר על החשבון) ושומר עותק מוצפן שמתרענן כל כמה שעות כשהיומן פתוח. האירועים שלו לקריאה בלבד.';
 
   @override
   String get subscribe => 'הרשמה';
@@ -1940,4 +1940,887 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get widgetNextMonth => 'החודש הבא';
+
+  @override
+  String get leaveEmptyForCalendarsOwnName =>
+      'השאירו ריק כדי להשתמש בשם של היומן עצמו';
+
+  @override
+  String get whereDoIFindTheLink => 'איפה מוצאים את הקישור?';
+
+  @override
+  String get googleOutlookOrIcloud => 'יומן Google, ‏Outlook או iCloud';
+
+  @override
+  String get getALinkFromAnotherCalendar => 'קבלת קישור מיומן אחר';
+
+  @override
+  String get feedHelpGoogleTitle => 'יומן Google';
+
+  @override
+  String get feedHelpGoogle =>
+      'במחשב, פתחו את calendar.google.com, לחצו על גלגל השיניים ואז על \"הגדרות\". תחת \"הגדרות של היומנים שלי\" בחרו את היומן ופתחו את \"שילוב יומן\". העתיקו את \"כתובת סודית בפורמט iCal\". Google מעדכנת את הקישור הזה כל כמה שעות, כך שאירוע חדש עשוי להופיע באיחור.';
+
+  @override
+  String get feedHelpOutlookTitle => 'Outlook.com או Microsoft 365';
+
+  @override
+  String get feedHelpOutlook =>
+      'ב-Outlook באינטרנט, פתחו את \"הגדרות\", אחר כך \"לוח שנה\" ואז \"לוחות שנה משותפים\". תחת \"פרסם לוח שנה\" בחרו את היומן ואת \"יכול להציג את כל הפרטים\", לחצו \"פרסם\" והעתיקו את קישור ה-ICS.';
+
+  @override
+  String get feedHelpIcloudTitle => 'iCloud (Apple)';
+
+  @override
+  String get feedHelpIcloud =>
+      'ב-iPhone, פתחו את אפליקציית לוח השנה והקישו על \"לוחות שנה\". הקישו על כפתור המידע ליד היומן, הפעילו את \"לוח שנה ציבורי\" והקישו על \"שיתוף קישור\". כל מי שיש לו קישור ציבורי של iCloud יכול לפתוח אותו.';
+
+  @override
+  String get feedHelpPrivacy =>
+      'שמרו על הקישורים האלה בסוד: כל מי שיש לו קישור כזה יכול לראות את היומן. ZT Calendar שומר את הקישור מוצפן ומוריד אותו ישירות מהטלפון שלכם. יומנים במינוי הם לקריאה בלבד כאן. כדי להעביר אירועים לצמיתות, ייצאו קובץ מהאפליקציה השנייה והשתמשו ב\"ייבוא\".';
+
+  @override
+  String get planner => 'מתכנן';
+
+  @override
+  String get plannedCalendarName => 'מתוכנן';
+
+  @override
+  String plannerPartOf(String title, int part, int total) {
+    return '$title ($part מתוך $total)';
+  }
+
+  @override
+  String plannerHoursMinutes(int hours, int minutes) {
+    return '$hours שע׳ $minutes דק׳';
+  }
+
+  @override
+  String get plannerReasonEarliest => 'זה הזמן הפנוי המוקדם ביותר בשעות שלכם.';
+
+  @override
+  String get plannerReasonDeadline => 'שובץ כאן כדי להסתיים לפני תאריך היעד.';
+
+  @override
+  String get plannerReasonLate =>
+      'אין מספיק מקום לפני תאריך היעד. זה הזמן המוקדם ביותר שנשאר.';
+
+  @override
+  String get plannerReasonLocked => 'נעלתם אותו בשעה הזו.';
+
+  @override
+  String get plannerReasonDone => 'סומן כבוצע.';
+
+  @override
+  String get plannerNoHours => 'לא הוגדרו שעות';
+
+  @override
+  String get plannerHoursEndFirst => 'שעת הסיום צריכה להיות אחרי שעת ההתחלה.';
+
+  @override
+  String get plannerHoursOverlap => 'השעות האלה חופפות לשעות אחרות באותו יום.';
+
+  @override
+  String get plannerDayOff => 'כבוי';
+
+  @override
+  String get plannerTaskFinishedSaved => 'המשימה הושלמה ונשמרה ב-ZT Tasks.';
+
+  @override
+  String get plannerBlockGone => 'הבלוק הזה כבר לא מתוכנן.';
+
+  @override
+  String plannerBlockPart(int part, int total) {
+    return 'חלק $part מתוך $total';
+  }
+
+  @override
+  String get plannerBlockMoves =>
+      'המתכנן מזיז את הבלוק הזה כשהיומן שלכם משתנה.';
+
+  @override
+  String get plannerTaskFinished => 'המשימה הושלמה';
+
+  @override
+  String plannerCouldNotPlan(String error) {
+    return 'לא ניתן לתכנן: $error';
+  }
+
+  @override
+  String get plannerIntroTitle => 'תנו ליומן לתכנן את המשימות שלכם';
+
+  @override
+  String get plannerIntroBody =>
+      'המתכנן לוקח משימות מ-ZT Tasks ומשבץ אותן בזמן הפנוי שבין האירועים שלכם. כשפגישה זזה או כשמגיעה פגישה חדשה הוא מתכנן מחדש, ומודיע לכם כשמשימה כבר לא נכנסת לפני תאריך היעד שלה.';
+
+  @override
+  String get plannerIntroPrivacy =>
+      'הכול מחושב בטלפון הזה. המשימות והאירועים שלכם נשארים מוצפנים מקצה לקצה, ואין כאן בינה מלאכותית.';
+
+  @override
+  String get plannerSetUp => 'הגדרת המתכנן';
+
+  @override
+  String get plannerNext7Days => '7 הימים הקרובים';
+
+  @override
+  String get plannerWaitingForSync => 'ממתין לסיום הסנכרון של היומן והמשימות…';
+
+  @override
+  String plannerRiskNoRoom(String amount) {
+    return 'אין מקום ב-4 השבועות הקרובים: $amount';
+  }
+
+  @override
+  String plannerRiskLate(String amount) {
+    return 'מתוכנן אחרי תאריך היעד: $amount';
+  }
+
+  @override
+  String get plannerTasksToPlan => 'משימות לתכנון';
+
+  @override
+  String get plannerLoadingTasks => 'טוען משימות מ-ZT Tasks…';
+
+  @override
+  String get plannerNoOpenTasks => 'אין משימות פתוחות ב-ZT Tasks.';
+
+  @override
+  String get plannerNoTasksSwitchedOn =>
+      'עדיין לא הופעלה אף משימה. הפעילו את המשימות שתרצו לתכנן.';
+
+  @override
+  String plannerOtherTasks(int count) {
+    return 'משימות אחרות ($count)';
+  }
+
+  @override
+  String get plannerWorkHours => 'שעות עבודה';
+
+  @override
+  String get plannerPersonalHours => 'שעות אישיות';
+
+  @override
+  String get plannerWhichTasks => 'אילו משימות לתכנן';
+
+  @override
+  String get plannerAllTasks => 'כל המשימות';
+
+  @override
+  String get plannerAllTasksHint =>
+      'כל משימה פתוחה ב-ZT Tasks, חוץ מאלה שתכבו.';
+
+  @override
+  String get plannerOnlySwitchedOn => 'רק משימות שאפעיל';
+
+  @override
+  String get plannerOnlySwitchedOnHint => 'שום דבר לא מתוכנן עד שתפעילו משימה.';
+
+  @override
+  String get plannerUsualLength => 'אורך רגיל של משימה';
+
+  @override
+  String get plannerShortestBlock => 'הבלוק הקצר ביותר';
+
+  @override
+  String get plannerLongestBlock => 'הבלוק הארוך ביותר';
+
+  @override
+  String get plannerBreakAfterMeetings => 'הפסקה אחרי פגישות';
+
+  @override
+  String get plannerNoBreak => 'ללא';
+
+  @override
+  String get plannerMostPerDay => 'מקסימום זמן מתוכנן ביום';
+
+  @override
+  String get plannerBusyCalendars => 'יומנים שנחשבים כתפוסים';
+
+  @override
+  String get plannerNoBusyCalendars => 'אין';
+
+  @override
+  String get plannerPassedCountAsDone => 'בלוקים שעברו נחשבים כבוצעו';
+
+  @override
+  String get plannerPassedCountAsDoneOn => 'בלוק שזמנו עבר מסומן כבוצע.';
+
+  @override
+  String get plannerPassedCountAsDoneOff =>
+      'בלוק שזמנו עבר ממתין עד סוף היום, ואז הזמן שלו מתוכנן מחדש.';
+
+  @override
+  String get plannerRemindAtStart => 'להודיע לי כשבלוק מתחיל';
+
+  @override
+  String get plannerTidyUp => 'סדרו לי את השבוע';
+
+  @override
+  String get plannerTidyUpHint => 'מתכנן מחדש כל בלוק, מוקדם ככל האפשר.';
+
+  @override
+  String get plannerTidiedUp => 'מתכנן מחדש את השבוע';
+
+  @override
+  String get plannerTurnOff => 'כיבוי המתכנן';
+
+  @override
+  String get plannerTurnOffTitle => 'לכבות את המתכנן?';
+
+  @override
+  String get plannerTurnOffBody =>
+      'בלוקים מתוכננים שלא בוצעו יוסרו מהיומן. המשימות שלכם נשארות כפי שהן ב-ZT Tasks, והגדרות המתכנן נשמרות.';
+
+  @override
+  String get plannerTaskLength => 'אורך';
+
+  @override
+  String plannerLengthGuess(String length) {
+    return '$length (הערכה)';
+  }
+
+  @override
+  String get plannerPlanIn => 'לתכנן בתוך';
+
+  @override
+  String get plannerNothingPlanned => 'אין שום דבר מתוכנן ב-7 הימים הקרובים.';
+
+  @override
+  String plannerPlannedTotal(String amount) {
+    return 'מתוכנן: $amount';
+  }
+
+  @override
+  String plannerDailyLimit(String amount) {
+    return 'עד $amount ביום';
+  }
+
+  @override
+  String plannerDoneOf(String amount) {
+    return 'בוצע: $amount';
+  }
+
+  @override
+  String get plannerNotPlannedYet => 'עדיין לא תוכנן';
+
+  @override
+  String plannerNextBlock(String when) {
+    return 'הבא: $when';
+  }
+
+  @override
+  String get plannerHoursHint => 'המתכנן משבץ בלוקים רק בתוך השעות האלה.';
+
+  @override
+  String get plannerBusyCalendarsHint =>
+      'אירועים ביומנים האלה מרחיקים את המתכנן. בטלו את הסימון של יומן שאפשר לעבוד בזמן האירועים שלו.';
+
+  @override
+  String get plannerHiddenCalendar => 'יומנים מוסתרים לא נחשבים';
+
+  @override
+  String get plannerAllDayBusy => 'אירועי כל היום נחשבים כתפוסים';
+
+  @override
+  String get plannerAllDayBusyHint =>
+      'שום דבר לא מתוכנן ביום שיש בו אירוע של כל היום, כמו חג.';
+
+  @override
+  String get plannerBack => 'חזרה';
+
+  @override
+  String get plannerNext => 'הבא';
+
+  @override
+  String get plannerTurnOn => 'הפעלת המתכנן';
+
+  @override
+  String get plannerStepHours => 'השעות שלכם';
+
+  @override
+  String get plannerStepHoursBody =>
+      'מתי המתכנן רשאי לשבץ משימות? משימות עבודה משובצות בשעות העבודה, ומשימות אישיות בשעות האישיות.';
+
+  @override
+  String get plannerStepTasks => 'אילו משימות';
+
+  @override
+  String get plannerStepTasksBody =>
+      'בחרו מה המתכנן מתכנן. אפשר לשנות את זה בהמשך.';
+
+  @override
+  String get plannerPickTasks => 'משימות לתכנון עכשיו';
+
+  @override
+  String get plannerStepDefaults => 'ברירות מחדל';
+
+  @override
+  String get plannerStepDefaultsBody =>
+      'משמשות למשימות שלא הוגדר להן אחרת. אפשר לקבוע אורך לכל משימה.';
+
+  @override
+  String get plannerStepPreview => 'התוכנית שלכם';
+
+  @override
+  String get plannerStepPreviewBody =>
+      'זה מה שהמתכנן יוסיף ליומן שלכם. שום דבר לא נשמר עד שתפעילו אותו.';
+
+  @override
+  String get plannerPreviewNoTasks =>
+      'עדיין אין מה לתכנן. אחרי שתפעילו את המתכנן, הפעילו את המשימות שתרצו לתכנן.';
+
+  @override
+  String get plannerPreviewNoRoom =>
+      'לא נמצא זמן פנוי בשעות שלכם ב-4 השבועות הקרובים.';
+
+  @override
+  String get plannerNeedMoreTime => 'צריך עוד זמן';
+
+  @override
+  String get plannerDidNotDoIt => 'לא בוצע';
+
+  @override
+  String get plannerDidNotDoItHint => 'הזמן שלו יתוכנן מחדש.';
+
+  @override
+  String get plannerFinishedBlock => 'סיימתם את הבלוק הזה?';
+
+  @override
+  String plannerFinishedTitle(String title) {
+    return 'סיימתם את $title?';
+  }
+
+  @override
+  String plannerMovedAndLocked(String when) {
+    return 'הועבר ל-$when וננעל שם';
+  }
+
+  @override
+  String get plannerMarkedDone => 'סומן כבוצע';
+
+  @override
+  String get plannerMarkedNotDone => 'סומן כלא בוצע';
+
+  @override
+  String get plannerHowMuchMore => 'כמה זמן נוסף?';
+
+  @override
+  String plannerAddedTime(String amount) {
+    return 'נוסף למשימה: $amount';
+  }
+
+  @override
+  String get plannerLaterToday => 'מאוחר יותר היום';
+
+  @override
+  String get plannerLaterThatDay => 'מאוחר יותר באותו יום';
+
+  @override
+  String get plannerTheDayAfter => 'ביום שאחרי';
+
+  @override
+  String get plannerAWeekLater => 'שבוע אחר כך';
+
+  @override
+  String get plannerNotNowUntil => 'ממתי לתכנן אותו מחדש?';
+
+  @override
+  String plannerPlannedAgainFrom(String when) {
+    return 'לא יתוכנן לפני: $when';
+  }
+
+  @override
+  String get plannerPlannedAgain => 'הזמן שלו יתוכנן מחדש';
+
+  @override
+  String get plannerBlockOverlaps => 'הבלוק הזה חופף לאירוע.';
+
+  @override
+  String get plannerNotDoneAfterAll => 'בעצם לא בוצע';
+
+  @override
+  String get plannerAlreadyDone => 'כבר בוצע';
+
+  @override
+  String get plannerAlreadyDoneHint => 'משחרר את הזמן שתוכנן לו.';
+
+  @override
+  String get plannerNotNow => 'לא עכשיו';
+
+  @override
+  String get plannerUnlock => 'ביטול הנעילה';
+
+  @override
+  String get plannerLockHere => 'נעילה כאן';
+
+  @override
+  String get plannerLockHereHint => 'המתכנן לא יזיז אותו.';
+
+  @override
+  String get plannerUnlocked => 'הנעילה בוטלה. המתכנן רשאי להזיז אותו שוב.';
+
+  @override
+  String get plannerLocked => 'ננעל בשעה הזו';
+
+  @override
+  String plannerTasksAtRisk(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count משימות בסיכון',
+      one: 'משימה אחת בסיכון',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get plannerAtRiskTitle => 'משימות בסיכון';
+
+  @override
+  String get plannerAtRiskBody =>
+      'המשימות האלה לא נכנסות לפני תאריך היעד שלהן. הקישו על משימה כדי לשנות את האורך או את תאריך היעד שלה, או פנו מקום ביומן.';
+
+  @override
+  String get plannerAtRiskNone => 'כל המשימות נכנסות עכשיו.';
+
+  @override
+  String get plannerOpenPlanner => 'פתיחת המתכנן';
+
+  @override
+  String get plannerFixLength => 'שינוי האורך';
+
+  @override
+  String plannerFixLengthNow(String amount) {
+    return 'כרגע $amount';
+  }
+
+  @override
+  String get plannerFixDue => 'הזזת תאריך היעד';
+
+  @override
+  String get plannerFixStop => 'להפסיק לתכנן את המשימה הזו';
+
+  @override
+  String get plannerAskAtEnd => 'לשאול כשבלוק מסתיים';
+
+  @override
+  String get plannerAskAtEndHint =>
+      'התראה שואלת אם סיימתם. הכפתורים שלה פועלים גם כשהיומן נעול.';
+
+  @override
+  String get markAsDone => 'סימון כבוצע';
+
+  @override
+  String get markAsNotDone => 'סימון כלא בוצע';
+
+  @override
+  String get plannerDone => 'בוצע';
+
+  @override
+  String get plannerHabits => 'הרגלים';
+
+  @override
+  String get plannerNoHabits =>
+      'שמרו זמן לארוחת צהריים, לאימון או לכל דבר שאתם עושים בקביעות.';
+
+  @override
+  String get plannerAddHabit => 'הוספת הרגל';
+
+  @override
+  String get plannerEditHabit => 'עריכת הרגל';
+
+  @override
+  String get plannerHabitLunch => 'ארוחת צהריים';
+
+  @override
+  String get plannerHabitExercise => 'אימון';
+
+  @override
+  String get plannerHabitOther => 'משהו אחר';
+
+  @override
+  String get plannerHabitUntitled => 'הרגל';
+
+  @override
+  String get plannerHabitName => 'שם';
+
+  @override
+  String get plannerHabitNameHint => 'לדוגמה: קריאה';
+
+  @override
+  String get plannerHabitDays => 'ימים';
+
+  @override
+  String get plannerHabitLength => 'אורך';
+
+  @override
+  String get plannerHabitIdeal => 'השעה הכי טובה להתחיל';
+
+  @override
+  String get plannerHabitWindow => 'רק בין';
+
+  @override
+  String get plannerHabitWindowTooShort => 'קצר מדי לאורך של ההרגל.';
+
+  @override
+  String plannerHabitBetween(String from, String to) {
+    return '$from עד $to';
+  }
+
+  @override
+  String get plannerHabitFrom => 'מ-';
+
+  @override
+  String get plannerHabitTo => 'עד';
+
+  @override
+  String get plannerHabitNoRoom => 'כשאין מקום';
+
+  @override
+  String get plannerHabitSkipDay => 'לדלג על היום הזה';
+
+  @override
+  String plannerHabitShortenTo(String length) {
+    return 'לקצר, עד $length';
+  }
+
+  @override
+  String get plannerAnyTime => 'בכל שעה';
+
+  @override
+  String get plannerHabitPaused => 'השהיה';
+
+  @override
+  String get plannerHabitPausedHint => 'נשמר, אבל לא יתוכנן עד שתכבו את זה.';
+
+  @override
+  String get plannerHabitPausedShort => 'מושהה';
+
+  @override
+  String get plannerDeleteHabitTitle => 'למחוק את ההרגל הזה?';
+
+  @override
+  String get plannerDeleteHabitBody =>
+      'הזמנים הבאים שלו יוסרו מהיומן. אלה שעברו יישארו.';
+
+  @override
+  String get plannerEveryDay => 'כל יום';
+
+  @override
+  String plannerAround(String time) {
+    return 'בסביבות $time';
+  }
+
+  @override
+  String get plannerSkipToday => 'דילוג היום';
+
+  @override
+  String get plannerSkipTodayHint => 'משחרר את הזמן. לא יתוכנן שוב היום.';
+
+  @override
+  String get plannerHabitSkipped => 'דולג';
+
+  @override
+  String get plannerHabitSkippedToday => 'דולג';
+
+  @override
+  String get plannerHabitKeptAfterAll => 'בעצם כן עשיתי';
+
+  @override
+  String get plannerHabitSkippedAfterAll => 'בעצם דילגתי';
+
+  @override
+  String get plannerFocusGoal => 'זמן ריכוז בכל שבוע';
+
+  @override
+  String get plannerFocusOff => 'כבוי. שומר זמן בלי פגישות לעבודה מרוכזת.';
+
+  @override
+  String get plannerFocusOffShort => 'כבוי';
+
+  @override
+  String plannerFocusPerWeek(String amount) {
+    return '$amount בשבוע, בשעות העבודה';
+  }
+
+  @override
+  String get plannerFocusBlockTitle => 'זמן ריכוז';
+
+  @override
+  String plannerWeekFocus(String planned, String goal) {
+    return 'זמן ריכוז: $planned מתוך $goal';
+  }
+
+  @override
+  String plannerWeekHabits(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count זמנים להרגלים מתוכננים',
+      one: 'זמן אחד להרגלים מתוכנן',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String plannerLastWeekDone(String amount) {
+    return '7 הימים האחרונים: $amount של משימות בוצעו';
+  }
+
+  @override
+  String plannerLastWeekHabits(int kept, int total) {
+    return 'הרגלים שנשמרו: $kept מתוך $total';
+  }
+
+  @override
+  String get findTimeForTask => 'מציאת זמן למשימה';
+
+  @override
+  String get findTimePickTask => 'איזו משימה?';
+
+  @override
+  String get findTimeNoTasks =>
+      'אין משימות פתוחות ב-ZT Tasks. הוסיפו משימה שם וחזרו לכאן.';
+
+  @override
+  String findTimeDue(String day) {
+    return 'יעד: $day';
+  }
+
+  @override
+  String get findTimeFreeTimes => 'זמנים פנויים';
+
+  @override
+  String get findTimeNone =>
+      'אין זמן פנוי בשבועיים הקרובים. נסו אורך קצר יותר או שעות אחרות.';
+
+  @override
+  String get findTimeAdd => 'הוספה';
+
+  @override
+  String get findTimeHint =>
+      'המשימה תתווסף כאירוע שמקושר אליה. היא תישאר במקום שבחרתם.';
+
+  @override
+  String findTimeAdded(String when) {
+    return 'נוסף ליומן: $when';
+  }
+
+  @override
+  String get plannerPlusTitle => 'המתכנן האוטומטי הוא חלק מ-Plus';
+
+  @override
+  String get plannerPlusBody =>
+      'עם Plus, היומן מתכנן את המשימות, ההרגלים וזמן הריכוז שלכם ומזיז אותם כשהיום משתנה. Plus עדיין לא במכירה. בתוכנית החינמית, מציאת זמן משבצת משימה אחת בכל פעם.';
+
+  @override
+  String get plannerPausedTitle => 'המתכנן מושהה';
+
+  @override
+  String get plannerPausedBody =>
+      'התוכנית שלכם כבר לא כוללת את המתכנן (הוא חלק מ-Plus). הבלוקים שלכם נשארים במקום, אבל שום דבר לא מזיז אותם עכשיו.';
+
+  @override
+  String get plannerCheckPlan => 'לבדוק שוב את התוכנית שלי';
+
+  @override
+  String get plannerAi => 'עוזר AI';
+
+  @override
+  String get plannerAiIntro =>
+      'כבוי אלא אם תפעילו אותו. השרת שלנו שומר רק כמה בקשות שלחתם, אף פעם לא את מה שנשלח.';
+
+  @override
+  String get plannerAiGuess => 'ניחוש אורך של משימות';
+
+  @override
+  String get plannerAiGuessHint => 'שולח את שם המשימה כשמבקשים ניחוש.';
+
+  @override
+  String get plannerAiRequests => 'לבקש מהמתכנן';
+
+  @override
+  String get plannerAiRequestsHint =>
+      'כתבו במשפט מה צריך, למשל \"אני חולה היום, תזיז הכל\".';
+
+  @override
+  String get plannerAiHideTitles => 'הסתרת שמות';
+
+  @override
+  String get plannerAiHideTitlesHint =>
+      'השמות נשלחים כתוויות (משימה A, אירוע B) ומוחזרים בטלפון הזה.';
+
+  @override
+  String plannerAiUsed(int used, int limit) {
+    return 'שימוש החודש: $used מתוך $limit';
+  }
+
+  @override
+  String get plannerAiConsentTitle => 'לשלוח את זה לעוזר ה-AI?';
+
+  @override
+  String get plannerAiConsentGuess =>
+      'כשמבקשים ניחוש, שם המשימה נשלח לשרת שלנו ומשם ל-Claude של Anthropic, שמנחש כמה זמן היא לוקחת. השרת שלנו שומר רק כמה בקשות שלחתם, אף פעם לא את הטקסט.';
+
+  @override
+  String get plannerAiConsentRequests =>
+      'כשמבקשים מהמתכנן, המשפט שלכם, המשימות הפתוחות, והבלוקים והאירועים של השבועיים הקרובים (שמות ושעות) נשלחים לשרת שלנו ומשם ל-Claude של Anthropic. השרת שלנו שומר רק כמה בקשות שלחתם, אף פעם לא את הטקסט. \"הסתרת שמות\" שולחת תוויות במקום שמות.';
+
+  @override
+  String get plannerAiSwitchOn => 'הפעלה';
+
+  @override
+  String get plannerAiAskHint => 'לדוגמה: לסיים את הדוח לפני יום חמישי';
+
+  @override
+  String get plannerAiSend => 'שליחה';
+
+  @override
+  String get plannerAiThinking => 'שואלים את עוזר ה-AI…';
+
+  @override
+  String get plannerAiNoChanges => 'עוזר ה-AI לא מצא מה לשנות. נסו לנסח אחרת.';
+
+  @override
+  String get plannerAiQuestion => 'עוזר ה-AI שואל';
+
+  @override
+  String get plannerAiCannot => 'אי אפשר';
+
+  @override
+  String get plannerAiChanges => 'שינויים מוצעים';
+
+  @override
+  String get plannerAiCheckHint => 'שום דבר לא משתנה עד שלוחצים על החלה.';
+
+  @override
+  String get plannerAiApply => 'החלה';
+
+  @override
+  String get plannerAiApplied => 'השינויים הוחלו';
+
+  @override
+  String get plannerAiUndone => 'השינויים בוטלו';
+
+  @override
+  String get plannerAiPreviewSame => 'התכנון נשאר כמו שהוא.';
+
+  @override
+  String plannerAiPreview(int moved, int added, int removed) {
+    return 'התכנון: $moved יזוזו, $added יתווספו, $removed יוסרו.';
+  }
+
+  @override
+  String plannerAiSetLength(String task, String length) {
+    return '$task: לוקחת $length';
+  }
+
+  @override
+  String plannerAiSetPriority(String task, String priority) {
+    return '$task: עדיפות $priority';
+  }
+
+  @override
+  String get plannerAiPriorityHigh => 'גבוהה';
+
+  @override
+  String get plannerAiPriorityMedium => 'בינונית';
+
+  @override
+  String get plannerAiPriorityLow => 'נמוכה';
+
+  @override
+  String plannerAiSetDue(String task, String day) {
+    return '$task: עד $day';
+  }
+
+  @override
+  String plannerAiNotBefore(String task, String day) {
+    return '$task: לא לפני $day';
+  }
+
+  @override
+  String plannerAiLock(String block, String when) {
+    return 'להשאיר את $block במקום ($when)';
+  }
+
+  @override
+  String plannerAiUnlock(String block, String when) {
+    return 'לתת למתכנן להזיז את $block ($when)';
+  }
+
+  @override
+  String plannerAiMarkDone(String block, String when) {
+    return '$block ($when) בוצע';
+  }
+
+  @override
+  String plannerAiBlockOut(String when, String title) {
+    return 'לשמור פנוי: $when ($title)';
+  }
+
+  @override
+  String get plannerAiBusyTitle => 'תפוס';
+
+  @override
+  String plannerAiSetHours(
+    String hours,
+    String weekday,
+    String from,
+    String to,
+  ) {
+    return '$hours ב$weekday: $from עד $to';
+  }
+
+  @override
+  String plannerAiNoHours(String hours, String weekday) {
+    return 'בלי $hours ב$weekday';
+  }
+
+  @override
+  String plannerAiAddHabit(String title, String details) {
+    return 'הרגל חדש: $title, $details';
+  }
+
+  @override
+  String get plannerAiGuessButton => 'ניחוש האורך';
+
+  @override
+  String plannerAiGuessed(String length) {
+    return 'הניחוש: $length';
+  }
+
+  @override
+  String get plannerAiGuessLengths => 'ניחוש אורכים חסרים';
+
+  @override
+  String plannerAiGuessLengthsHint(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ל-$count משימות מתוכננות אין אורך',
+      one: 'למשימה מתוכננת אחת אין אורך',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get plannerAiGuessesTitle => 'אורכים משוערים';
+
+  @override
+  String get plannerAiErrorOff => 'עוזר ה-AI לא זמין כרגע.';
+
+  @override
+  String get plannerAiErrorLimit => 'ניצלתם את בקשות ה-AI של החודש.';
+
+  @override
+  String get plannerAiErrorRefused => 'עוזר ה-AI לא יכול לעזור עם זה.';
+
+  @override
+  String get plannerAiErrorNetwork => 'אין חיבור. נסו שוב כשתהיו מחוברים.';
+
+  @override
+  String get plannerAiErrorOther =>
+      'עוזר ה-AI לא הצליח לענות. נסו שוב עוד רגע.';
 }

@@ -7,12 +7,14 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../data/calendar_store.dart';
+import '../data/event_done.dart';
 import '../data/event_actions.dart';
 import '../data/linked_apps.dart';
 import '../data/subscriptions.dart';
 import '../ics/ics.dart';
 import '../model/calendar_event.dart';
 import '../model/linked_items.dart';
+import '../planner/planner_model.dart';
 import '../util/format.dart';
 import '../util/time_zones.dart';
 import 'attachments.dart';
@@ -20,6 +22,7 @@ import 'event_editor_page.dart';
 import 'guest_actions.dart';
 import 'linked_app_launcher.dart';
 import 'linked_pickers.dart';
+import 'planner_block_sheet.dart';
 import 'inline_button_style.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
@@ -50,6 +53,17 @@ class EventDetailsPage extends ConsumerWidget {
         ),
       );
     }
+    if (PlanMark.of(event) != null) {
+      // One of the Planner's blocks (opened from search, a widget or a
+      // reminder): the Planner places it, so it isn't edited like an event.
+      return Scaffold(
+        appBar: AppBar(title: Text(context.l10n.planner)),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+          child: PlannerBlockView(blockId: event.id),
+        ),
+      );
+    }
     final calendars =
         ref.watch(calendarsProvider).value ?? const [ZtCalendarInfo.personal];
     final calendar = calendars.firstWhere(
@@ -72,6 +86,12 @@ class EventDetailsPage extends ConsumerWidget {
         if (g.email != null) g.email!,
     ];
     final readOnly = event.readOnly;
+    // "Mark as done" is a tick on your own events (not on shared or
+    // subscribed ones, which other people see too).
+    final own = !readOnly &&
+        (ref.watch(eventsProvider).value ?? const <CalendarEvent>[])
+            .any((e) => e.id == event.id);
+    final done = own && eventDone(event, occ);
     final zone = event.allDay ? null : zoneFor(event.timeZone);
     final call = event.conferenceUrl;
 
@@ -126,6 +146,14 @@ class EventDetailsPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          if (own)
+            IconButton(
+              tooltip: done ? context.l10n.markAsNotDone : context.l10n.markAsDone,
+              icon: Icon(done ? Icons.check_circle : Icons.check_circle_outline),
+              onPressed: () => ref
+                  .read(calendarRepositoryProvider)
+                  .saveEvent(withEventDone(event, occ, !done)),
+            ),
           if (!readOnly)
             IconButton(
               tooltip: context.l10n.edit,
@@ -213,7 +241,9 @@ class EventDetailsPage extends ConsumerWidget {
                     children: [
                       SelectableText(
                         event.title.isEmpty ? context.l10n.noTitle : event.title,
-                        style: theme.textTheme.headlineSmall,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          decoration: done ? TextDecoration.lineThrough : null,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(

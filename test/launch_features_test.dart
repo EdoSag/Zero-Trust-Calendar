@@ -121,6 +121,25 @@ void main() {
       expect(normalizeFeedUrl('http://x.test/a.ics'), 'http://x.test/a.ics');
     });
 
+    test('a new subscription is named from the file when left blank', () {
+      const google = 'https://calendar.google.com/calendar/ical/me%40gmail.com/private-abc123/basic.ics';
+      expect(subscriptionName(typed: '  ', fromFeed: 'Work', url: google), 'Work');
+      expect(subscriptionName(typed: 'Mine', fromFeed: 'Work', url: google), 'Mine');
+      expect(subscriptionName(typed: '', fromFeed: null, url: google), 'calendar.google.com');
+      expect(feedNameFromUrl('https://outlook.office365.com/owa/calendar/abc/def/calendar.ics'), 'outlook.office365.com');
+      expect(
+        feedNameFromUrl('webcal://p55-caldav.icloud.com/published/2/MTIzNDU2Nzg5MDEyMzQ1Nj3kdVo5aFqXyGg2ZHJkLXBsYW5uZXI'),
+        'p55-caldav.icloud.com',
+      );
+      expect(feedNameFromUrl('https://school.test/feeds/Term%20dates.ics'), 'Term dates');
+      const ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nX-WR-CALNAME:Family\r\nEND:VCALENDAR\r\n';
+      expect(Ics.parse(ics).name, 'Family');
+    });
+
+    test('subscribed calendars refresh every few hours', () {
+      expect(SubscriptionService.refreshEvery, const Duration(hours: 3));
+    });
+
     test('a feed keeps recent events, read-only, and round-trips', () {
       const ics =
           'BEGIN:VCALENDAR\r\nVERSION:2.0\r\n'

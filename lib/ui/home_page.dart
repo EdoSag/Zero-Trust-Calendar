@@ -7,8 +7,11 @@ import '../data/calendar_store.dart';
 import '../model/calendar_event.dart';
 import '../util/format.dart';
 import 'calendars_page.dart';
+import 'entry_widgets.dart';
 import 'month_view.dart';
 import 'navigation.dart';
+import 'planner_page.dart';
+import 'planner_risks.dart';
 import 'quick_add_sheet.dart';
 import 'schedule_view.dart';
 import 'search_page.dart';
@@ -110,7 +113,13 @@ class HomePage extends ConsumerWidget {
         ],
       ),
       drawer: _CalendarDrawer(onView: (v) => _setView(ref, v)),
-      body: body,
+      // Tasks the Planner could not fit show across the top of every view.
+      body: Column(
+        children: [
+          const PlannerRiskBanner(),
+          Expanded(child: body),
+        ],
+      ),
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -224,6 +233,12 @@ class _CalendarDrawer extends ConsumerWidget {
           onTap: () => push(const CalendarsPage()),
         ),
         const Divider(indent: 28, endIndent: 28),
+        ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 28),
+          leading: const Icon(plannerIcon),
+          title: Text(context.l10n.planner),
+          onTap: () => push(const PlannerPage()),
+        ),
         ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 28),
           leading: const Icon(Icons.settings_outlined),

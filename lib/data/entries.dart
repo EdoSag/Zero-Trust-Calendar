@@ -5,7 +5,10 @@ import 'package:zero_trust_core/zero_trust_core.dart';
 import '../app/calendar_settings.dart';
 import '../model/calendar_event.dart';
 import '../model/linked_items.dart';
+import '../planner/planner_model.dart';
+import '../planner/planner_plan.dart';
 import 'calendar_store.dart';
+import 'event_done.dart';
 import 'linked_apps.dart';
 import 'subscriptions.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
@@ -26,6 +29,8 @@ class CalendarEntry {
     this.event,
     this.task,
     this.contact,
+    this.plan,
+    this.done = false,
   });
 
   final EntryKind kind;
@@ -41,6 +46,13 @@ class CalendarEntry {
   final CalendarEvent? event;
   final LinkedTask? task;
   final LinkedContact? contact;
+
+  /// Set when the event is one of the Planner's blocks.
+  final PlanMark? plan;
+
+  /// Shown crossed out: a Planner block that is done, or an event the user
+  /// marked as done.
+  final bool done;
 
   bool get isOccurrenceOfSeries => event?.repeats ?? false;
 
@@ -97,19 +109,31 @@ List<CalendarEntry> buildEntries({
   final l = l10n ?? currentL10n;
   final byId = {for (final c in calendars) c.id: c};
   final out = <CalendarEntry>[];
+  // A task planned in several blocks shows which one each is: "(2 of 3)".
+  final groups = planGroups(events);
   for (final e in events) {
     final cal = byId[e.calendarId] ?? ZtCalendarInfo.personal;
     if (cal.hidden) continue;
+    final plan = PlanMark.of(e);
+    var title = e.title.trim().isEmpty ? '(No title)' : e.title.trim();
+    if (plan != null) {
+      final group = groups[plan.group]!;
+      if (group.length > 1) {
+        title = l.plannerPartOf(title, group.indexOf(e) + 1, group.length);
+      }
+    }
     for (final (s, end) in e.occurrencesBetween(range.from, range.to)) {
       out.add(
         CalendarEntry(
           kind: EntryKind.event,
-          title: e.title.trim().isEmpty ? '(No title)' : e.title.trim(),
+          title: title,
           start: s,
           end: end,
           allDay: e.allDay,
           color: e.color ?? cal.color,
           event: e,
+          plan: plan,
+          done: plan?.done ?? (!e.readOnly && eventDone(e, s)),
         ),
       );
     }
