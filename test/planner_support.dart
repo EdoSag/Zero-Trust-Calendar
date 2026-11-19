@@ -12,6 +12,7 @@ import 'package:zerotrust_calendar/data/subscriptions.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 import 'package:zerotrust_calendar/model/calendar_event.dart';
 import 'package:zerotrust_calendar/model/linked_items.dart';
+import 'package:zerotrust_calendar/planner/planner_access.dart';
 import 'package:zerotrust_calendar/planner/planner_answers.dart';
 import 'package:zerotrust_calendar/planner/planner_controller.dart';
 import 'package:zerotrust_calendar/planner/planner_model.dart';
@@ -38,6 +39,9 @@ class FakeAccount {
   /// As [LinkedMirror.lastRefreshOk]: null while the first pull runs.
   bool? tasksRefreshOk;
   bool synced;
+
+  /// Whether the account's plan includes the Planner (null: not known).
+  bool? plannerAllowed = true;
 
   /// This device's own preferences. Shared by every container made from
   /// this account, as they are when the app is closed and opened again.
@@ -150,6 +154,7 @@ class FakeAccount {
       (ref) => _from(_tasks, () => PlannerTaskList([...tasks], refreshOk: tasksRefreshOk)),
     ),
     plannerSyncedProvider.overrideWith((ref) => synced),
+    plannerAllowedProvider.overrideWith((ref) => plannerAllowed),
     plannerWriterProvider.overrideWith((ref) => _FakeWriter(ref, this)),
     plannerTaskWriterProvider.overrideWithValue((id, changes) async => setTask(id, changes)),
     plannerTaskCompleterProvider.overrideWithValue(

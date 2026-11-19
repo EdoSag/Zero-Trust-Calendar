@@ -80,7 +80,12 @@ account, settings and look as the other Zero-Trust apps, built on
   task time per day, focus time against the goal, and the last seven days
   (task time done, habits kept). Everything is worked out on the phone by the
   `zt_scheduler` package of Zero-Trust-Core: no server, no AI. It plans
-  while Calendar is unlocked.
+  while Calendar is unlocked. The automatic Planner is part of Plus (plan
+  feature `planner`, checked on the phone; when the plan can't be checked,
+  offline, nothing is held back). On the free plan **Find a time for a
+  task** suggests the earliest free time on each of the next days, in work
+  hours, personal hours or any time, and adds the task as an ordinary event
+  linked to it.
 - **Mark as done:** any event of yours can be ticked off on its page, and
   is then shown crossed out (a repeating event one day at a time).
 - **Show on this phone** (optional, per calendar, off by default): copies

@@ -673,5 +673,19 @@
   "plannerWeekFocus": "זמן ריכוז: {planned} מתוך {goal}",
   "plannerWeekHabits": "{count, plural, =1{זמן אחד להרגלים מתוכנן} other{{count} זמנים להרגלים מתוכננים}}",
   "plannerLastWeekDone": "7 הימים האחרונים: {amount} של משימות בוצעו",
-  "plannerLastWeekHabits": "הרגלים שנשמרו: {kept} מתוך {total}"
+  "plannerLastWeekHabits": "הרגלים שנשמרו: {kept} מתוך {total}",
+  "findTimeForTask": "מציאת זמן למשימה",
+  "findTimePickTask": "איזו משימה?",
+  "findTimeNoTasks": "אין משימות פתוחות ב-ZT Tasks. הוסיפו משימה שם וחזרו לכאן.",
+  "findTimeDue": "יעד: {day}",
+  "findTimeFreeTimes": "זמנים פנויים",
+  "findTimeNone": "אין זמן פנוי בשבועיים הקרובים. נסו אורך קצר יותר או שעות אחרות.",
+  "findTimeAdd": "הוספה",
+  "findTimeHint": "המשימה תתווסף כאירוע שמקושר אליה. היא תישאר במקום שבחרתם.",
+  "findTimeAdded": "נוסף ליומן: {when}",
+  "plannerPlusTitle": "המתכנן האוטומטי הוא חלק מ-Plus",
+  "plannerPlusBody": "עם Plus, היומן מתכנן את המשימות, ההרגלים וזמן הריכוז שלכם ומזיז אותם כשהיום משתנה. Plus עדיין לא במכירה. בתוכנית החינמית, מציאת זמן משבצת משימה אחת בכל פעם.",
+  "plannerPausedTitle": "המתכנן מושהה",
+  "plannerPausedBody": "התוכנית שלכם כבר לא כוללת את המתכנן (הוא חלק מ-Plus). הבלוקים שלכם נשארים במקום, אבל שום דבר לא מזיז אותם עכשיו.",
+  "plannerCheckPlan": "לבדוק שוב את התוכנית שלי"
 }

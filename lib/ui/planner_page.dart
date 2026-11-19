@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:zero_trust_core/zero_trust_core.dart' show ztPlanProvider;
 import 'package:zt_scheduler/zt_scheduler.dart';
 
 import '../data/calendar_store.dart';
@@ -11,7 +12,9 @@ import '../planner/planner_model.dart';
 import '../util/format.dart';
 import 'entry_widgets.dart';
 import 'linked_app_launcher.dart';
+import '../planner/planner_access.dart';
 import '../planner/planner_actions.dart';
+import 'find_task_time_page.dart';
 import 'planner_habit_page.dart';
 import 'planner_risks.dart';
 import 'planner_setup_page.dart';
@@ -46,13 +49,72 @@ class PlannerPage extends ConsumerWidget {
   }
 }
 
-class _PlannerIntro extends StatelessWidget {
+/// Opens "Find a time for a task".
+void openFindTaskTime(BuildContext context) => Navigator.of(context).push(
+  MaterialPageRoute<void>(builder: (_) => const FindTaskTimePage()),
+);
+
+/// The automatic Planner is part of Plus: what that means for this account,
+/// with the free "Find a time" and a way to check the plan again.
+class PlannerPlusCard extends ConsumerWidget {
+  const PlannerPlusCard({super.key, this.paused = false});
+
+  /// The Planner was on: its blocks stay, but nothing moves them.
+  final bool paused;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final theme = Theme.of(context);
+    return Card(
+      key: const ValueKey('planner-plus'),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.workspace_premium_outlined, color: theme.colorScheme.primary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    paused ? l.plannerPausedTitle : l.plannerPlusTitle,
+                    style: theme.textTheme.titleMedium,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(paused ? l.plannerPausedBody : l.plannerPlusBody),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              key: const ValueKey('planner-find-time'),
+              onPressed: () => openFindTaskTime(context),
+              icon: const Icon(Icons.manage_search),
+              label: Text(l.findTimeForTask),
+            ),
+            TextButton(
+              key: const ValueKey('planner-check-plan'),
+              onPressed: () => ref.invalidate(ztPlanProvider),
+              child: Text(l.plannerCheckPlan),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PlannerIntro extends ConsumerWidget {
   const _PlannerIntro();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final theme = Theme.of(context);
+    final allowed = ref.watch(plannerAllowedProvider);
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
@@ -69,12 +131,23 @@ class _PlannerIntro extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        FilledButton(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(builder: (_) => const PlannerSetupPage()),
+        if (allowed == false)
+          const PlannerPlusCard()
+        else ...[
+          FilledButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const PlannerSetupPage()),
+            ),
+            child: Text(l.plannerSetUp),
           ),
-          child: Text(l.plannerSetUp),
-        ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            key: const ValueKey('planner-find-time'),
+            onPressed: () => openFindTaskTime(context),
+            icon: const Icon(Icons.manage_search),
+            label: Text(l.findTimeForTask),
+          ),
+        ],
       ],
     );
   }
@@ -181,6 +254,7 @@ class _PlannerBody extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.only(bottom: 32),
       children: [
+        if (status.waiting == PlannerWaiting.needsPlus) const PlannerPlusCard(paused: true),
         header(l.plannerNext7Days),
         _WeekCard(settings: settings, blocks: blocks),
         if (status.waiting == PlannerWaiting.loading)

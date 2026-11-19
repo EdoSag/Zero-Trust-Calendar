@@ -1645,5 +1645,33 @@
         "type": "int"
       }
     }
-  }
+  },
+  "findTimeForTask": "Find a time for a task",
+  "findTimePickTask": "Which task?",
+  "findTimeNoTasks": "No open tasks in ZT Tasks. Add a task there, then come back.",
+  "findTimeDue": "Due {day}",
+  "@findTimeDue": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "findTimeFreeTimes": "Free times",
+  "findTimeNone": "No free time in the next two weeks. Try a shorter length or other hours.",
+  "findTimeAdd": "Add",
+  "findTimeHint": "The task is added as an event linked to it. It stays where you put it.",
+  "findTimeAdded": "Added to your calendar: {when}",
+  "@findTimeAdded": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerPlusTitle": "The automatic Planner is part of Plus",
+  "plannerPlusBody": "With Plus, Calendar plans your tasks, habits and focus time and moves them when your day changes. Plus isn't on sale yet. On the free plan, Find a time places one task at a time.",
+  "plannerPausedTitle": "The Planner is paused",
+  "plannerPausedBody": "Your plan no longer includes the Planner (it is part of Plus). Your blocks stay where they are, but nothing moves them now.",
+  "plannerCheckPlan": "Check my plan again"
 }
