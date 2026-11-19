@@ -24,12 +24,11 @@ dependencies:
     git:
       url: https://github.com/EdoSag/Zero-Trust-Core.git
       path: packages/zero_trust_core
-      # Core Dev: the shared spaces trust chain fix (Core PR #35), invite
-      # links per app (Core PR #37), and the booking page tables this app
-      # uses (Core PRs #41, #42). Every app that shares must be on this
-      # commit or later: older ones cannot read the new member records.
+      # Core Dev: everything the shared spaces and booking pages need
+      # (Core PRs #35, #37, #41, #42), plus the Planner's AI helper
+      # functions (Core PR #65), which the release checks look for.
       # Switch to the release tag once one is pushed.
-      ref: 08eccf33e5989c0efceba67d351159b979ae0740
+      ref: 5ac7562562574187e94529c4b3400897f32c8e46
   # The Planner's engine (R0, R1): pure Dart, fits tasks into free time.
   # Independent of zero_trust_core, so it may be newer.
   zt_scheduler:
