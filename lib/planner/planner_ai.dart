@@ -641,7 +641,7 @@ AiPreview? previewAiChanges(
     rebuild: next.planSignature != settings.planSignature,
     tasks: (tasks) => [for (final t in tasks) _taskWith(t, applied)],
     events: (events) => [
-      for (final e in events) _eventWith(e, applied),
+      for (final e in events) _eventWith(e, applied, at),
       for (final (i, c) in applied.indexed)
         if (c.type == AiChangeType.blockOut) _blockOutEvent(c, 'preview-busy-$i', ''),
     ],
@@ -705,11 +705,17 @@ PlannerTask _taskWith(PlannerTask t, List<AiChange> changes) {
   return out;
 }
 
-CalendarEvent _eventWith(CalendarEvent e, List<AiChange> changes) {
+CalendarEvent _eventWith(CalendarEvent e, List<AiChange> changes, DateTime at) {
   var mark = PlanMark.of(e);
   if (mark == null) return e;
   for (final c in changes) {
     if (c.blockId != e.id) continue;
+    // Done ahead of time: as PlannerActions.setDone does, the block moves
+    // to end now, and its old time is free for other work.
+    if (c.type == AiChangeType.markDone && !mark!.done && e.start.isAfter(at)) {
+      final end = DateTime(at.year, at.month, at.day, at.hour, at.minute);
+      e = e.copyWith(start: end.subtract(e.duration), end: end);
+    }
     mark = switch (c.type) {
       AiChangeType.lock => mark!.copyWith(locked: true, reason: PlanReason.locked),
       AiChangeType.unlock => mark!.copyWith(locked: false, reason: PlanReason.kept),
@@ -739,18 +745,44 @@ class PlannerAiApplier {
       _ref.read(plannerBlocksProvider).where((b) => b.id == id).firstOrNull;
 
   /// Applies [changes]. [busyTitle] names a blocked-out time the helper
-  /// gave no title. Returns the undo, or throws when nothing could be
-  /// applied; a change whose task or block is gone is skipped.
+  /// gave no title. Returns the undo; a change whose task or block is gone
+  /// is skipped. When a write fails, what was already written is undone
+  /// before the error is thrown, so nothing is left half applied.
   Future<Future<void> Function()> apply(
     List<AiChange> changes, {
     required String busyTitle,
     DateTime? now,
   }) async {
     final at = now ?? DateTime.now();
+    final undo = <Future<void> Function()>[];
+    try {
+      await _applyAll(changes, busyTitle, at, undo);
+    } catch (_) {
+      for (final u in undo.reversed) {
+        try {
+          await u();
+        } on Object {
+          // Keep undoing the rest.
+        }
+      }
+      rethrow;
+    }
+    return () async {
+      for (final u in undo.reversed) {
+        await u();
+      }
+    };
+  }
+
+  Future<void> _applyAll(
+    List<AiChange> changes,
+    String busyTitle,
+    DateTime at,
+    List<Future<void> Function()> undo,
+  ) async {
     final actions = _ref.read(plannerActionsProvider);
     final writeTask = _ref.read(plannerTaskWriterProvider);
     final writer = _ref.read(plannerWriterProvider);
-    final undo = <Future<void> Function()>[];
 
     for (final c in changes.where((c) => c.applies)) {
       switch (c.type) {
@@ -843,11 +875,6 @@ class PlannerAiApplier {
         );
       });
     }
-    return () async {
-      for (final u in undo.reversed) {
-        await u();
-      }
-    };
   }
 }
 

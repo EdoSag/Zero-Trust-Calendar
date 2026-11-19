@@ -356,6 +356,21 @@ void main() {
       expect(longer.added + longer.moved, greaterThan(0), reason: 'two more hours to place');
     });
 
+    test('done ahead of time shows the block moving to end now, as Apply does', () async {
+      final account = FakeAccount(
+        settings: on,
+        tasks: [task('a', minutes: 60)],
+        events: [block('a1', 'a', soon(3))],
+      );
+      final container = await start(account);
+      final controller = container.read(plannerControllerProvider.notifier);
+      final preview = previewAiChanges(controller, on, [
+        parse({'type': 'mark_done', 'blockId': 'a1'}),
+      ], now: DateTime.now())!;
+      expect(preview.same, isFalse, reason: 'Apply moves the block to now');
+      expect(preview.moved, greaterThan(0));
+    });
+
     test('task changes are applied and undone exactly', () async {
       final due = DateTime(2026, 12, 4);
       final account = FakeAccount(
@@ -443,6 +458,21 @@ void main() {
       expect(back.hours, on.hours);
       expect(back.habits, isEmpty);
       expect(back.defaultMinutes, 45);
+    });
+
+    test('when a write fails, what was already written is undone', () async {
+      final account = FakeAccount(settings: on, tasks: [task('a', minutes: 60)]);
+      final container = await start(account);
+      account.onSaveBlock = (id) async => throw StateError('offline');
+      await expectLater(
+        container.read(plannerAiApplierProvider).apply([
+          parse({'type': 'set_length', 'taskId': 'a', 'minutes': 120}),
+          parse({'type': 'block_out', 'start': '2026-11-24 13:00', 'end': '2026-11-24 15:00'}),
+        ], busyTitle: 'Busy'),
+        throwsStateError,
+      );
+      expect(account.tasks.single.minutes, 60, reason: 'the length went back');
+      expect(account.events.where((e) => PlanMark.of(e) == null), isEmpty);
     });
 
     test('lock and done on blocks, and their undo', () async {
