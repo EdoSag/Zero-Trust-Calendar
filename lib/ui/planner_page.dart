@@ -12,6 +12,7 @@ import '../planner/planner_model.dart';
 import '../util/format.dart';
 import 'entry_widgets.dart';
 import 'linked_app_launcher.dart';
+import 'planner_ai_widgets.dart';
 import '../planner/planner_access.dart';
 import '../planner/planner_actions.dart';
 import 'find_task_time_page.dart';
@@ -257,6 +258,7 @@ class _PlannerBody extends ConsumerWidget {
         if (status.waiting == PlannerWaiting.needsPlus) const PlannerPlusCard(paused: true),
         header(l.plannerNext7Days),
         _WeekCard(settings: settings, blocks: blocks),
+        PlannerAskButton(settings: settings),
         if (status.waiting == PlannerWaiting.loading)
           ListTile(
             dense: true,
@@ -386,6 +388,8 @@ class _PlannerBody extends ConsumerWidget {
             ),
           ),
         ),
+
+        PlannerAiSection(settings: settings),
 
         header(l.settings),
         hoursTile(l.plannerWorkHours, workHoursId),

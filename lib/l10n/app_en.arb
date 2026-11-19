@@ -1673,5 +1673,209 @@
   "plannerPlusBody": "With Plus, Calendar plans your tasks, habits and focus time and moves them when your day changes. Plus isn't on sale yet. On the free plan, Find a time places one task at a time.",
   "plannerPausedTitle": "The Planner is paused",
   "plannerPausedBody": "Your plan no longer includes the Planner (it is part of Plus). Your blocks stay where they are, but nothing moves them now.",
-  "plannerCheckPlan": "Check my plan again"
+  "plannerCheckPlan": "Check my plan again",
+  "plannerAi": "AI helper",
+  "plannerAiIntro": "Off unless you switch it on. Our server keeps only how many requests you made, never what was sent.",
+  "plannerAiGuess": "Guess task lengths",
+  "plannerAiGuessHint": "Sends a task's title when you ask for a guess.",
+  "plannerAiRequests": "Ask the Planner",
+  "plannerAiRequestsHint": "Say what you need in a sentence, like \"I'm sick today, move everything\".",
+  "plannerAiHideTitles": "Hide titles",
+  "plannerAiHideTitlesHint": "Titles go as labels (Task A, Event B) and are put back on this phone.",
+  "plannerAiUsed": "Used this month: {used} of {limit}",
+  "@plannerAiUsed": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerAiConsentTitle": "Send this to the AI helper?",
+  "plannerAiConsentGuess": "When you ask for a guess, the task's title goes to our server and on to Anthropic's Claude, which guesses how long it takes. Our server keeps only how many requests you made, never the text.",
+  "plannerAiConsentRequests": "When you ask the Planner, your sentence, your open tasks, and your blocks and events for the next 2 weeks (titles and times) go to our server and on to Anthropic's Claude. Our server keeps only how many requests you made, never the text. \"Hide titles\" sends labels in place of titles.",
+  "plannerAiSwitchOn": "Switch on",
+  "plannerAiAskHint": "For example: Finish the report before Thursday",
+  "plannerAiSend": "Send",
+  "plannerAiThinking": "Asking the AI helper…",
+  "plannerAiNoChanges": "The AI helper found nothing to change. Try saying it another way.",
+  "plannerAiQuestion": "The AI helper asks",
+  "plannerAiCannot": "Can't do",
+  "plannerAiChanges": "Suggested changes",
+  "plannerAiCheckHint": "Nothing changes until you tap Apply.",
+  "plannerAiApply": "Apply",
+  "plannerAiApplied": "Changes applied",
+  "plannerAiUndone": "Changes undone",
+  "plannerAiPreviewSame": "The plan stays as it is.",
+  "plannerAiPreview": "The plan: {moved} moved, {added} added, {removed} removed.",
+  "@plannerAiPreview": {
+    "placeholders": {
+      "moved": {
+        "type": "int"
+      },
+      "added": {
+        "type": "int"
+      },
+      "removed": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerAiSetLength": "{task}: takes {length}",
+  "@plannerAiSetLength": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      },
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiSetPriority": "{task}: priority {priority}",
+  "@plannerAiSetPriority": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      },
+      "priority": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiPriorityHigh": "high",
+  "plannerAiPriorityMedium": "medium",
+  "plannerAiPriorityLow": "low",
+  "plannerAiSetDue": "{task}: due {day}",
+  "@plannerAiSetDue": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiNotBefore": "{task}: not before {day}",
+  "@plannerAiNotBefore": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiLock": "Keep {block} where it is ({when})",
+  "@plannerAiLock": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiUnlock": "Let the Planner move {block} ({when})",
+  "@plannerAiUnlock": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiMarkDone": "{block} ({when}) is done",
+  "@plannerAiMarkDone": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiBlockOut": "Keep free: {when} ({title})",
+  "@plannerAiBlockOut": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiBusyTitle": "Busy",
+  "plannerAiSetHours": "{hours} on {weekday}: {from} to {to}",
+  "@plannerAiSetHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "weekday": {
+        "type": "String"
+      },
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiNoHours": "No {hours} on {weekday}",
+  "@plannerAiNoHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiAddHabit": "New habit: {title}, {details}",
+  "@plannerAiAddHabit": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiGuessButton": "Guess the length",
+  "plannerAiGuessed": "Guessed: {length}",
+  "@plannerAiGuessed": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAiGuessLengths": "Guess missing lengths",
+  "plannerAiGuessLengthsHint": "{count, plural, =1{1 planned task has no length} other{{count} planned tasks have no length}}",
+  "@plannerAiGuessLengthsHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerAiGuessesTitle": "Guessed lengths",
+  "plannerAiErrorOff": "The AI helper isn't available right now.",
+  "plannerAiErrorLimit": "You've used this month's AI requests.",
+  "plannerAiErrorRefused": "The AI helper can't help with that.",
+  "plannerAiErrorNetwork": "No connection. Try again when you're online.",
+  "plannerAiErrorOther": "The AI helper couldn't answer. Try again in a moment."
 }

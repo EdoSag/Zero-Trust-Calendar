@@ -4224,6 +4224,317 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Check my plan again'**
   String get plannerCheckPlan;
+
+  /// No description provided for @plannerAi.
+  ///
+  /// In en, this message translates to:
+  /// **'AI helper'**
+  String get plannerAi;
+
+  /// No description provided for @plannerAiIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Off unless you switch it on. Our server keeps only how many requests you made, never what was sent.'**
+  String get plannerAiIntro;
+
+  /// No description provided for @plannerAiGuess.
+  ///
+  /// In en, this message translates to:
+  /// **'Guess task lengths'**
+  String get plannerAiGuess;
+
+  /// No description provided for @plannerAiGuessHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends a task\'s title when you ask for a guess.'**
+  String get plannerAiGuessHint;
+
+  /// No description provided for @plannerAiRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the Planner'**
+  String get plannerAiRequests;
+
+  /// No description provided for @plannerAiRequestsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Say what you need in a sentence, like \"I\'m sick today, move everything\".'**
+  String get plannerAiRequestsHint;
+
+  /// No description provided for @plannerAiHideTitles.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide titles'**
+  String get plannerAiHideTitles;
+
+  /// No description provided for @plannerAiHideTitlesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Titles go as labels (Task A, Event B) and are put back on this phone.'**
+  String get plannerAiHideTitlesHint;
+
+  /// No description provided for @plannerAiUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Used this month: {used} of {limit}'**
+  String plannerAiUsed(int used, int limit);
+
+  /// No description provided for @plannerAiConsentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send this to the AI helper?'**
+  String get plannerAiConsentTitle;
+
+  /// No description provided for @plannerAiConsentGuess.
+  ///
+  /// In en, this message translates to:
+  /// **'When you ask for a guess, the task\'s title goes to our server and on to Anthropic\'s Claude, which guesses how long it takes. Our server keeps only how many requests you made, never the text.'**
+  String get plannerAiConsentGuess;
+
+  /// No description provided for @plannerAiConsentRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'When you ask the Planner, your sentence, your open tasks, and your blocks and events for the next 2 weeks (titles and times) go to our server and on to Anthropic\'s Claude. Our server keeps only how many requests you made, never the text. \"Hide titles\" sends labels in place of titles.'**
+  String get plannerAiConsentRequests;
+
+  /// No description provided for @plannerAiSwitchOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch on'**
+  String get plannerAiSwitchOn;
+
+  /// No description provided for @plannerAiAskHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For example: Finish the report before Thursday'**
+  String get plannerAiAskHint;
+
+  /// No description provided for @plannerAiSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get plannerAiSend;
+
+  /// No description provided for @plannerAiThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Asking the AI helper…'**
+  String get plannerAiThinking;
+
+  /// No description provided for @plannerAiNoChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'The AI helper found nothing to change. Try saying it another way.'**
+  String get plannerAiNoChanges;
+
+  /// No description provided for @plannerAiQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'The AI helper asks'**
+  String get plannerAiQuestion;
+
+  /// No description provided for @plannerAiCannot.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t do'**
+  String get plannerAiCannot;
+
+  /// No description provided for @plannerAiChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested changes'**
+  String get plannerAiChanges;
+
+  /// No description provided for @plannerAiCheckHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing changes until you tap Apply.'**
+  String get plannerAiCheckHint;
+
+  /// No description provided for @plannerAiApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get plannerAiApply;
+
+  /// No description provided for @plannerAiApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes applied'**
+  String get plannerAiApplied;
+
+  /// No description provided for @plannerAiUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes undone'**
+  String get plannerAiUndone;
+
+  /// No description provided for @plannerAiPreviewSame.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan stays as it is.'**
+  String get plannerAiPreviewSame;
+
+  /// No description provided for @plannerAiPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan: {moved} moved, {added} added, {removed} removed.'**
+  String plannerAiPreview(int moved, int added, int removed);
+
+  /// No description provided for @plannerAiSetLength.
+  ///
+  /// In en, this message translates to:
+  /// **'{task}: takes {length}'**
+  String plannerAiSetLength(String task, String length);
+
+  /// No description provided for @plannerAiSetPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'{task}: priority {priority}'**
+  String plannerAiSetPriority(String task, String priority);
+
+  /// No description provided for @plannerAiPriorityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'high'**
+  String get plannerAiPriorityHigh;
+
+  /// No description provided for @plannerAiPriorityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'medium'**
+  String get plannerAiPriorityMedium;
+
+  /// No description provided for @plannerAiPriorityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'low'**
+  String get plannerAiPriorityLow;
+
+  /// No description provided for @plannerAiSetDue.
+  ///
+  /// In en, this message translates to:
+  /// **'{task}: due {day}'**
+  String plannerAiSetDue(String task, String day);
+
+  /// No description provided for @plannerAiNotBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'{task}: not before {day}'**
+  String plannerAiNotBefore(String task, String day);
+
+  /// No description provided for @plannerAiLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep {block} where it is ({when})'**
+  String plannerAiLock(String block, String when);
+
+  /// No description provided for @plannerAiUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Let the Planner move {block} ({when})'**
+  String plannerAiUnlock(String block, String when);
+
+  /// No description provided for @plannerAiMarkDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{block} ({when}) is done'**
+  String plannerAiMarkDone(String block, String when);
+
+  /// No description provided for @plannerAiBlockOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep free: {when} ({title})'**
+  String plannerAiBlockOut(String when, String title);
+
+  /// No description provided for @plannerAiBusyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Busy'**
+  String get plannerAiBusyTitle;
+
+  /// No description provided for @plannerAiSetHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} on {weekday}: {from} to {to}'**
+  String plannerAiSetHours(
+    String hours,
+    String weekday,
+    String from,
+    String to,
+  );
+
+  /// No description provided for @plannerAiNoHours.
+  ///
+  /// In en, this message translates to:
+  /// **'No {hours} on {weekday}'**
+  String plannerAiNoHours(String hours, String weekday);
+
+  /// No description provided for @plannerAiAddHabit.
+  ///
+  /// In en, this message translates to:
+  /// **'New habit: {title}, {details}'**
+  String plannerAiAddHabit(String title, String details);
+
+  /// No description provided for @plannerAiGuessButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Guess the length'**
+  String get plannerAiGuessButton;
+
+  /// No description provided for @plannerAiGuessed.
+  ///
+  /// In en, this message translates to:
+  /// **'Guessed: {length}'**
+  String plannerAiGuessed(String length);
+
+  /// No description provided for @plannerAiGuessLengths.
+  ///
+  /// In en, this message translates to:
+  /// **'Guess missing lengths'**
+  String get plannerAiGuessLengths;
+
+  /// No description provided for @plannerAiGuessLengthsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 planned task has no length} other{{count} planned tasks have no length}}'**
+  String plannerAiGuessLengthsHint(int count);
+
+  /// No description provided for @plannerAiGuessesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guessed lengths'**
+  String get plannerAiGuessesTitle;
+
+  /// No description provided for @plannerAiErrorOff.
+  ///
+  /// In en, this message translates to:
+  /// **'The AI helper isn\'t available right now.'**
+  String get plannerAiErrorOff;
+
+  /// No description provided for @plannerAiErrorLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve used this month\'s AI requests.'**
+  String get plannerAiErrorLimit;
+
+  /// No description provided for @plannerAiErrorRefused.
+  ///
+  /// In en, this message translates to:
+  /// **'The AI helper can\'t help with that.'**
+  String get plannerAiErrorRefused;
+
+  /// No description provided for @plannerAiErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection. Try again when you\'re online.'**
+  String get plannerAiErrorNetwork;
+
+  /// No description provided for @plannerAiErrorOther.
+  ///
+  /// In en, this message translates to:
+  /// **'The AI helper couldn\'t answer. Try again in a moment.'**
+  String get plannerAiErrorOther;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

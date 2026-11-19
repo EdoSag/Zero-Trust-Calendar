@@ -17,6 +17,7 @@ import 'package:zerotrust_calendar/planner/planner_answers.dart';
 import 'package:zerotrust_calendar/planner/planner_controller.dart';
 import 'package:zerotrust_calendar/planner/planner_model.dart';
 import 'package:zerotrust_calendar/reminders/reminders.dart';
+import 'package:zt_scheduler/zt_scheduler.dart' show PlanPriority;
 
 /// The account as the Planner sees it, kept in memory: events, calendars,
 /// the Planner's settings and the tasks of ZT Tasks. Every write goes back
@@ -89,6 +90,15 @@ class FakeAccount {
         hoursId: changes.containsKey('planHours')
             ? (changes['planHours'] as String?) ?? workHoursId
             : t.hoursId,
+        priority: changes.containsKey('priority')
+            ? PlanPriority.values.asNameMap()[changes['priority']]
+            : null,
+        due: changes.containsKey('dueDate')
+            ? (changes['dueDate'] is String
+                  ? DateTime.parse(changes['dueDate'] as String)
+                  : null)
+            : _same,
+        dueRaw: changes.containsKey('dueDate') ? changes['dueDate'] as String? : _same,
       ),
     );
   }
@@ -100,7 +110,14 @@ class FakeAccount {
 
   void setDue(String id, DateTime day) {
     log.add('due $id ${day.toIso8601String().substring(0, 10)}');
-    _change(id, (t) => _copy(t, due: DateTime(day.year, day.month, day.day)));
+    _change(
+      id,
+      (t) => _copy(
+        t,
+        due: DateTime(day.year, day.month, day.day),
+        dueRaw: DateTime(day.year, day.month, day.day).toIso8601String(),
+      ),
+    );
   }
 
   void _change(String id, PlannerTask Function(PlannerTask) change) {
@@ -116,20 +133,22 @@ class FakeAccount {
     Object? auto = _same,
     String? hoursId,
     bool? completed,
-    DateTime? due,
+    Object? due = _same,
+    PlanPriority? priority,
+    Object? dueRaw = _same,
   }) => PlannerTask(
     id: t.id,
     title: t.title,
     minutes: identical(minutes, _same) ? t.minutes : minutes as int?,
-    priority: t.priority,
-    due: due ?? t.due,
+    priority: priority ?? t.priority,
+    due: identical(due, _same) ? t.due : due as DateTime?,
     dueHasTime: t.dueHasTime,
     notBefore: t.notBefore,
     auto: identical(auto, _same) ? t.auto : auto as bool?,
     hoursId: hoursId ?? t.hoursId,
     completed: completed ?? t.completed,
     repeats: t.repeats,
-    dueRaw: t.dueRaw,
+    dueRaw: identical(dueRaw, _same) ? t.dueRaw : dueRaw as String?,
     createdAt: t.createdAt,
   );
 

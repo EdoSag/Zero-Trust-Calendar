@@ -306,6 +306,33 @@ class PlannerController extends Notifier<PlannerStatus> {
     );
   }
 
+  /// The blocks a plan made now from [settings] would have, with the
+  /// tasks and events passed through [tasks] and [events] first, without
+  /// saving anything: the AI helper's before and after. Blocks stay where
+  /// they are unless [rebuild], as a run does (it rebuilds when the
+  /// settings' [PlannerSettings.planSignature] changed). Null while
+  /// anything is still loading.
+  List<CalendarEvent>? previewWith(
+    PlannerSettings settings, {
+    DateTime? now,
+    bool rebuild = false,
+    List<PlannerTask> Function(List<PlannerTask>)? tasks,
+    List<CalendarEvent> Function(List<CalendarEvent>)? events,
+  }) {
+    final inputs = _inputs(settings: settings.copyWith(enabled: true));
+    if (inputs == null) return null;
+    final all = events == null ? inputs.events : events(inputs.events);
+    final outcome = computePlan(
+      now: now ?? DateTime.now(),
+      settings: inputs.settings,
+      events: all,
+      calendars: inputs.calendars,
+      tasks: tasks == null ? inputs.tasks : tasks(inputs.tasks),
+      rebuild: rebuild,
+    );
+    return outcome.blocksAfter(all);
+  }
+
   /// Saves the Planner's settings. Turning the Planner on makes sure the
   /// Planned calendar exists; turning it off waits for a run that is in
   /// flight and then removes the blocks that aren't done. A change to where

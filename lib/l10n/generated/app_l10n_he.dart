@@ -2623,4 +2623,204 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get plannerCheckPlan => 'לבדוק שוב את התוכנית שלי';
+
+  @override
+  String get plannerAi => 'עוזר AI';
+
+  @override
+  String get plannerAiIntro =>
+      'כבוי אלא אם תפעילו אותו. השרת שלנו שומר רק כמה בקשות שלחתם, אף פעם לא את מה שנשלח.';
+
+  @override
+  String get plannerAiGuess => 'ניחוש אורך של משימות';
+
+  @override
+  String get plannerAiGuessHint => 'שולח את שם המשימה כשמבקשים ניחוש.';
+
+  @override
+  String get plannerAiRequests => 'לבקש מהמתכנן';
+
+  @override
+  String get plannerAiRequestsHint =>
+      'כתבו במשפט מה צריך, למשל \"אני חולה היום, תזיז הכל\".';
+
+  @override
+  String get plannerAiHideTitles => 'הסתרת שמות';
+
+  @override
+  String get plannerAiHideTitlesHint =>
+      'השמות נשלחים כתוויות (משימה A, אירוע B) ומוחזרים בטלפון הזה.';
+
+  @override
+  String plannerAiUsed(int used, int limit) {
+    return 'שימוש החודש: $used מתוך $limit';
+  }
+
+  @override
+  String get plannerAiConsentTitle => 'לשלוח את זה לעוזר ה-AI?';
+
+  @override
+  String get plannerAiConsentGuess =>
+      'כשמבקשים ניחוש, שם המשימה נשלח לשרת שלנו ומשם ל-Claude של Anthropic, שמנחש כמה זמן היא לוקחת. השרת שלנו שומר רק כמה בקשות שלחתם, אף פעם לא את הטקסט.';
+
+  @override
+  String get plannerAiConsentRequests =>
+      'כשמבקשים מהמתכנן, המשפט שלכם, המשימות הפתוחות, והבלוקים והאירועים של השבועיים הקרובים (שמות ושעות) נשלחים לשרת שלנו ומשם ל-Claude של Anthropic. השרת שלנו שומר רק כמה בקשות שלחתם, אף פעם לא את הטקסט. \"הסתרת שמות\" שולחת תוויות במקום שמות.';
+
+  @override
+  String get plannerAiSwitchOn => 'הפעלה';
+
+  @override
+  String get plannerAiAskHint => 'לדוגמה: לסיים את הדוח לפני יום חמישי';
+
+  @override
+  String get plannerAiSend => 'שליחה';
+
+  @override
+  String get plannerAiThinking => 'שואלים את עוזר ה-AI…';
+
+  @override
+  String get plannerAiNoChanges => 'עוזר ה-AI לא מצא מה לשנות. נסו לנסח אחרת.';
+
+  @override
+  String get plannerAiQuestion => 'עוזר ה-AI שואל';
+
+  @override
+  String get plannerAiCannot => 'אי אפשר';
+
+  @override
+  String get plannerAiChanges => 'שינויים מוצעים';
+
+  @override
+  String get plannerAiCheckHint => 'שום דבר לא משתנה עד שלוחצים על החלה.';
+
+  @override
+  String get plannerAiApply => 'החלה';
+
+  @override
+  String get plannerAiApplied => 'השינויים הוחלו';
+
+  @override
+  String get plannerAiUndone => 'השינויים בוטלו';
+
+  @override
+  String get plannerAiPreviewSame => 'התכנון נשאר כמו שהוא.';
+
+  @override
+  String plannerAiPreview(int moved, int added, int removed) {
+    return 'התכנון: $moved יזוזו, $added יתווספו, $removed יוסרו.';
+  }
+
+  @override
+  String plannerAiSetLength(String task, String length) {
+    return '$task: לוקחת $length';
+  }
+
+  @override
+  String plannerAiSetPriority(String task, String priority) {
+    return '$task: עדיפות $priority';
+  }
+
+  @override
+  String get plannerAiPriorityHigh => 'גבוהה';
+
+  @override
+  String get plannerAiPriorityMedium => 'בינונית';
+
+  @override
+  String get plannerAiPriorityLow => 'נמוכה';
+
+  @override
+  String plannerAiSetDue(String task, String day) {
+    return '$task: עד $day';
+  }
+
+  @override
+  String plannerAiNotBefore(String task, String day) {
+    return '$task: לא לפני $day';
+  }
+
+  @override
+  String plannerAiLock(String block, String when) {
+    return 'להשאיר את $block במקום ($when)';
+  }
+
+  @override
+  String plannerAiUnlock(String block, String when) {
+    return 'לתת למתכנן להזיז את $block ($when)';
+  }
+
+  @override
+  String plannerAiMarkDone(String block, String when) {
+    return '$block ($when) בוצע';
+  }
+
+  @override
+  String plannerAiBlockOut(String when, String title) {
+    return 'לשמור פנוי: $when ($title)';
+  }
+
+  @override
+  String get plannerAiBusyTitle => 'תפוס';
+
+  @override
+  String plannerAiSetHours(
+    String hours,
+    String weekday,
+    String from,
+    String to,
+  ) {
+    return '$hours ב$weekday: $from עד $to';
+  }
+
+  @override
+  String plannerAiNoHours(String hours, String weekday) {
+    return 'בלי $hours ב$weekday';
+  }
+
+  @override
+  String plannerAiAddHabit(String title, String details) {
+    return 'הרגל חדש: $title, $details';
+  }
+
+  @override
+  String get plannerAiGuessButton => 'ניחוש האורך';
+
+  @override
+  String plannerAiGuessed(String length) {
+    return 'הניחוש: $length';
+  }
+
+  @override
+  String get plannerAiGuessLengths => 'ניחוש אורכים חסרים';
+
+  @override
+  String plannerAiGuessLengthsHint(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ל-$count משימות מתוכננות אין אורך',
+      one: 'למשימה מתוכננת אחת אין אורך',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get plannerAiGuessesTitle => 'אורכים משוערים';
+
+  @override
+  String get plannerAiErrorOff => 'עוזר ה-AI לא זמין כרגע.';
+
+  @override
+  String get plannerAiErrorLimit => 'ניצלתם את בקשות ה-AI של החודש.';
+
+  @override
+  String get plannerAiErrorRefused => 'עוזר ה-AI לא יכול לעזור עם זה.';
+
+  @override
+  String get plannerAiErrorNetwork => 'אין חיבור. נסו שוב כשתהיו מחוברים.';
+
+  @override
+  String get plannerAiErrorOther =>
+      'עוזר ה-AI לא הצליח לענות. נסו שוב עוד רגע.';
 }
