@@ -13,6 +13,7 @@ class PlannerOutcome {
     required this.save,
     required this.delete,
     required this.tasks,
+    this.habits = const {},
     required this.at,
   });
 
@@ -27,6 +28,9 @@ class PlannerOutcome {
 
   /// The tasks that were planned, by id.
   final Map<String, PlannerTask> tasks;
+
+  /// The habits that were planned (focus time among them), by id.
+  final Map<String, PlannerHabit> habits;
 
   /// The time the plan was made for.
   final DateTime at;
@@ -147,15 +151,17 @@ PlannerOutcome computePlan({
     return c != 0 ? c : a.id.compareTo(b.id);
   });
   final byId = {for (final t in planned) t.id: t};
+  final habits = plannedHabitsOf(settings);
+  final habitsById = {for (final h in habits) h.id: h};
 
   final stored = <String, CalendarEvent>{};
   final existing = <PlanBlock>[];
   for (final e in events) {
     final mark = PlanMark.of(e);
-    if (mark == null || mark.kind != PlanBlockKind.task) continue;
+    if (mark == null) continue;
     if (!e.end.isAfter(e.start) || e.allDay) continue;
     stored[e.id] = e;
-    final task = byId[mark.itemId];
+    final task = mark.isHabit ? null : byId[mark.itemId];
     // A block done for an earlier date of a repeating task is history: it
     // keeps its id but no longer counts toward the task.
     final earlier = mark.done &&
@@ -170,7 +176,10 @@ PlannerOutcome computePlan({
         start: PlanTime.wall(e.start),
         end: PlanTime.wall(e.end),
         locked: mark.locked,
-        done: mark.done,
+        // A habit whose time has passed counts as kept unless it was
+        // skipped: it isn't asked about, and it stays in the calendar as
+        // a record.
+        done: mark.done || (mark.isHabit && !e.end.isAfter(now)),
       ),
     );
   }
@@ -189,6 +198,9 @@ PlannerOutcome computePlan({
     tasks: [
       for (final (i, t) in planned.indexed) planTaskOf(t, settings, order: i),
     ],
+    habits: [
+      for (final (i, h) in habits.indexed) h.toPlan(order: i),
+    ],
     existing: existing,
     rebuild: rebuild,
   );
@@ -201,6 +213,30 @@ PlannerOutcome computePlan({
     final start = PlanTime.local(b.start);
     final end = PlanTime.local(b.end);
     if (old == null || oldMark == null) {
+      if (b.kind == PlanBlockKind.habit) {
+        final habit = habitsById[b.itemId];
+        if (habit == null) continue;
+        save.add(
+          CalendarEvent(
+            id: b.id,
+            title: habit.title,
+            start: start,
+            end: end,
+            calendarId: plannerCalendarId,
+            reminders: reminders,
+            extra: {
+              'plan': PlanMark(
+                kind: b.kind,
+                itemId: habit.id,
+                locked: b.locked,
+                done: b.done,
+                reason: b.reason,
+              ).toJson(),
+            },
+          ),
+        );
+        continue;
+      }
       final task = byId[b.itemId];
       if (task == null) continue;
       save.add(
@@ -228,7 +264,8 @@ PlannerOutcome computePlan({
     }
     // Done blocks are history: only the engine turning a passed block into
     // a done one changes them.
-    final task = byId[oldMark.itemId];
+    final task = oldMark.isHabit ? null : byId[oldMark.itemId];
+    final habit = oldMark.isHabit ? habitsById[oldMark.itemId] : null;
     final becameDone = b.done && !oldMark.done;
     if (oldMark.done && !becameDone) continue;
     final moved = old.start != start || old.end != end;
@@ -238,7 +275,7 @@ PlannerOutcome computePlan({
       reason: moved ? b.reason : oldMark.reason,
       occurrence: task == null ? oldMark.occurrence : task.occurrence,
     );
-    final title = task?.title ?? old.title;
+    final title = task?.title ?? habit?.title ?? old.title;
     final wanted = b.done ? old.reminders : reminders;
     if (!moved &&
         old.title == title &&
@@ -267,6 +304,7 @@ PlannerOutcome computePlan({
         if (stored.containsKey(id)) id,
     ],
     tasks: byId,
+    habits: habitsById,
     at: now,
   );
 }

@@ -11,6 +11,8 @@ import '../planner/planner_model.dart';
 import '../util/format.dart';
 import 'entry_widgets.dart';
 import 'linked_app_launcher.dart';
+import '../planner/planner_actions.dart';
+import 'planner_habit_page.dart';
 import 'planner_risks.dart';
 import 'planner_setup_page.dart';
 import 'planner_widgets.dart';
@@ -249,6 +251,67 @@ class _PlannerBody extends ConsumerWidget {
               label: Text(l.openZtTasks),
             ),
           ),
+
+        header(l.plannerHabits),
+        if (settings.habits.isEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+            child: Text(
+              l.plannerNoHabits,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        for (final h in settings.habits)
+          ListTile(
+            key: ValueKey('planner-habit-${h.id}'),
+            leading: Icon(h.paused ? Icons.pause_circle_outline : Icons.repeat),
+            title: Text(h.title.isEmpty ? l.plannerHabitUntitled : h.title),
+            subtitle: Text(h.paused ? l.plannerHabitPausedShort : describeHabit(context, h)),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => PlannerHabitPage(habit: h)),
+            ),
+          ),
+        ListTile(
+          key: const ValueKey('planner-focus'),
+          leading: const Icon(Icons.center_focus_strong_outlined),
+          title: Text(l.plannerFocusGoal),
+          subtitle: Text(
+            settings.focusMinutesPerWeek == 0
+                ? l.plannerFocusOff
+                : l.plannerFocusPerWeek(formatPlanMinutes(l, settings.focusMinutesPerWeek)),
+          ),
+          onTap: () async {
+            final messenger = ScaffoldMessenger.of(context);
+            final picked = await pickPlanMinutes(
+              context,
+              title: l.plannerFocusGoal,
+              choices: const [0, 120, 240, 300, 360, 480, 600, 720, 900, 1200],
+              current: settings.focusMinutesPerWeek,
+              zeroLabel: l.plannerFocusOffShort,
+            );
+            if (picked == null || picked == settings.focusMinutesPerWeek) return;
+            try {
+              await ref.read(plannerActionsProvider).setFocusGoal(picked, l.plannerFocusBlockTitle);
+            } on Object catch (e) {
+              messenger.showSnackBar(SnackBar(content: Text(l.couldNotSave('$e'))));
+            }
+          },
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: OutlinedButton.icon(
+              key: const ValueKey('planner-add-habit'),
+              onPressed: () => addPlannerHabit(context),
+              icon: const Icon(Icons.add),
+              label: Text(l.plannerAddHabit),
+            ),
+          ),
+        ),
 
         header(l.settings),
         hoursTile(l.plannerWorkHours, workHoursId),
@@ -532,11 +595,8 @@ class _WeekCard extends StatelessWidget {
     final theme = Theme.of(context);
     final today = dayOf(DateTime.now());
     final days = [for (var i = 0; i < 7; i++) addDays(today, i)];
-    final minutes = {for (final d in days) d: 0};
-    for (final b in blocks) {
-      final d = dayOf(b.start);
-      if (minutes.containsKey(d)) minutes[d] = minutes[d]! + b.duration.inMinutes;
-    }
+    final week = plannerWeekNumbers(blocks, today);
+    final minutes = week.taskMinutesByDay;
     final total = minutes.values.fold(0, (a, b) => a + b);
     final limit = settings.maxMinutesPerDay;
     final short = DateFormat.E(l.localeName);
@@ -603,6 +663,36 @@ class _WeekCard extends StatelessWidget {
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
+          if (settings.focusMinutesPerWeek > 0)
+            Text(
+              key: const ValueKey('planner-week-focus'),
+              l.plannerWeekFocus(
+                formatPlanMinutes(l, week.focusMinutes),
+                formatPlanMinutes(l, settings.focusMinutesPerWeek),
+              ),
+              style: theme.textTheme.bodyMedium,
+            ),
+          if (week.habitBlocks > 0)
+            Text(
+              key: const ValueKey('planner-week-habits'),
+              l.plannerWeekHabits(week.habitBlocks),
+              style: theme.textTheme.bodyMedium,
+            ),
+          if (week.doneTaskMinutes > 0 || week.habitsKept + week.habitsSkipped > 0)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                key: const ValueKey('planner-week-past'),
+                [
+                  l.plannerLastWeekDone(formatPlanMinutes(l, week.doneTaskMinutes)),
+                  if (week.habitsKept + week.habitsSkipped > 0)
+                    l.plannerLastWeekHabits(week.habitsKept, week.habitsKept + week.habitsSkipped),
+                ].join(' · '),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -613,6 +703,73 @@ class _WeekCard extends StatelessWidget {
     final h = minutes / 60;
     return h == h.roundToDouble() ? '${h.round()}' : h.toStringAsFixed(1);
   }
+}
+
+/// What the Planner screen counts for a week.
+class PlannerWeekNumbers {
+  PlannerWeekNumbers({
+    required this.taskMinutesByDay,
+    this.focusMinutes = 0,
+    this.habitBlocks = 0,
+    this.doneTaskMinutes = 0,
+    this.habitsKept = 0,
+    this.habitsSkipped = 0,
+  });
+
+  /// Task time planned on each of the next seven days (habits and focus
+  /// time aren't counted against the daily limit).
+  final Map<DateTime, int> taskMinutesByDay;
+
+  /// Focus time planned in the next seven days.
+  final int focusMinutes;
+
+  /// Habit blocks in the next seven days (focus time not counted).
+  final int habitBlocks;
+
+  /// The last seven days: task time done, habits kept and skipped.
+  final int doneTaskMinutes;
+  final int habitsKept;
+  final int habitsSkipped;
+}
+
+/// Counts [blocks] for the seven days from [today], and the seven before.
+PlannerWeekNumbers plannerWeekNumbers(List<CalendarEvent> blocks, DateTime today) {
+  final days = [for (var i = 0; i < 7; i++) addDays(today, i)];
+  final from = days.first;
+  final to = addDays(today, 7);
+  final pastFrom = addDays(today, -7);
+  final byDay = {for (final d in days) d: 0};
+  var focus = 0, habits = 0, done = 0, kept = 0, skipped = 0;
+  for (final b in blocks) {
+    final mark = PlanMark.of(b);
+    if (mark == null) continue;
+    final day = dayOf(b.start);
+    final minutes = b.duration.inMinutes;
+    final ahead = !day.isBefore(from) && day.isBefore(to);
+    final behind = !day.isBefore(pastFrom) && day.isBefore(from);
+    if (mark.isHabit) {
+      final isFocus = mark.itemId == PlannerHabit.focusId;
+      if (ahead && !mark.skipped) {
+        if (isFocus) {
+          focus += minutes;
+        } else {
+          habits++;
+        }
+      }
+      if (behind && !isFocus && mark.done) mark.skipped ? skipped++ : kept++;
+    } else {
+      if (ahead) byDay[day] = byDay[day]! + minutes;
+      if (behind && mark.done) done += minutes;
+    }
+  }
+  return PlannerWeekNumbers(
+    taskMinutesByDay: byDay,
+    focusMinutes: focus,
+    habitBlocks: habits,
+    doneTaskMinutes: done,
+    habitsKept: kept,
+    habitsSkipped: skipped,
+  );
 }
 
 /// `2026-11-18`, for widget keys.

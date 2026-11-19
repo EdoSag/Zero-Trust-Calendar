@@ -2428,4 +2428,163 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get plannerDone => 'Done';
+
+  @override
+  String get plannerHabits => 'Habits';
+
+  @override
+  String get plannerNoHabits =>
+      'Keep time for lunch, exercise or anything you do regularly.';
+
+  @override
+  String get plannerAddHabit => 'Add a habit';
+
+  @override
+  String get plannerEditHabit => 'Edit habit';
+
+  @override
+  String get plannerHabitLunch => 'Lunch';
+
+  @override
+  String get plannerHabitExercise => 'Exercise';
+
+  @override
+  String get plannerHabitOther => 'Something else';
+
+  @override
+  String get plannerHabitUntitled => 'Habit';
+
+  @override
+  String get plannerHabitName => 'Name';
+
+  @override
+  String get plannerHabitNameHint => 'For example: Reading';
+
+  @override
+  String get plannerHabitDays => 'Days';
+
+  @override
+  String get plannerHabitLength => 'Length';
+
+  @override
+  String get plannerHabitIdeal => 'Best time to start';
+
+  @override
+  String get plannerHabitWindow => 'Only between';
+
+  @override
+  String get plannerHabitWindowTooShort => 'Too short for the habit\'s length.';
+
+  @override
+  String plannerHabitBetween(String from, String to) {
+    return '$from to $to';
+  }
+
+  @override
+  String get plannerHabitFrom => 'From';
+
+  @override
+  String get plannerHabitTo => 'To';
+
+  @override
+  String get plannerHabitNoRoom => 'When there\'s no room';
+
+  @override
+  String get plannerHabitSkipDay => 'Skip that day';
+
+  @override
+  String plannerHabitShortenTo(String length) {
+    return 'Shorten it, down to $length';
+  }
+
+  @override
+  String get plannerAnyTime => 'Any time';
+
+  @override
+  String get plannerHabitPaused => 'Pause';
+
+  @override
+  String get plannerHabitPausedHint =>
+      'Kept, but not planned until you switch this off.';
+
+  @override
+  String get plannerHabitPausedShort => 'Paused';
+
+  @override
+  String get plannerDeleteHabitTitle => 'Delete this habit?';
+
+  @override
+  String get plannerDeleteHabitBody =>
+      'Its coming times are removed from the calendar. Past ones stay.';
+
+  @override
+  String get plannerEveryDay => 'Every day';
+
+  @override
+  String plannerAround(String time) {
+    return 'around $time';
+  }
+
+  @override
+  String get plannerSkipToday => 'Skip today';
+
+  @override
+  String get plannerSkipTodayHint =>
+      'Frees the time. It isn\'t planned again today.';
+
+  @override
+  String get plannerHabitSkipped => 'Skipped';
+
+  @override
+  String get plannerHabitSkippedToday => 'Skipped';
+
+  @override
+  String get plannerHabitKeptAfterAll => 'Did it after all';
+
+  @override
+  String get plannerHabitSkippedAfterAll => 'Skipped it after all';
+
+  @override
+  String get plannerFocusGoal => 'Focus time each week';
+
+  @override
+  String get plannerFocusOff =>
+      'Off. Keeps time free of meetings for deep work.';
+
+  @override
+  String get plannerFocusOffShort => 'Off';
+
+  @override
+  String plannerFocusPerWeek(String amount) {
+    return '$amount a week, in work hours';
+  }
+
+  @override
+  String get plannerFocusBlockTitle => 'Focus time';
+
+  @override
+  String plannerWeekFocus(String planned, String goal) {
+    return 'Focus time: $planned of $goal';
+  }
+
+  @override
+  String plannerWeekHabits(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count habit times planned',
+      one: '1 habit time planned',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String plannerLastWeekDone(String amount) {
+    return 'Last 7 days: $amount of tasks done';
+  }
+
+  @override
+  String plannerLastWeekHabits(int kept, int total) {
+    return 'habits kept $kept of $total';
+  }
 }

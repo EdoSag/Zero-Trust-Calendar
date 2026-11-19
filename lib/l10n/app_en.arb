@@ -1536,5 +1536,114 @@
   "plannerAskAtEndHint": "A notification asks whether you finished. Its buttons work while Calendar is locked.",
   "markAsDone": "Mark as done",
   "markAsNotDone": "Mark as not done",
-  "plannerDone": "Done"
+  "plannerDone": "Done",
+  "plannerHabits": "Habits",
+  "plannerNoHabits": "Keep time for lunch, exercise or anything you do regularly.",
+  "plannerAddHabit": "Add a habit",
+  "plannerEditHabit": "Edit habit",
+  "plannerHabitLunch": "Lunch",
+  "plannerHabitExercise": "Exercise",
+  "plannerHabitOther": "Something else",
+  "plannerHabitUntitled": "Habit",
+  "plannerHabitName": "Name",
+  "plannerHabitNameHint": "For example: Reading",
+  "plannerHabitDays": "Days",
+  "plannerHabitLength": "Length",
+  "plannerHabitIdeal": "Best time to start",
+  "plannerHabitWindow": "Only between",
+  "plannerHabitWindowTooShort": "Too short for the habit's length.",
+  "plannerHabitBetween": "{from} to {to}",
+  "@plannerHabitBetween": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerHabitFrom": "From",
+  "plannerHabitTo": "To",
+  "plannerHabitNoRoom": "When there's no room",
+  "plannerHabitSkipDay": "Skip that day",
+  "plannerHabitShortenTo": "Shorten it, down to {length}",
+  "@plannerHabitShortenTo": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerAnyTime": "Any time",
+  "plannerHabitPaused": "Pause",
+  "plannerHabitPausedHint": "Kept, but not planned until you switch this off.",
+  "plannerHabitPausedShort": "Paused",
+  "plannerDeleteHabitTitle": "Delete this habit?",
+  "plannerDeleteHabitBody": "Its coming times are removed from the calendar. Past ones stay.",
+  "plannerEveryDay": "Every day",
+  "plannerAround": "around {time}",
+  "@plannerAround": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerSkipToday": "Skip today",
+  "plannerSkipTodayHint": "Frees the time. It isn't planned again today.",
+  "plannerHabitSkipped": "Skipped",
+  "plannerHabitSkippedToday": "Skipped",
+  "plannerHabitKeptAfterAll": "Did it after all",
+  "plannerHabitSkippedAfterAll": "Skipped it after all",
+  "plannerFocusGoal": "Focus time each week",
+  "plannerFocusOff": "Off. Keeps time free of meetings for deep work.",
+  "plannerFocusOffShort": "Off",
+  "plannerFocusPerWeek": "{amount} a week, in work hours",
+  "@plannerFocusPerWeek": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerFocusBlockTitle": "Focus time",
+  "plannerWeekFocus": "Focus time: {planned} of {goal}",
+  "@plannerWeekFocus": {
+    "placeholders": {
+      "planned": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerWeekHabits": "{count, plural, =1{1 habit time planned} other{{count} habit times planned}}",
+  "@plannerWeekHabits": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerLastWeekDone": "Last 7 days: {amount} of tasks done",
+  "@plannerLastWeekDone": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerLastWeekHabits": "habits kept {kept} of {total}",
+  "@plannerLastWeekHabits": {
+    "placeholders": {
+      "kept": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

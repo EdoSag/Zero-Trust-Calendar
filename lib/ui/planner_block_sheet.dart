@@ -12,6 +12,8 @@ import '../planner/planner_plan.dart';
 import '../util/format.dart';
 import 'entry_widgets.dart';
 import 'linked_app_launcher.dart';
+import 'planner_habit_page.dart';
+import 'planner_page.dart';
 import 'planner_widgets.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
@@ -319,7 +321,12 @@ class _PlannerBlockViewState extends ConsumerState<PlannerBlockView> {
           ),
         ],
         const SizedBox(height: 12),
-        Text(planReasonText(l, mark.done ? PlanReason.done : mark.reason), style: small),
+        Text(
+          mark.skipped
+              ? l.plannerHabitSkippedToday
+              : planReasonText(l, mark.done ? PlanReason.done : mark.reason),
+          style: small,
+        ),
         if (!mark.done && !mark.locked) ...[
           const SizedBox(height: 4),
           Text(l.plannerBlockMoves, style: small),
@@ -332,7 +339,9 @@ class _PlannerBlockViewState extends ConsumerState<PlannerBlockView> {
           ),
         ],
         const SizedBox(height: 16),
-        if (mark.done)
+        if (mark.isHabit)
+          ..._habitActions(block, mark, started: started, action: action)
+        else if (mark.done)
           action(
             Icons.undo,
             l.plannerNotDoneAfterAll,
@@ -405,12 +414,92 @@ class _PlannerBlockViewState extends ConsumerState<PlannerBlockView> {
             ),
           action(Icons.open_with, l.move, () => _move(block)),
         ],
-        action(Icons.open_in_new, l.openZtTasks, () {
-          final navigator = Navigator.of(context);
-          if (navigator.canPop()) navigator.pop();
-          openLinkedApp(LinkedApp.tasks);
-        }),
+        if (!mark.isHabit)
+          action(Icons.open_in_new, l.openZtTasks, () {
+            final navigator = Navigator.of(context);
+            if (navigator.canPop()) navigator.pop();
+            openLinkedApp(LinkedApp.tasks);
+          }),
       ],
     );
+  }
+
+  /// A habit's block: done or skipped for the day, lock, move, and the
+  /// habit itself.
+  List<Widget> _habitActions(
+    CalendarEvent block,
+    PlanMark mark, {
+    required bool started,
+    required Widget Function(IconData, String, VoidCallback, {String? hint}) action,
+  }) {
+    final l = context.l10n;
+    final actions = ref.read(plannerActionsProvider);
+    final settings = ref.watch(plannerSettingsProvider).value ?? const PlannerSettings();
+    final habit = settings.habits.where((h) => h.id == mark.itemId).firstOrNull;
+    return [
+      if (mark.skipped)
+        action(
+          Icons.check,
+          l.plannerHabitKeptAfterAll,
+          () => _run(() => actions.setHabitSkipped(block, false), message: l.plannerMarkedDone),
+        )
+      else if (mark.done)
+        action(
+          Icons.event_busy,
+          l.plannerHabitSkippedAfterAll,
+          () => _run(() => actions.setHabitSkipped(block, true), message: l.plannerHabitSkipped),
+        )
+      else ...[
+        if (started)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: FilledButton.icon(
+              onPressed: _busy ? null : () => _done(block),
+              icon: const Icon(Icons.check),
+              label: Text(l.plannerDone),
+            ),
+          )
+        else
+          action(Icons.check, l.plannerAlreadyDone, () => _done(block)),
+        action(
+          Icons.event_busy,
+          l.plannerSkipToday,
+          () => _run(
+            () => actions.setHabitSkipped(block, true),
+            message: l.plannerHabitSkipped,
+            undo: () => actions.restore(block),
+          ),
+          hint: l.plannerSkipTodayHint,
+        ),
+        if (!started)
+          action(
+            mark.locked ? Icons.lock_open : Icons.lock_outline,
+            mark.locked ? l.plannerUnlock : l.plannerLockHere,
+            () => _run(
+              () => actions.setLocked(block, !mark.locked),
+              message: mark.locked ? l.plannerUnlocked : l.plannerLocked,
+              close: false,
+            ),
+            hint: mark.locked ? null : l.plannerLockHereHint,
+          ),
+        action(Icons.open_with, l.move, () => _move(block)),
+      ],
+      if (habit != null || mark.itemId == PlannerHabit.focusId)
+        action(
+          habit == null ? Icons.center_focus_strong_outlined : Icons.edit_outlined,
+          habit == null ? l.plannerFocusGoal : l.plannerEditHabit,
+          () {
+            final navigator = Navigator.of(context);
+            if (navigator.canPop()) navigator.pop();
+            if (habit != null) {
+              navigator.push(
+                MaterialPageRoute<void>(builder: (_) => PlannerHabitPage(habit: habit)),
+              );
+            } else {
+              navigator.push(MaterialPageRoute<void>(builder: (_) => const PlannerPage()));
+            }
+          },
+        ),
+    ];
   }
 }

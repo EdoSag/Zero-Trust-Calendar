@@ -55,6 +55,8 @@ class PlannerActions {
         mark.copyWith(done: done, reason: done ? PlanReason.done : PlanReason.kept),
       ),
     );
+    // A habit has no task to tick off or open again.
+    if (mark.isHabit) return null;
     if (!done) {
       // The task was ticked off (by the last block being done, or in ZT
       // Tasks). This part isn't done after all, so neither is the task:
@@ -152,6 +154,50 @@ class PlannerActions {
       ),
     );
   }
+
+  /// A habit's block skipped for the day, or kept after all. Either way
+  /// it is history: the habit isn't planned again that day.
+  Future<void> setHabitSkipped(CalendarEvent block, bool skipped) async {
+    final mark = PlanMark.of(block);
+    if (mark == null || !mark.isHabit) return;
+    if (mark.done && mark.skipped == skipped) return;
+    await _writer.saveBlock(
+      _marked(block, mark.copyWith(done: true, skipped: skipped, reason: PlanReason.done)),
+    );
+  }
+
+  /// Saves settings the way the Planner screen does: blocks still to come
+  /// are placed afresh, here and on the other devices.
+  Future<void> _saveSettings(PlannerSettings settings) =>
+      _ref.read(plannerControllerProvider.notifier).saveSettings(settings);
+
+  /// Adds [habit], or changes the one with its id.
+  Future<void> saveHabit(PlannerHabit habit) {
+    final settings = _settings;
+    final i = settings.habits.indexWhere((h) => h.id == habit.id);
+    return _saveSettings(
+      settings.copyWith(
+        habits: i == -1
+            ? [...settings.habits, habit]
+            : (List.of(settings.habits)..[i] = habit),
+      ),
+    );
+  }
+
+  /// Removes a habit. Its blocks still to come go with it; the ones that
+  /// passed stay as a record.
+  Future<void> deleteHabit(String id) {
+    final settings = _settings;
+    return _saveSettings(
+      settings.copyWith(habits: [for (final h in settings.habits) if (h.id != id) h]),
+    );
+  }
+
+  /// Sets the weekly focus time goal (0 turns it off). [title] names the
+  /// focus blocks.
+  Future<void> setFocusGoal(int minutesPerWeek, String title) => _saveSettings(
+    _settings.copyWith(focusMinutesPerWeek: minutesPerWeek, focusTitle: title),
+  );
 
   /// Puts a block back exactly as it was (undo).
   Future<void> restore(CalendarEvent block) => _writer.saveBlock(block);
