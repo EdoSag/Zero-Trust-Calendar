@@ -4,6 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:zerotrust_calendar/data/entries.dart';
 import 'package:zerotrust_calendar/data/event_done.dart';
+import 'package:zerotrust_calendar/data/find_a_time.dart';
 import 'package:zerotrust_calendar/model/calendar_event.dart';
 import 'package:zerotrust_calendar/planner/planner_answers.dart';
 import 'package:zerotrust_calendar/planner/planner_model.dart';
@@ -40,6 +41,49 @@ void main() {
     blockEndTitle: (b) => 'Finished ${b.title}?',
     blockEndBody: (b) => '1 hour',
   );
+
+  group('A habit skipped for the day', () {
+    CalendarEvent lunch({required bool skipped}) => CalendarEvent(
+      id: 'lunch:20261123',
+      title: 'Lunch',
+      start: DateTime(2026, 11, 23, 12),
+      end: DateTime(2026, 11, 23, 13),
+      calendarId: plannerCalendarId,
+      reminders: const [0],
+      extra: {
+        'plan': {
+          'type': 'habit',
+          'habitId': 'lunch',
+          'locked': false,
+          'done': skipped,
+          if (skipped) 'skipped': true,
+        },
+      },
+    );
+
+    test('does not remind, and reminds again when kept after all', () {
+      expect(reminders([lunch(skipped: true)]), isEmpty);
+      expect(reminders([lunch(skipped: false)]).single.at, DateTime(2026, 11, 23, 12));
+    });
+
+    test('leaves its time free for Find a time and shared free/busy', () {
+      List<(DateTime, DateTime)> busy(CalendarEvent e) => busyBlocks(
+        events: [e],
+        calendars: const [
+          ZtCalendarInfo(id: plannerCalendarId, name: 'Planned', color: plannerColor),
+        ],
+        from: now,
+      );
+      expect(busy(lunch(skipped: true)), isEmpty);
+      // A habit kept (done, not skipped) still counts, like any done block.
+      final kept = lunch(skipped: false).copyWith(
+        extra: {
+          'plan': {'type': 'habit', 'habitId': 'lunch', 'locked': false, 'done': true},
+        },
+      );
+      expect(busy(kept), hasLength(1));
+    });
+  });
 
   group('The question when a block ends', () {
     test('is asked at the end of a block that is not done, with its own buttons', () {

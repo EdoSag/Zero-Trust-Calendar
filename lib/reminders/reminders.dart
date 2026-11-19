@@ -246,6 +246,9 @@ List<ScheduledReminder> remindersFor(
         ),
       );
     }
+    // A habit skipped for the day doesn't remind (its reminders stay on
+    // the block, so "keep it after all" brings them back).
+    if (mark != null && mark.skipped) continue;
     if (e.reminders.isEmpty) continue;
     final longest = e.reminders.reduce((a, b) => a > b ? a : b);
     // Occurrences whose earliest reminder could fall in [now, until).

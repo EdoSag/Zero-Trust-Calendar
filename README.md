@@ -86,6 +86,18 @@ account, settings and look as the other Zero-Trust apps, built on
   task** suggests the earliest free time on each of the next days, in work
   hours, personal hours or any time, and adds the task as an ordinary event
   linked to it.
+- **AI helper** (Plus, optional, hidden until the server switches it on;
+  each part off until you switch it on, after a screen that says what is
+  sent): **Guess task lengths** sends a task's title and gets back minutes;
+  **Ask the Planner** turns one sentence ("I'm sick today, move
+  everything") into changes from a fixed menu (a task's length, priority,
+  due date or "not before"; lock, release or mark a block done; keep a time
+  free; change one day's hours; add a habit). Every change is shown with a
+  check box and what it does to the plan, nothing is applied until you tap
+  Apply, and Undo puts it back. **Hide titles** sends labels (Task A, Event
+  B) instead of titles. The request goes to the `planner-ai` function of
+  Zero-Trust-Core, which checks the plan and a monthly limit and keeps only
+  counts, never the text. The Planner itself still places every block.
 - **Mark as done:** any event of yours can be ticked off on its page, and
   is then shown crossed out (a repeating event one day at a time).
 - **Show on this phone** (optional, per calendar, off by default): copies

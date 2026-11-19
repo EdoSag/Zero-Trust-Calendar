@@ -2638,4 +2638,208 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get plannerCheckPlan => 'Check my plan again';
+
+  @override
+  String get plannerAi => 'AI helper';
+
+  @override
+  String get plannerAiIntro =>
+      'Off unless you switch it on. Our server keeps only how many requests you made, never what was sent.';
+
+  @override
+  String get plannerAiGuess => 'Guess task lengths';
+
+  @override
+  String get plannerAiGuessHint =>
+      'Sends a task\'s title when you ask for a guess.';
+
+  @override
+  String get plannerAiRequests => 'Ask the Planner';
+
+  @override
+  String get plannerAiRequestsHint =>
+      'Say what you need in a sentence, like \"I\'m sick today, move everything\".';
+
+  @override
+  String get plannerAiHideTitles => 'Hide titles';
+
+  @override
+  String get plannerAiHideTitlesHint =>
+      'Titles go as labels (Task A, Event B) and are put back on this phone.';
+
+  @override
+  String plannerAiUsed(int used, int limit) {
+    return 'Used this month: $used of $limit';
+  }
+
+  @override
+  String get plannerAiConsentTitle => 'Send this to the AI helper?';
+
+  @override
+  String get plannerAiConsentGuess =>
+      'When you ask for a guess, the task\'s title goes to our server and on to Anthropic\'s Claude, which guesses how long it takes. Our server keeps only how many requests you made, never the text.';
+
+  @override
+  String get plannerAiConsentRequests =>
+      'When you ask the Planner, your sentence, your open tasks, and your blocks and events for the next 2 weeks (titles and times) go to our server and on to Anthropic\'s Claude. Our server keeps only how many requests you made, never the text. \"Hide titles\" sends labels in place of titles.';
+
+  @override
+  String get plannerAiSwitchOn => 'Switch on';
+
+  @override
+  String get plannerAiAskHint =>
+      'For example: Finish the report before Thursday';
+
+  @override
+  String get plannerAiSend => 'Send';
+
+  @override
+  String get plannerAiThinking => 'Asking the AI helper…';
+
+  @override
+  String get plannerAiNoChanges =>
+      'The AI helper found nothing to change. Try saying it another way.';
+
+  @override
+  String get plannerAiQuestion => 'The AI helper asks';
+
+  @override
+  String get plannerAiCannot => 'Can\'t do';
+
+  @override
+  String get plannerAiChanges => 'Suggested changes';
+
+  @override
+  String get plannerAiCheckHint => 'Nothing changes until you tap Apply.';
+
+  @override
+  String get plannerAiApply => 'Apply';
+
+  @override
+  String get plannerAiApplied => 'Changes applied';
+
+  @override
+  String get plannerAiUndone => 'Changes undone';
+
+  @override
+  String get plannerAiPreviewSame => 'The plan stays as it is.';
+
+  @override
+  String plannerAiPreview(int moved, int added, int removed) {
+    return 'The plan: $moved moved, $added added, $removed removed.';
+  }
+
+  @override
+  String plannerAiSetLength(String task, String length) {
+    return '$task: takes $length';
+  }
+
+  @override
+  String plannerAiSetPriority(String task, String priority) {
+    return '$task: priority $priority';
+  }
+
+  @override
+  String get plannerAiPriorityHigh => 'high';
+
+  @override
+  String get plannerAiPriorityMedium => 'medium';
+
+  @override
+  String get plannerAiPriorityLow => 'low';
+
+  @override
+  String plannerAiSetDue(String task, String day) {
+    return '$task: due $day';
+  }
+
+  @override
+  String plannerAiNotBefore(String task, String day) {
+    return '$task: not before $day';
+  }
+
+  @override
+  String plannerAiLock(String block, String when) {
+    return 'Keep $block where it is ($when)';
+  }
+
+  @override
+  String plannerAiUnlock(String block, String when) {
+    return 'Let the Planner move $block ($when)';
+  }
+
+  @override
+  String plannerAiMarkDone(String block, String when) {
+    return '$block ($when) is done';
+  }
+
+  @override
+  String plannerAiBlockOut(String when, String title) {
+    return 'Keep free: $when ($title)';
+  }
+
+  @override
+  String get plannerAiBusyTitle => 'Busy';
+
+  @override
+  String plannerAiSetHours(
+    String hours,
+    String weekday,
+    String from,
+    String to,
+  ) {
+    return '$hours on $weekday: $from to $to';
+  }
+
+  @override
+  String plannerAiNoHours(String hours, String weekday) {
+    return 'No $hours on $weekday';
+  }
+
+  @override
+  String plannerAiAddHabit(String title, String details) {
+    return 'New habit: $title, $details';
+  }
+
+  @override
+  String get plannerAiGuessButton => 'Guess the length';
+
+  @override
+  String plannerAiGuessed(String length) {
+    return 'Guessed: $length';
+  }
+
+  @override
+  String get plannerAiGuessLengths => 'Guess missing lengths';
+
+  @override
+  String plannerAiGuessLengthsHint(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count planned tasks have no length',
+      one: '1 planned task has no length',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get plannerAiGuessesTitle => 'Guessed lengths';
+
+  @override
+  String get plannerAiErrorOff => 'The AI helper isn\'t available right now.';
+
+  @override
+  String get plannerAiErrorLimit => 'You\'ve used this month\'s AI requests.';
+
+  @override
+  String get plannerAiErrorRefused => 'The AI helper can\'t help with that.';
+
+  @override
+  String get plannerAiErrorNetwork =>
+      'No connection. Try again when you\'re online.';
+
+  @override
+  String get plannerAiErrorOther =>
+      'The AI helper couldn\'t answer. Try again in a moment.';
 }

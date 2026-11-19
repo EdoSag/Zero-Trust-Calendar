@@ -5,12 +5,15 @@ import 'package:uuid/uuid.dart';
 import '../app/calendar_settings.dart';
 import '../data/calendar_store.dart';
 import '../data/linked_apps.dart';
+import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
+import '../planner/planner_ai.dart';
 import '../planner/planner_controller.dart';
 import '../planner/planner_model.dart';
 import '../planner/task_time_finder.dart';
 import '../util/format.dart';
+import 'planner_ai_widgets.dart';
 import 'planner_widgets.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
@@ -37,6 +40,35 @@ class _FindTaskTimePageState extends ConsumerState<FindTaskTimePage> {
   int _minutes = 60;
   String? _hoursId = workHoursId;
   bool _saving = false;
+  bool _guessing = false;
+
+  /// Asks the AI helper (Plus, when switched on) how long [task] takes.
+  Future<void> _guess(PlannerTask task, PlannerSettings settings) async {
+    final l = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _guessing = true);
+    try {
+      final g = await guessTaskLength(
+        ref.read(plannerAiBackendProvider),
+        title: task.title,
+        language: l.localeName,
+        usualMinutes: settings.defaultMinutes,
+      );
+      if (!mounted) return;
+      setState(() => _minutes = g.minutes);
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l.plannerAiGuessed(formatPlanMinutes(l, g.minutes))),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } on Object catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(plannerAiErrorText(l, e))));
+    } finally {
+      if (mounted) setState(() => _guessing = false);
+      ref.invalidate(plannerAiStatusProvider);
+    }
+  }
 
   static const _lengths = [15, 30, 45, 60, 90, 120, 180];
 
@@ -161,7 +193,14 @@ class _FindTaskTimePageState extends ConsumerState<FindTaskTimePage> {
     final events = ref.watch(allEventsProvider).value;
     final calendars = ref.watch(calendarsProvider).value ?? const <ZtCalendarInfo>[];
     final hasPersonal = (settings.hours[personalHoursId] ?? const {}).isNotEmpty;
-    final slots = events == null
+    // Shared and subscribed calendars' events are busy too: until they have
+    // loaded (or failed), a time could look free that isn't. As the
+    // Planner does.
+    final shared = ref.watch(sharedCalendarsProvider);
+    final feeds = ref.watch(feedsProvider);
+    final othersReady =
+        (shared.hasValue || shared.hasError) && (feeds.hasValue || feeds.hasError);
+    final slots = events == null || !othersReady
         ? null
         : findTaskTimes(
             now: widget.now ?? DateTime.now(),
@@ -192,6 +231,25 @@ class _FindTaskTimePageState extends ConsumerState<FindTaskTimePage> {
             if (m != null) setState(() => _minutes = m);
           },
         ),
+        if (settings.aiGuess && ref.watch(plannerAiStatusProvider).value != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                key: const ValueKey('find-time-guess'),
+                onPressed: _guessing ? null : () => _guess(task, settings),
+                icon: _guessing
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.auto_awesome_outlined),
+                label: Text(l.plannerAiGuessButton),
+              ),
+            ),
+          ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: Wrap(

@@ -111,10 +111,11 @@ List<(DateTime, DateTime)> busyBlocks({
 
 /// A Planner block that can still move doesn't keep others away: a meeting
 /// or a booking wins and the block is planned again. Locked blocks, and
-/// blocks that are done, count like any event.
+/// blocks that are done, count like any event. A habit skipped for the day
+/// is only a record: its time is free.
 bool _flexible(CalendarEvent e) {
   final mark = PlanMark.of(e);
-  return mark != null && !mark.locked && !mark.done;
+  return mark != null && (mark.skipped || (!mark.locked && !mark.done));
 }
 
 /// Start times of free slots of [length], on a [step] grid, between

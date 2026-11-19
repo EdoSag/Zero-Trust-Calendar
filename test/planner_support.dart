@@ -17,6 +17,7 @@ import 'package:zerotrust_calendar/planner/planner_answers.dart';
 import 'package:zerotrust_calendar/planner/planner_controller.dart';
 import 'package:zerotrust_calendar/planner/planner_model.dart';
 import 'package:zerotrust_calendar/reminders/reminders.dart';
+import 'package:zt_scheduler/zt_scheduler.dart' show PlanPriority;
 
 /// The account as the Planner sees it, kept in memory: events, calendars,
 /// the Planner's settings and the tasks of ZT Tasks. Every write goes back
@@ -39,6 +40,10 @@ class FakeAccount {
   /// As [LinkedMirror.lastRefreshOk]: null while the first pull runs.
   bool? tasksRefreshOk;
   bool synced;
+
+  /// Shared calendars still loading until a test completes it; null:
+  /// none, loaded at once.
+  Completer<List<SharedCalendar>>? sharedCalendars;
 
   /// Whether the account's plan includes the Planner (null: not known).
   bool? plannerAllowed = true;
@@ -89,6 +94,15 @@ class FakeAccount {
         hoursId: changes.containsKey('planHours')
             ? (changes['planHours'] as String?) ?? workHoursId
             : t.hoursId,
+        priority: changes.containsKey('priority')
+            ? PlanPriority.values.asNameMap()[changes['priority']]
+            : null,
+        due: changes.containsKey('dueDate')
+            ? (changes['dueDate'] is String
+                  ? DateTime.parse(changes['dueDate'] as String)
+                  : null)
+            : _same,
+        dueRaw: changes.containsKey('dueDate') ? changes['dueDate'] as String? : _same,
       ),
     );
   }
@@ -100,7 +114,14 @@ class FakeAccount {
 
   void setDue(String id, DateTime day) {
     log.add('due $id ${day.toIso8601String().substring(0, 10)}');
-    _change(id, (t) => _copy(t, due: DateTime(day.year, day.month, day.day)));
+    _change(
+      id,
+      (t) => _copy(
+        t,
+        due: DateTime(day.year, day.month, day.day),
+        dueRaw: DateTime(day.year, day.month, day.day).toIso8601String(),
+      ),
+    );
   }
 
   void _change(String id, PlannerTask Function(PlannerTask) change) {
@@ -116,20 +137,22 @@ class FakeAccount {
     Object? auto = _same,
     String? hoursId,
     bool? completed,
-    DateTime? due,
+    Object? due = _same,
+    PlanPriority? priority,
+    Object? dueRaw = _same,
   }) => PlannerTask(
     id: t.id,
     title: t.title,
     minutes: identical(minutes, _same) ? t.minutes : minutes as int?,
-    priority: t.priority,
-    due: due ?? t.due,
+    priority: priority ?? t.priority,
+    due: identical(due, _same) ? t.due : due as DateTime?,
     dueHasTime: t.dueHasTime,
     notBefore: t.notBefore,
     auto: identical(auto, _same) ? t.auto : auto as bool?,
     hoursId: hoursId ?? t.hoursId,
     completed: completed ?? t.completed,
     repeats: t.repeats,
-    dueRaw: t.dueRaw,
+    dueRaw: identical(dueRaw, _same) ? t.dueRaw : dueRaw as String?,
     createdAt: t.createdAt,
   );
 
@@ -144,7 +167,9 @@ class FakeAccount {
     reminderSchedulerProvider.overrideWithValue(NoopReminderScheduler()),
     eventsProvider.overrideWith((ref) => _from(_events, () => [...events])),
     calendarsProvider.overrideWith((ref) => _from(_calendars, () => [...calendars])),
-    sharedCalendarsProvider.overrideWith((ref) async => const <SharedCalendar>[]),
+    sharedCalendarsProvider.overrideWith(
+      (ref) => sharedCalendars?.future ?? Future.value(const <SharedCalendar>[]),
+    ),
     feedsProvider.overrideWith((ref) => Stream.value(const <CalendarFeed>[])),
     linkedNotesProvider.overrideWith((ref) => Stream.value(const <LinkedNote>[])),
     linkedTasksProvider.overrideWith((ref) => Stream.value(const <LinkedTask>[])),

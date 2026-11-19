@@ -168,6 +168,9 @@ class PlannerSettings {
     this.habits = const [],
     this.focusMinutesPerWeek = 0,
     this.focusTitle = 'Focus time',
+    this.aiGuess = false,
+    this.aiRequests = false,
+    this.aiHideTitles = false,
     this.updatedAt,
     this.extra = const {},
   });
@@ -222,6 +225,16 @@ class PlannerSettings {
   /// The focus blocks' title, in the language it was set up in.
   final String focusTitle;
 
+  /// The AI helper (Plus, off unless switched on here): guess a task's
+  /// length from its title.
+  final bool aiGuess;
+
+  /// The AI helper: turn a sentence into changes ("Ask the Planner").
+  final bool aiRequests;
+
+  /// Requests go with labels (Task A, Event B) in place of titles.
+  final bool aiHideTitles;
+
   /// [skips] without the ones that have passed at [now].
   Map<String, DateTime> skipsAfter(DateTime now) => {
     for (final e in skips.entries)
@@ -238,7 +251,7 @@ class PlannerSettings {
     'kind', '_v', 'enabled', 'hours', 'tasks', 'defaultMinutes', 'minChunk',
     'maxChunk', 'breakAfterMeetings', 'maxMinutesPerDay', 'freeCalendars',
     'allDayBusy', 'pastBlocks', 'remindAtStart', 'askAtEnd', 'skips', 'habits',
-    'focusPerWeek', 'focusTitle',
+    'focusPerWeek', 'focusTitle', 'aiGuess', 'aiRequests', 'aiHideTitles',
   };
 
   /// Work hours 9:00 to 17:00 on the five work days, personal hours in the
@@ -308,6 +321,9 @@ class PlannerSettings {
     List<PlannerHabit>? habits,
     int? focusMinutesPerWeek,
     String? focusTitle,
+    bool? aiGuess,
+    bool? aiRequests,
+    bool? aiHideTitles,
   }) => PlannerSettings(
     enabled: enabled ?? this.enabled,
     hours: hours ?? this.hours,
@@ -326,6 +342,9 @@ class PlannerSettings {
     habits: habits ?? this.habits,
     focusMinutesPerWeek: focusMinutesPerWeek ?? this.focusMinutesPerWeek,
     focusTitle: focusTitle ?? this.focusTitle,
+    aiGuess: aiGuess ?? this.aiGuess,
+    aiRequests: aiRequests ?? this.aiRequests,
+    aiHideTitles: aiHideTitles ?? this.aiHideTitles,
     updatedAt: updatedAt,
     extra: extra,
   );
@@ -362,6 +381,11 @@ class PlannerSettings {
     if (habits.isNotEmpty) 'habits': [for (final h in habits) h.toJson()],
     if (focusMinutesPerWeek > 0) 'focusPerWeek': focusMinutesPerWeek,
     if (focusMinutesPerWeek > 0) 'focusTitle': focusTitle,
+    // The AI switches are written only when on: off is the default, and
+    // settings saved before them look the same.
+    if (aiGuess) 'aiGuess': true,
+    if (aiRequests) 'aiRequests': true,
+    if (aiHideTitles) 'aiHideTitles': true,
   };
 
   /// A local time as written in the settings: the date and time of day with
@@ -429,6 +453,9 @@ class PlannerSettings {
       focusTitle: json['focusTitle'] is String && (json['focusTitle'] as String).trim().isNotEmpty
           ? (json['focusTitle'] as String).trim()
           : d.focusTitle,
+      aiGuess: json['aiGuess'] == true,
+      aiRequests: json['aiRequests'] == true,
+      aiHideTitles: json['aiHideTitles'] == true,
       updatedAt: updatedAt,
       extra: {
         for (final e in json.entries)
@@ -508,6 +535,30 @@ class PlannerTask {
       !completed &&
       (choice == PlannerTasksChoice.all ? auto != false : auto == true);
 
+  /// The same task with some fields changed (the AI helper's preview).
+  PlannerTask copyWith({
+    int? minutes,
+    PlanPriority? priority,
+    DateTime? due,
+    bool? dueHasTime,
+  }) => PlannerTask(
+    id: id,
+    title: title,
+    minutes: minutes ?? this.minutes,
+    priority: priority ?? this.priority,
+    due: due ?? this.due,
+    dueHasTime: dueHasTime ?? this.dueHasTime,
+    notBefore: notBefore,
+    minChunk: minChunk,
+    maxChunk: maxChunk,
+    auto: auto,
+    hoursId: hoursId,
+    completed: completed,
+    repeats: repeats,
+    dueRaw: dueRaw,
+    createdAt: createdAt,
+  );
+
   /// The same task with Auto-schedule switched [on] or off.
   PlannerTask withAuto(bool on) => PlannerTask(
     id: id,
@@ -574,7 +625,12 @@ class PlannerTask {
     Map<String, Object?> changes,
     DateTime now,
   ) {
-    const allowed = {'planMinutes', 'planMinChunk', 'planMaxChunk', 'planAuto', 'planHours'};
+    // `priority` and `dueDate` are ZT Tasks' own fields: the AI helper's
+    // changes (and their undo) write them, with the person's confirmation.
+    const allowed = {
+      'planMinutes', 'planMinChunk', 'planMaxChunk', 'planAuto', 'planHours',
+      'priority', 'dueDate',
+    };
     final out = {...json};
     for (final e in changes.entries) {
       if (!allowed.contains(e.key)) {
