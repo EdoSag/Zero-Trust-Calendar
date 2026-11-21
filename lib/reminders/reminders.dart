@@ -227,6 +227,8 @@ List<ScheduledReminder> remindersFor(
     if (hiddenCalendars.contains(e.calendarId)) continue;
     // A task's Planner block that isn't done asks "Finished?" when it
     // ends. Habits aren't asked about: one that passes counts as kept.
+    // Nor is a block being timed: the person says when they stop, and
+    // its planned end is only where the timer started plus its length.
     final mark = PlanMark.of(e);
     if (askAtBlockEnd &&
         !e.allDay &&
@@ -234,7 +236,8 @@ List<ScheduledReminder> remindersFor(
         e.end.isBefore(until) &&
         mark != null &&
         !mark.done &&
-        !mark.isHabit) {
+        !mark.isHabit &&
+        !mark.runningAt(now)) {
       out.add(
         ScheduledReminder(
           eventId: e.id,

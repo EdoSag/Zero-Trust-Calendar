@@ -4535,6 +4535,126 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'The AI helper couldn\'t answer. Try again in a moment.'**
   String get plannerAiErrorOther;
+
+  /// No description provided for @plannerForOthers.
+  ///
+  /// In en, this message translates to:
+  /// **'For other people'**
+  String get plannerForOthers;
+
+  /// No description provided for @plannerBlocksBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned blocks count as busy'**
+  String get plannerBlocksBusy;
+
+  /// No description provided for @plannerBlocksBusyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking pages and Find a time treat every planned block as taken. When this is off, only locked and done blocks are taken, and a booking that lands on a block moves the block.'**
+  String get plannerBlocksBusyHint;
+
+  /// No description provided for @plannerStartNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Start now'**
+  String get plannerStartNow;
+
+  /// No description provided for @plannerStartBlockHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Moves this block to now and times your work.'**
+  String get plannerStartBlockHint;
+
+  /// No description provided for @plannerStartTaskHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Puts the task\'s next block at this moment and times your work.'**
+  String get plannerStartTaskHint;
+
+  /// No description provided for @plannerStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get plannerStop;
+
+  /// No description provided for @plannerStopHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends the block now. The time you worked is kept, and the rest of the task is planned again.'**
+  String get plannerStopHint;
+
+  /// No description provided for @plannerWorkingOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Working on'**
+  String get plannerWorkingOn;
+
+  /// No description provided for @plannerRunningSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Started {time} · {length}'**
+  String plannerRunningSince(String time, String length);
+
+  /// No description provided for @plannerTimerStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Started. Stop it when you finish.'**
+  String get plannerTimerStarted;
+
+  /// No description provided for @plannerTimerStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped. Time worked: {length}'**
+  String plannerTimerStopped(String length);
+
+  /// No description provided for @plannerTimerStoppedFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped. Time worked: {length}. The task is finished.'**
+  String plannerTimerStoppedFinished(String length);
+
+  /// No description provided for @plannerLogTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Log time worked'**
+  String get plannerLogTime;
+
+  /// No description provided for @plannerLogTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds time you already spent on this task, ending now.'**
+  String get plannerLogTimeHint;
+
+  /// No description provided for @plannerLogTimeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How long did you work?'**
+  String get plannerLogTimeTitle;
+
+  /// No description provided for @plannerTimeLogged.
+  ///
+  /// In en, this message translates to:
+  /// **'Time worked added: {length}'**
+  String plannerTimeLogged(String length);
+
+  /// No description provided for @plannerTimeLoggedFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Time worked added: {length}. The task is finished.'**
+  String plannerTimeLoggedFinished(String length);
+
+  /// No description provided for @plannerLessThanAMinute.
+  ///
+  /// In en, this message translates to:
+  /// **'less than a minute'**
+  String get plannerLessThanAMinute;
+
+  /// No description provided for @plannerReasonRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'You are working on it now.'**
+  String get plannerReasonRunning;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

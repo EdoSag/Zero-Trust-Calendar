@@ -18,7 +18,9 @@ import '../planner/planner_actions.dart';
 import 'find_task_time_page.dart';
 import 'planner_habit_page.dart';
 import 'planner_risks.dart';
+import '../planner/planner_plan.dart';
 import 'planner_setup_page.dart';
+import 'planner_timer.dart';
 import 'planner_widgets.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
@@ -252,7 +254,7 @@ class _PlannerBody extends ConsumerWidget {
       },
     );
 
-    return ListView(
+    final list = ListView(
       padding: const EdgeInsets.only(bottom: 32),
       children: [
         if (status.waiting == PlannerWaiting.needsPlus) const PlannerPlusCard(paused: true),
@@ -565,6 +567,13 @@ class _PlannerBody extends ConsumerWidget {
         ),
       ],
     );
+    // What is being timed stays in view above the list, as on the calendar.
+    return Column(
+      children: [
+        const PlannerRunningBar(),
+        Expanded(child: list),
+      ],
+    );
   }
 
   /// A task's length and which hours it is planned in.
@@ -581,6 +590,11 @@ class _PlannerBody extends ConsumerWidget {
                   .where((x) => x.id == task.id)
                   .firstOrNull ??
               task;
+          // This task's block being timed, if it has one.
+          final at = DateTime.now();
+          final timed = planBlocksOf(t, ref.watch(plannerBlocksProvider))
+              .where((b) => PlanMark.of(b)!.runningAt(at))
+              .firstOrNull;
           return SafeArea(
             child: SingleChildScrollView(
               child: Column(
@@ -594,6 +608,57 @@ class _PlannerBody extends ConsumerWidget {
                       style: Theme.of(sheet).textTheme.titleLarge,
                     ),
                   ),
+                  // Timing the work: only for a task the Planner plans,
+                  // because a block of any other task is removed again.
+                  if (!t.completed && t.plannedUnder(settings.tasks)) ...[
+                    if (timed != null)
+                      ListTile(
+                        key: const ValueKey('planner-task-stop'),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                        leading: const Icon(Icons.stop),
+                        title: Text(l.plannerStop),
+                        subtitle: Text(
+                          l.plannerRunningSince(
+                            formatTime(sheet, PlanMark.of(timed)!.started!),
+                            plannerElapsed(l, PlanMark.of(timed)!.started!, DateTime.now()),
+                          ),
+                        ),
+                        onTap: () async {
+                          final navigator = Navigator.of(sheet);
+                          if (await stopPlannerBlock(sheet, ref, timed) && navigator.canPop()) {
+                            navigator.pop();
+                          }
+                        },
+                      )
+                    else
+                      ListTile(
+                        key: const ValueKey('planner-task-start'),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                        leading: const Icon(Icons.play_arrow),
+                        title: Text(l.plannerStartNow),
+                        subtitle: Text(l.plannerStartTaskHint),
+                        onTap: () async {
+                          final navigator = Navigator.of(sheet);
+                          if (await startPlannerTask(sheet, ref, t) && navigator.canPop()) {
+                            navigator.pop();
+                          }
+                        },
+                      ),
+                    ListTile(
+                      key: const ValueKey('planner-task-log'),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                      leading: const Icon(Icons.history),
+                      title: Text(l.plannerLogTime),
+                      subtitle: Text(l.plannerLogTimeHint),
+                      onTap: () async {
+                        final navigator = Navigator.of(sheet);
+                        if (await logPlannerTime(sheet, ref, t) && navigator.canPop()) {
+                          navigator.pop();
+                        }
+                      },
+                    ),
+                    const Divider(),
+                  ],
                   ListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 24),
                     leading: const Icon(Icons.timelapse),
@@ -1011,6 +1076,22 @@ class PlannerBusyCalendarsPage extends ConsumerWidget {
             value: settings.allDayBusy,
             onChanged: (on) =>
                 controller.saveSettings(settings.copyWith(allDayBusy: on)),
+          ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Text(
+              l.plannerForOthers,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+          ),
+          SwitchListTile(
+            key: const ValueKey('planner-blocks-busy'),
+            title: Text(l.plannerBlocksBusy),
+            subtitle: Text(l.plannerBlocksBusyHint),
+            value: settings.blocksBusy,
+            onChanged: (on) =>
+                controller.saveSettings(settings.copyWith(blocksBusy: on)),
           ),
         ],
       ),

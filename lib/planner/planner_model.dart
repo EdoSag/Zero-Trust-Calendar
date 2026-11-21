@@ -108,12 +108,33 @@ class PlanMark {
 
   bool get isHabit => kind == PlanBlockKind.habit;
 
+  /// "Start now": when work on the block began (local time), until it is
+  /// stopped. Kept in [extra], like [skipped], so a version that doesn't
+  /// know it writes it back unchanged.
+  DateTime? get started {
+    final raw = extra['started'];
+    return raw is String ? DateTime.tryParse(raw) : null;
+  }
+
+  /// A timer nobody stopped stops counting after this long: the block is
+  /// then an ordinary block whose time has passed.
+  static const timerLimit = Duration(hours: 12);
+
+  /// Whether the block is being worked on at [now]: started, not done, and
+  /// not left running for longer than [timerLimit].
+  bool runningAt(DateTime now) {
+    final from = started;
+    return from != null && !done && now.difference(from) < timerLimit;
+  }
+
+  /// [started] is a [DateTime] to set it, null to clear it.
   PlanMark copyWith({
     bool? locked,
     bool? done,
     PlanReason? reason,
     Object? occurrence = _unset,
     bool? skipped,
+    Object? started = _unset,
   }) => PlanMark(
     kind: kind,
     itemId: itemId,
@@ -121,14 +142,19 @@ class PlanMark {
     done: done ?? this.done,
     reason: reason ?? this.reason,
     occurrence: identical(occurrence, _unset) ? this.occurrence : occurrence as String?,
-    extra: skipped == null
-        ? extra
-        : {
-            for (final e in extra.entries)
-              if (e.key != 'skipped') e.key: e.value,
-            if (skipped) 'skipped': true,
-          },
+    extra: {
+      for (final e in extra.entries)
+        if (!(e.key == 'skipped' && skipped != null) &&
+            !(e.key == 'started' && !identical(started, _unset)))
+          e.key: e.value,
+      if (skipped == true) 'skipped': true,
+      if (started case final DateTime at) 'started': _wallMinute(at),
+    },
   );
+
+  /// A local time to the minute, with no zone.
+  static String _wallMinute(DateTime t) =>
+      DateTime(t.year, t.month, t.day, t.hour, t.minute).toIso8601String();
 
   /// Blocks numbered together ("2 of 3"): one task, one occurrence.
   String get group => '$itemId|${occurrence ?? ''}';
@@ -171,6 +197,7 @@ class PlannerSettings {
     this.aiGuess = false,
     this.aiRequests = false,
     this.aiHideTitles = false,
+    this.blocksBusy = false,
     this.updatedAt,
     this.extra = const {},
   });
@@ -235,6 +262,11 @@ class PlannerSettings {
   /// Requests go with labels (Task A, Event B) in place of titles.
   final bool aiHideTitles;
 
+  /// Every planned block counts as busy for booking pages and "Find a
+  /// time", not only locked ones. Off: a booking may land on a block that
+  /// can still move, and the block is planned again.
+  final bool blocksBusy;
+
   /// [skips] without the ones that have passed at [now].
   Map<String, DateTime> skipsAfter(DateTime now) => {
     for (final e in skips.entries)
@@ -251,7 +283,7 @@ class PlannerSettings {
     'kind', '_v', 'enabled', 'hours', 'tasks', 'defaultMinutes', 'minChunk',
     'maxChunk', 'breakAfterMeetings', 'maxMinutesPerDay', 'freeCalendars',
     'allDayBusy', 'pastBlocks', 'remindAtStart', 'askAtEnd', 'skips', 'habits',
-    'focusPerWeek', 'focusTitle', 'aiGuess', 'aiRequests', 'aiHideTitles',
+    'focusPerWeek', 'focusTitle', 'aiGuess', 'aiRequests', 'aiHideTitles', 'blocksBusy',
   };
 
   /// Work hours 9:00 to 17:00 on the five work days, personal hours in the
@@ -324,6 +356,7 @@ class PlannerSettings {
     bool? aiGuess,
     bool? aiRequests,
     bool? aiHideTitles,
+    bool? blocksBusy,
   }) => PlannerSettings(
     enabled: enabled ?? this.enabled,
     hours: hours ?? this.hours,
@@ -345,6 +378,7 @@ class PlannerSettings {
     aiGuess: aiGuess ?? this.aiGuess,
     aiRequests: aiRequests ?? this.aiRequests,
     aiHideTitles: aiHideTitles ?? this.aiHideTitles,
+    blocksBusy: blocksBusy ?? this.blocksBusy,
     updatedAt: updatedAt,
     extra: extra,
   );
@@ -386,6 +420,9 @@ class PlannerSettings {
     if (aiGuess) 'aiGuess': true,
     if (aiRequests) 'aiRequests': true,
     if (aiHideTitles) 'aiHideTitles': true,
+    // As above: written only when on. It moves no block, so it is not in
+    // the plan signature.
+    if (blocksBusy) 'blocksBusy': true,
   };
 
   /// A local time as written in the settings: the date and time of day with
@@ -456,6 +493,7 @@ class PlannerSettings {
       aiGuess: json['aiGuess'] == true,
       aiRequests: json['aiRequests'] == true,
       aiHideTitles: json['aiHideTitles'] == true,
+      blocksBusy: json['blocksBusy'] == true,
       updatedAt: updatedAt,
       extra: {
         for (final e in json.entries)

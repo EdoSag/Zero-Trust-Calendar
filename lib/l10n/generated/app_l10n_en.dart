@@ -2842,4 +2842,79 @@ class AppL10nEn extends AppL10n {
   @override
   String get plannerAiErrorOther =>
       'The AI helper couldn\'t answer. Try again in a moment.';
+
+  @override
+  String get plannerForOthers => 'For other people';
+
+  @override
+  String get plannerBlocksBusy => 'Planned blocks count as busy';
+
+  @override
+  String get plannerBlocksBusyHint =>
+      'Booking pages and Find a time treat every planned block as taken. When this is off, only locked and done blocks are taken, and a booking that lands on a block moves the block.';
+
+  @override
+  String get plannerStartNow => 'Start now';
+
+  @override
+  String get plannerStartBlockHint =>
+      'Moves this block to now and times your work.';
+
+  @override
+  String get plannerStartTaskHint =>
+      'Puts the task\'s next block at this moment and times your work.';
+
+  @override
+  String get plannerStop => 'Stop';
+
+  @override
+  String get plannerStopHint =>
+      'Ends the block now. The time you worked is kept, and the rest of the task is planned again.';
+
+  @override
+  String get plannerWorkingOn => 'Working on';
+
+  @override
+  String plannerRunningSince(String time, String length) {
+    return 'Started $time · $length';
+  }
+
+  @override
+  String get plannerTimerStarted => 'Started. Stop it when you finish.';
+
+  @override
+  String plannerTimerStopped(String length) {
+    return 'Stopped. Time worked: $length';
+  }
+
+  @override
+  String plannerTimerStoppedFinished(String length) {
+    return 'Stopped. Time worked: $length. The task is finished.';
+  }
+
+  @override
+  String get plannerLogTime => 'Log time worked';
+
+  @override
+  String get plannerLogTimeHint =>
+      'Adds time you already spent on this task, ending now.';
+
+  @override
+  String get plannerLogTimeTitle => 'How long did you work?';
+
+  @override
+  String plannerTimeLogged(String length) {
+    return 'Time worked added: $length';
+  }
+
+  @override
+  String plannerTimeLoggedFinished(String length) {
+    return 'Time worked added: $length. The task is finished.';
+  }
+
+  @override
+  String get plannerLessThanAMinute => 'less than a minute';
+
+  @override
+  String get plannerReasonRunning => 'You are working on it now.';
 }

@@ -457,6 +457,9 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     );
   }
 
+  /// The Planner's "planned blocks count as busy" setting.
+  bool get _plannedBusy => ref.read(plannerSettingsProvider).value?.blocksBusy ?? false;
+
   /// Booking pages: new bookings into the calendar, cancelled ones out,
   /// busy times up to date for visitors.
   Future<void> _syncBookings(
@@ -468,6 +471,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
       await ref.read(bookingSyncProvider).sync(
         events: events,
         calendars: calendars,
+        plannedBusy: _plannedBusy,
         now: now,
         text: (
           title: currentL10n.bookingEventTitle,
@@ -503,6 +507,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
             calendars: calendars,
             from: dayOf(now),
             exceptCalendarId: c.id,
+            plannedBusy: _plannedBusy,
           ),
           onlyUpdate: true,
         );

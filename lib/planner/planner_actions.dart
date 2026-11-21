@@ -43,8 +43,12 @@ class PlannerActions {
   Future<String?> setDone(CalendarEvent block, bool done, {DateTime? now}) async {
     final mark = PlanMark.of(block);
     if (mark == null || mark.done == done) return null;
-    var saved = block;
     final at = now ?? DateTime.now();
+    // Done on a block being timed (the helper's change, or an answer to
+    // a question asked before "Start now") is "Stop": the time that was
+    // really worked counts, not the planned length.
+    if (done && mark.runningAt(at)) return (await stop(block, now: at)).finished;
+    var saved = block;
     if (done && block.start.isAfter(at)) {
       final end = DateTime(at.year, at.month, at.day, at.hour, at.minute);
       saved = block.copyWith(start: end.subtract(block.duration), end: end);
@@ -52,7 +56,12 @@ class PlannerActions {
     await _writer.saveBlock(
       _marked(
         saved,
-        mark.copyWith(done: done, reason: done ? PlanReason.done : PlanReason.kept),
+        // A timer that was left running too long to count ends here.
+        mark.copyWith(
+          done: done,
+          reason: done ? PlanReason.done : PlanReason.kept,
+          started: null,
+        ),
       ),
     );
     // A habit has no task to tick off or open again.
@@ -68,16 +77,170 @@ class PlannerActions {
       }
       return null;
     }
-    final task = _task(mark.itemId);
+    return _tickOffWhenDone(mark.itemId, saved);
+  }
+
+  /// Ticks the task off in ZT Tasks when [doneBlock], just saved as done,
+  /// was the last of its time, and returns its id then. A repeating task is
+  /// left to ZT Tasks.
+  Future<String?> _tickOffWhenDone(String taskId, CalendarEvent doneBlock) async {
+    final task = _task(taskId);
     if (task == null || task.completed || task.repeats) return null;
     final others = [
       for (final b in _ref.read(plannerBlocksProvider))
-        if (b.id != block.id) b,
+        if (b.id != doneBlock.id) b,
     ];
-    final doneMinutes = planDoneMinutes(task, others) + block.duration.inMinutes;
+    final doneMinutes = planDoneMinutes(task, others) + doneBlock.duration.inMinutes;
     if (doneMinutes < (task.minutes ?? _settings.defaultMinutes)) return null;
     await _ref.read(plannerTaskCompleterProvider)(task.id, true);
     return task.id;
+  }
+
+  static DateTime _minute(DateTime t) => DateTime(t.year, t.month, t.day, t.hour, t.minute);
+
+  /// The task block being timed at [now], if any.
+  CalendarEvent? running({DateTime? now}) {
+    final at = now ?? DateTime.now();
+    return _ref
+        .read(plannerBlocksProvider)
+        .where((b) => PlanMark.of(b)!.runningAt(at))
+        .firstOrNull;
+  }
+
+  /// "Start now" on a task's block: work on it begins at [now]. The block
+  /// moves to start now, keeps its length (a block already under way keeps
+  /// its end, when a few minutes of it are left), and is locked there. One
+  /// block is timed at a time: another one running is stopped first.
+  /// Returns the block as saved.
+  Future<CalendarEvent> start(CalendarEvent block, {DateTime? now}) async {
+    final mark = PlanMark.of(block);
+    if (mark == null || mark.isHabit || mark.done) {
+      throw StateError('That block can\'t be started');
+    }
+    final at = _minute(now ?? DateTime.now());
+    final other = running(now: at);
+    if (other != null && other.id != block.id) await stop(other, now: at);
+    final underWay = !block.start.isAfter(at) &&
+        block.end.difference(at) >= const Duration(minutes: 5);
+    final saved = _marked(
+      block.copyWith(start: at, end: underWay ? block.end : at.add(block.duration)),
+      mark.copyWith(locked: true, reason: PlanReason.locked, started: at),
+    );
+    await _writer.saveBlock(saved);
+    return saved;
+  }
+
+  /// "Start now" on a task: its next block that isn't done starts now. A
+  /// task with no such block gets one, as long as what is left of it (at
+  /// least the shortest block, at most the longest).
+  Future<CalendarEvent> startTask(PlannerTask task, {DateTime? now}) async {
+    final at = _minute(now ?? DateTime.now());
+    final blocks = planBlocksOf(task, _ref.read(plannerBlocksProvider));
+    final next = blocks
+        .where((b) => !PlanMark.of(b)!.done && b.end.isAfter(at))
+        .firstOrNull;
+    if (next != null) return start(next, now: at);
+    final other = running(now: at);
+    if (other != null) await stop(other, now: at);
+    final settings = _settings;
+    var minChunk = task.minChunk ?? settings.minChunk;
+    final maxChunk = task.maxChunk ?? settings.maxChunk;
+    if (maxChunk < minChunk) minChunk = maxChunk;
+    final left = (task.minutes ?? settings.defaultMinutes) - planDoneMinutes(task, blocks);
+    final block = _taskBlock(
+      task,
+      id: '${task.id}:s${at.millisecondsSinceEpoch ~/ 60000}',
+      start: at,
+      end: at.add(Duration(minutes: left.clamp(minChunk, maxChunk))),
+      mark: (m) => m.copyWith(locked: true, reason: PlanReason.locked, started: at),
+    );
+    await _writer.saveBlock(block);
+    return block;
+  }
+
+  /// "Stop": the block being timed ends at [now] and is done, so it shows
+  /// the time that was really worked, and what is left of the task is
+  /// planned again. Returns the block as saved, and the task's id when
+  /// that was the last of its time (it is then ticked off, as in
+  /// [setDone]).
+  Future<({CalendarEvent block, String? finished})> stop(
+    CalendarEvent block, {
+    DateTime? now,
+  }) async {
+    final mark = PlanMark.of(block);
+    final from = mark?.started;
+    if (mark == null || from == null || mark.done) {
+      throw StateError('That block isn\'t being timed');
+    }
+    var end = _minute(now ?? DateTime.now());
+    // At least a minute, so the block is an event that can be shown.
+    if (!end.isAfter(from)) end = from.add(const Duration(minutes: 1));
+    final saved = _marked(
+      block.copyWith(start: from, end: end),
+      mark.copyWith(done: true, reason: PlanReason.done, started: null),
+    );
+    await _writer.saveBlock(saved);
+    return (block: saved, finished: await _tickOffWhenDone(mark.itemId, saved));
+  }
+
+  /// "Log time": [minutes] already worked on [task], ending at [now], kept
+  /// as a done block. Returns it, and the task's id when that was the last
+  /// of its time.
+  Future<({CalendarEvent block, String? finished})> logTime(
+    PlannerTask task,
+    int minutes, {
+    DateTime? now,
+  }) async {
+    if (minutes <= 0) throw ArgumentError.value(minutes, 'minutes');
+    final end = _minute(now ?? DateTime.now());
+    final block = _taskBlock(
+      task,
+      id: '${task.id}:l${end.millisecondsSinceEpoch ~/ 60000}',
+      start: end.subtract(Duration(minutes: minutes)),
+      end: end,
+      mark: (m) => m.copyWith(done: true, reason: PlanReason.done),
+    );
+    await _writer.saveBlock(block);
+    return (block: block, finished: await _tickOffWhenDone(task.id, block));
+  }
+
+  /// A new block of [task], outside the engine's numbering. An id that is
+  /// taken (two in one minute) gets a number after it.
+  CalendarEvent _taskBlock(
+    PlannerTask task, {
+    required String id,
+    required DateTime start,
+    required DateTime end,
+    required PlanMark Function(PlanMark) mark,
+  }) {
+    final taken = {for (final b in _ref.read(plannerBlocksProvider)) b.id};
+    var unique = id;
+    for (var n = 2; taken.contains(unique); n++) {
+      unique = '$id.$n';
+    }
+    return CalendarEvent(
+      id: unique,
+      title: task.title,
+      start: start,
+      end: end,
+      calendarId: plannerCalendarId,
+      taskIds: [task.id],
+      extra: {
+        'plan': mark(
+          PlanMark(
+            kind: PlanBlockKind.task,
+            itemId: task.id,
+            occurrence: task.occurrence,
+          ),
+        ).toJson(),
+      },
+    );
+  }
+
+  /// Removes a block that [startTask] or [logTime] made (undo).
+  Future<void> remove(CalendarEvent block) async {
+    if (PlanMark.of(block) == null) return;
+    await _writer.deleteBlock(block.id);
   }
 
   /// Opens a task again that [setDone] ticked off.
@@ -90,8 +253,15 @@ class PlannerActions {
 
   /// Gives the block's task [extra] more minutes. A block whose time has
   /// passed counts as done; one that is still running or still to come
-  /// stays as it is.
-  Future<void> needMoreTime(CalendarEvent block, int extra, {DateTime? now}) async {
+  /// stays as it is, and so does one being timed, whatever its planned
+  /// end: its time worked is known only at "Stop". [passed] says whether
+  /// its time has passed, when the caller knows better than the clock.
+  Future<void> needMoreTime(
+    CalendarEvent block,
+    int extra, {
+    DateTime? now,
+    bool? passed,
+  }) async {
     final mark = PlanMark.of(block);
     if (mark == null) return;
     final task = _task(mark.itemId);
@@ -99,9 +269,11 @@ class PlannerActions {
     await _ref.read(plannerTaskWriterProvider)(task.id, {
       'planMinutes': (task.minutes ?? _settings.defaultMinutes) + extra,
     });
-    if (!mark.done && !block.end.isAfter(now ?? DateTime.now())) {
+    final at = now ?? DateTime.now();
+    final over = passed ?? (!block.end.isAfter(at) && !mark.runningAt(at));
+    if (!mark.done && over) {
       await _writer.saveBlock(
-        _marked(block, mark.copyWith(done: true, reason: PlanReason.done)),
+        _marked(block, mark.copyWith(done: true, reason: PlanReason.done, started: null)),
       );
     }
   }
@@ -206,7 +378,13 @@ class PlannerActions {
   /// that fails doesn't stop the ones after it. An answer for a block that
   /// is gone or already done, or whose task is gone, is dropped. Returns the
   /// answers that could not be saved, to be kept for the next run.
-  Future<List<PlanAnswer>> applyAnswers(List<PlanAnswer> answers) async {
+  ///
+  /// A block being timed was started after its question was asked (none
+  /// is asked while a timer runs). "Done" then stops the timer, "Need
+  /// more time" leaves it running, and "Didn't do it" is dropped: it is
+  /// being done now.
+  Future<List<PlanAnswer>> applyAnswers(List<PlanAnswer> answers, {DateTime? now}) async {
+    final at = now ?? DateTime.now();
     final failed = <PlanAnswer>[];
     for (final a in answers) {
       final block = _ref
@@ -215,15 +393,19 @@ class PlannerActions {
           .firstOrNull;
       final mark = PlanMark.of(block);
       if (block == null || mark == null || mark.done) continue;
+      final timed = mark.runningAt(at);
       try {
         switch (a.kind) {
           case PlanAnswerKind.done:
-            await setDone(block, true);
+            await setDone(block, true, now: at);
           case PlanAnswerKind.more:
             // The task was deleted meanwhile: the Planner removes its block.
             if (_task(mark.itemId) == null) continue;
-            await needMoreTime(block, _settings.minChunk, now: block.end);
+            // The question is asked when the block ends, so its time has
+            // passed however long the answer waited.
+            await needMoreTime(block, _settings.minChunk, now: at, passed: !timed);
           case PlanAnswerKind.skip:
+            if (timed) continue;
             await didNot(block);
         }
       } on Object {

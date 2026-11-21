@@ -91,11 +91,14 @@ List<(DateTime, DateTime)> mergeBlocks(Iterable<(DateTime, DateTime)> blocks) {
 /// of its visible calendars, except [exceptCalendarId] (that calendar's
 /// events are already in the space for everyone). All-day events don't
 /// count, as in Google Calendar (holidays, birthdays, reminders).
+/// A Planner block that can still move counts only with [plannedBusy]
+/// (the Planner's "planned blocks count as busy" setting).
 List<(DateTime, DateTime)> busyBlocks({
   required List<CalendarEvent> events,
   required List<ZtCalendarInfo> calendars,
   required DateTime from,
   String? exceptCalendarId,
+  bool plannedBusy = false,
 }) {
   final visible = {
     for (final c in calendars)
@@ -104,7 +107,7 @@ List<(DateTime, DateTime)> busyBlocks({
   final to = from.add(busyHorizon);
   return mergeBlocks([
     for (final e in events)
-      if (!e.allDay && visible.contains(e.calendarId) && !_flexible(e))
+      if (!e.allDay && visible.contains(e.calendarId) && !_flexible(e, plannedBusy))
         for (final o in e.occurrencesBetween(from, to)) o,
   ]);
 }
@@ -112,10 +115,13 @@ List<(DateTime, DateTime)> busyBlocks({
 /// A Planner block that can still move doesn't keep others away: a meeting
 /// or a booking wins and the block is planned again. Locked blocks, and
 /// blocks that are done, count like any event. A habit skipped for the day
-/// is only a record: its time is free.
-bool _flexible(CalendarEvent e) {
+/// is only a record: its time is free. With [plannedBusy] every block
+/// counts, except the skipped habit.
+bool _flexible(CalendarEvent e, bool plannedBusy) {
   final mark = PlanMark.of(e);
-  return mark != null && (mark.skipped || (!mark.locked && !mark.done));
+  if (mark == null) return false;
+  if (mark.skipped) return true;
+  return !plannedBusy && !mark.locked && !mark.done;
 }
 
 /// Start times of free slots of [length], on a [step] grid, between
