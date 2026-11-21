@@ -132,6 +132,32 @@ void main() {
       expect(reminders([block('a:1', at10)], ask: false).where((r) => r.planEnd), isEmpty);
     });
 
+    test('is not asked while the block is being timed, and is asked again '
+        'for a timer left running too long to count', () {
+      // "Start now" at 7:40: the block is 7:40 to 8:40, and it is 8:00.
+      CalendarEvent timed(DateTime started) {
+        final b = block('a:1', started, reminders: const []);
+        final mark = PlanMark.of(b)!.copyWith(locked: true, started: started);
+        return b.copyWith(extra: {...b.extra, 'plan': mark.toJson()});
+      }
+
+      final running = timed(DateTime(2026, 11, 23, 7, 40));
+      expect(PlanMark.of(running)!.runningAt(now), isTrue);
+      expect(reminders([running]), isEmpty);
+      // The same block with no timer is asked about at 8:40.
+      expect(
+        reminders([block('a:1', DateTime(2026, 11, 23, 7, 40), reminders: const [])]).single.at,
+        DateTime(2026, 11, 23, 8, 40),
+      );
+      // Started 13 hours ago and moved since: no longer a timer.
+      final stale = timed(DateTime(2026, 11, 22, 19)).copyWith(
+        start: at10,
+        end: at10.add(const Duration(hours: 1)),
+      );
+      expect(PlanMark.of(stale)!.runningAt(now), isFalse);
+      expect(reminders([stale]).single.planEnd, isTrue);
+    });
+
     test('a button press becomes an answer for that block', () {
       final end = reminders([block('a:1', at10)]).last;
       PlanAnswer? press(String? action) => planAnswerOf(

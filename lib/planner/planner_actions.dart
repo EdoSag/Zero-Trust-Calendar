@@ -43,8 +43,12 @@ class PlannerActions {
   Future<String?> setDone(CalendarEvent block, bool done, {DateTime? now}) async {
     final mark = PlanMark.of(block);
     if (mark == null || mark.done == done) return null;
-    var saved = block;
     final at = now ?? DateTime.now();
+    // Done on a block being timed (the helper's change, or an answer to
+    // a question asked before "Start now") is "Stop": the time that was
+    // really worked counts, not the planned length.
+    if (done && mark.runningAt(at)) return (await stop(block, now: at)).finished;
+    var saved = block;
     if (done && block.start.isAfter(at)) {
       final end = DateTime(at.year, at.month, at.day, at.hour, at.minute);
       saved = block.copyWith(start: end.subtract(block.duration), end: end);
@@ -52,8 +56,7 @@ class PlannerActions {
     await _writer.saveBlock(
       _marked(
         saved,
-        // Done without "Stop" (the notification's answer, say): the timer
-        // ends with it, and the block keeps its planned end.
+        // A timer that was left running too long to count ends here.
         mark.copyWith(
           done: done,
           reason: done ? PlanReason.done : PlanReason.kept,
@@ -250,8 +253,15 @@ class PlannerActions {
 
   /// Gives the block's task [extra] more minutes. A block whose time has
   /// passed counts as done; one that is still running or still to come
-  /// stays as it is.
-  Future<void> needMoreTime(CalendarEvent block, int extra, {DateTime? now}) async {
+  /// stays as it is, and so does one being timed, whatever its planned
+  /// end: its time worked is known only at "Stop". [passed] says whether
+  /// its time has passed, when the caller knows better than the clock.
+  Future<void> needMoreTime(
+    CalendarEvent block,
+    int extra, {
+    DateTime? now,
+    bool? passed,
+  }) async {
     final mark = PlanMark.of(block);
     if (mark == null) return;
     final task = _task(mark.itemId);
@@ -259,7 +269,9 @@ class PlannerActions {
     await _ref.read(plannerTaskWriterProvider)(task.id, {
       'planMinutes': (task.minutes ?? _settings.defaultMinutes) + extra,
     });
-    if (!mark.done && !block.end.isAfter(now ?? DateTime.now())) {
+    final at = now ?? DateTime.now();
+    final over = passed ?? (!block.end.isAfter(at) && !mark.runningAt(at));
+    if (!mark.done && over) {
       await _writer.saveBlock(
         _marked(block, mark.copyWith(done: true, reason: PlanReason.done, started: null)),
       );
@@ -366,7 +378,13 @@ class PlannerActions {
   /// that fails doesn't stop the ones after it. An answer for a block that
   /// is gone or already done, or whose task is gone, is dropped. Returns the
   /// answers that could not be saved, to be kept for the next run.
-  Future<List<PlanAnswer>> applyAnswers(List<PlanAnswer> answers) async {
+  ///
+  /// A block being timed was started after its question was asked (none
+  /// is asked while a timer runs). "Done" then stops the timer, "Need
+  /// more time" leaves it running, and "Didn't do it" is dropped: it is
+  /// being done now.
+  Future<List<PlanAnswer>> applyAnswers(List<PlanAnswer> answers, {DateTime? now}) async {
+    final at = now ?? DateTime.now();
     final failed = <PlanAnswer>[];
     for (final a in answers) {
       final block = _ref
@@ -375,15 +393,19 @@ class PlannerActions {
           .firstOrNull;
       final mark = PlanMark.of(block);
       if (block == null || mark == null || mark.done) continue;
+      final timed = mark.runningAt(at);
       try {
         switch (a.kind) {
           case PlanAnswerKind.done:
-            await setDone(block, true);
+            await setDone(block, true, now: at);
           case PlanAnswerKind.more:
             // The task was deleted meanwhile: the Planner removes its block.
             if (_task(mark.itemId) == null) continue;
-            await needMoreTime(block, _settings.minChunk, now: block.end);
+            // The question is asked when the block ends, so its time has
+            // passed however long the answer waited.
+            await needMoreTime(block, _settings.minChunk, now: at, passed: !timed);
           case PlanAnswerKind.skip:
+            if (timed) continue;
             await didNot(block);
         }
       } on Object {

@@ -710,11 +710,22 @@ CalendarEvent _eventWith(CalendarEvent e, List<AiChange> changes, DateTime at) {
   if (mark == null) return e;
   for (final c in changes) {
     if (c.blockId != e.id) continue;
-    // Done ahead of time: as PlannerActions.setDone does, the block moves
-    // to end now, and its old time is free for other work.
-    if (c.type == AiChangeType.markDone && !mark!.done && e.start.isAfter(at)) {
+    if (c.type == AiChangeType.markDone && !mark!.done) {
       final end = DateTime(at.year, at.month, at.day, at.hour, at.minute);
-      e = e.copyWith(start: end.subtract(e.duration), end: end);
+      final from = mark.started;
+      if (from != null && mark.runningAt(at)) {
+        // Being timed: as PlannerActions.setDone does, the timer stops and
+        // the block is the time that was really worked.
+        e = e.copyWith(
+          start: from,
+          end: end.isAfter(from) ? end : from.add(const Duration(minutes: 1)),
+        );
+        mark = mark.copyWith(started: null);
+      } else if (e.start.isAfter(at)) {
+        // Done ahead of time: as PlannerActions.setDone does, the block
+        // moves to end now, and its old time is free for other work.
+        e = e.copyWith(start: end.subtract(e.duration), end: end);
+      }
     }
     mark = switch (c.type) {
       AiChangeType.lock => mark!.copyWith(locked: true, reason: PlanReason.locked),

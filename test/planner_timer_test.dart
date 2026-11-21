@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:zerotrust_calendar/data/find_a_time.dart';
 import 'package:zerotrust_calendar/model/calendar_event.dart';
 import 'package:zerotrust_calendar/planner/planner_actions.dart';
+import 'package:zerotrust_calendar/planner/planner_answers.dart';
 import 'package:zerotrust_calendar/planner/planner_controller.dart';
 import 'package:zerotrust_calendar/planner/planner_model.dart';
 import 'package:zerotrust_calendar/planner/planner_plan.dart';
@@ -239,7 +240,8 @@ void main() {
       expect(stopped.duration, const Duration(minutes: 1));
     });
 
-    test('"Done" on a block being timed ends the timer too', () async {
+    test('"Done" on a block being timed is "Stop": the time worked counts, '
+        'not the planned hour', () async {
       final account = FakeAccount(
         settings: on,
         tasks: [task('a', minutes: 120)],
@@ -247,14 +249,102 @@ void main() {
       );
       final container = await start(account);
       final actions = container.read(plannerActionsProvider);
-      await actions.start(account.blocks.single, now: now.subtract(const Duration(minutes: 20)));
+      final began = now.subtract(const Duration(minutes: 20));
+      await actions.start(account.blocks.single, now: began);
       await pumpEventQueue();
-      await actions.setDone(account.blocks.single, true, now: now);
+      expect(await actions.setDone(account.blocks.single, true, now: now), isNull);
       await pumpEventQueue();
-      final mark = PlanMark.of(account.blocks.single)!;
+      final saved = account.blocks.single;
+      final mark = PlanMark.of(saved)!;
       expect(mark.done, isTrue);
       expect(mark.started, isNull);
+      expect((saved.start, saved.end), (began, now));
+      expect(planDoneMinutes(account.tasks.single, account.blocks), 20);
       expect(actions.running(now: now), isNull);
+    });
+
+    test('"Need more time" on a block timed past its planned end keeps the '
+        'timer, and "Stop" then counts all of the time', () async {
+      final account = FakeAccount(
+        settings: on,
+        tasks: [task('a')],
+        events: [block('a:1', 'a', tomorrow)],
+      );
+      final container = await start(account);
+      final actions = container.read(plannerActionsProvider);
+      // Started 90 minutes ago on a block of an hour: half an hour over.
+      final began = now.subtract(const Duration(minutes: 90));
+      await actions.start(account.blocks.single, now: began);
+      await pumpEventQueue();
+      expect(account.blocks.single.end.isBefore(now), isTrue);
+
+      await actions.needMoreTime(account.blocks.single, 60, now: now);
+      await pumpEventQueue();
+      expect(account.tasks.single.minutes, 120);
+      final mark = PlanMark.of(account.blocks.single)!;
+      expect(mark.done, isFalse);
+      expect(mark.started, began);
+      expect(actions.running(now: now)?.id, 'a:1');
+
+      final (block: stopped, :finished) = await actions.stop(account.blocks.single, now: now);
+      expect(stopped.duration, const Duration(minutes: 90));
+      expect(finished, isNull);
+    });
+
+    test('answers to a question asked before "Start now": "Didn\'t do it" is '
+        'dropped, "Need more time" leaves the timer, "Done" stops it', () async {
+      final account = FakeAccount(
+        settings: on,
+        tasks: [task('a', minutes: 120)],
+        events: [block('a:1', 'a', tomorrow)],
+      );
+      final container = await start(account);
+      final actions = container.read(plannerActionsProvider);
+      final began = now.subtract(const Duration(minutes: 90));
+      await actions.start(account.blocks.single, now: began);
+      await pumpEventQueue();
+
+      expect(
+        await actions.applyAnswers(const [PlanAnswer('a:1', PlanAnswerKind.skip)], now: now),
+        isEmpty,
+      );
+      await pumpEventQueue();
+      expect(actions.running(now: now)?.id, 'a:1');
+
+      await actions.applyAnswers(const [PlanAnswer('a:1', PlanAnswerKind.more)], now: now);
+      await pumpEventQueue();
+      expect(account.tasks.single.minutes, 120 + on.minChunk);
+      expect(PlanMark.of(account.blocks.single)!.done, isFalse);
+      expect(actions.running(now: now)?.id, 'a:1');
+
+      await actions.applyAnswers(const [PlanAnswer('a:1', PlanAnswerKind.done)], now: now);
+      await pumpEventQueue();
+      final saved = account.blocks.single;
+      expect(PlanMark.of(saved)!.done, isTrue);
+      expect((saved.start, saved.end), (began, now));
+    });
+
+    test('a timer left running too long is an ordinary passed block: "Need '
+        'more time" counts its planned hour as done', () async {
+      final account = FakeAccount(
+        settings: on,
+        tasks: [task('a')],
+        events: [block('a:1', 'a', tomorrow)],
+      );
+      final container = await start(account);
+      final actions = container.read(plannerActionsProvider);
+      final began = now.subtract(const Duration(hours: 13));
+      await actions.start(account.blocks.single, now: began);
+      await pumpEventQueue();
+      expect(actions.running(now: now), isNull);
+
+      await actions.applyAnswers(const [PlanAnswer('a:1', PlanAnswerKind.more)], now: now);
+      await pumpEventQueue();
+      final saved = account.blocks.single;
+      final mark = PlanMark.of(saved)!;
+      expect(mark.done, isTrue);
+      expect(mark.started, isNull);
+      expect(saved.duration, const Duration(hours: 1));
     });
 
     test('a block that isn\'t being timed can\'t be stopped', () async {
