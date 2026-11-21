@@ -1877,5 +1877,63 @@
   "plannerAiErrorLimit": "You've used this month's AI requests.",
   "plannerAiErrorRefused": "The AI helper can't help with that.",
   "plannerAiErrorNetwork": "No connection. Try again when you're online.",
-  "plannerAiErrorOther": "The AI helper couldn't answer. Try again in a moment."
+  "plannerAiErrorOther": "The AI helper couldn't answer. Try again in a moment.",
+  "plannerForOthers": "For other people",
+  "plannerBlocksBusy": "Planned blocks count as busy",
+  "plannerBlocksBusyHint": "Booking pages and Find a time treat every planned block as taken. When this is off, only locked and done blocks are taken, and a booking that lands on a block moves the block.",
+  "plannerStartNow": "Start now",
+  "plannerStartBlockHint": "Moves this block to now and times your work.",
+  "plannerStartTaskHint": "Puts the task's next block at this moment and times your work.",
+  "plannerStop": "Stop",
+  "plannerStopHint": "Ends the block now. The time you worked is kept, and the rest of the task is planned again.",
+  "plannerWorkingOn": "Working on",
+  "plannerRunningSince": "Started {time} · {length}",
+  "@plannerRunningSince": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerTimerStarted": "Started. Stop it when you finish.",
+  "plannerTimerStopped": "Stopped. Time worked: {length}",
+  "@plannerTimerStopped": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerTimerStoppedFinished": "Stopped. Time worked: {length}. The task is finished.",
+  "@plannerTimerStoppedFinished": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerLogTime": "Log time worked",
+  "plannerLogTimeHint": "Adds time you already spent on this task, ending now.",
+  "plannerLogTimeTitle": "How long did you work?",
+  "plannerTimeLogged": "Time worked added: {length}",
+  "@plannerTimeLogged": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerTimeLoggedFinished": "Time worked added: {length}. The task is finished.",
+  "@plannerTimeLoggedFinished": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerLessThanAMinute": "less than a minute",
+  "plannerReasonRunning": "You are working on it now."
 }

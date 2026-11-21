@@ -14,6 +14,7 @@ import 'entry_widgets.dart';
 import 'linked_app_launcher.dart';
 import 'planner_habit_page.dart';
 import 'planner_page.dart';
+import 'planner_timer.dart';
 import 'planner_widgets.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
@@ -151,6 +152,18 @@ class _PlannerBlockViewState extends ConsumerState<PlannerBlockView> {
       );
   }
 
+  /// Runs "Start now" or "Stop" (which say what they did themselves) and
+  /// closes the sheet when it worked.
+  Future<void> _timer(Future<bool> Function() action) async {
+    final navigator = Navigator.of(context);
+    setState(() => _busy = true);
+    try {
+      if (await action() && navigator.canPop()) navigator.pop();
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _needMoreTime(CalendarEvent block) async {
     final l = context.l10n;
     final extra = await showDialog<int>(
@@ -263,6 +276,8 @@ class _PlannerBlockViewState extends ConsumerState<PlannerBlockView> {
     final now = DateTime.now();
     final started = !block.start.isAfter(now);
     final passed = !block.end.isAfter(now);
+    // "Start now" was pressed and "Stop" not yet.
+    final running = mark.runningAt(now);
     final small = theme.textTheme.bodySmall?.copyWith(
       color: theme.colorScheme.onSurfaceVariant,
     );
@@ -286,6 +301,8 @@ class _PlannerBlockViewState extends ConsumerState<PlannerBlockView> {
             Icon(
               mark.done
                   ? Icons.check_circle_outline
+                  : running
+                  ? Icons.play_circle_outline
                   : mark.locked
                   ? Icons.lock_outline
                   : plannerIcon,
@@ -324,9 +341,22 @@ class _PlannerBlockViewState extends ConsumerState<PlannerBlockView> {
         Text(
           mark.skipped
               ? l.plannerHabitSkippedToday
+              : running
+              ? l.plannerReasonRunning
               : planReasonText(l, mark.done ? PlanReason.done : mark.reason),
           style: small,
         ),
+        if (running) ...[
+          const SizedBox(height: 4),
+          Text(
+            l.plannerRunningSince(
+              formatTime(context, mark.started!),
+              plannerElapsed(l, mark.started!, now),
+            ),
+            key: const ValueKey('planner-block-running'),
+            style: small,
+          ),
+        ],
         if (!mark.done && !mark.locked) ...[
           const SizedBox(height: 4),
           Text(l.plannerBlockMoves, style: small),
@@ -351,7 +381,22 @@ class _PlannerBlockViewState extends ConsumerState<PlannerBlockView> {
             ),
           )
         else ...[
-          if (started)
+          if (running)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: FilledButton.icon(
+                key: const ValueKey('planner-block-stop'),
+                onPressed: _busy ? null : () => _timer(() => stopPlannerBlock(context, ref, block)),
+                icon: const Icon(Icons.stop),
+                label: Text(l.plannerStop),
+              ),
+            ),
+          if (running)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(l.plannerStopHint, style: small),
+            ),
+          if (started && !running)
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: FilledButton.icon(
@@ -359,6 +404,16 @@ class _PlannerBlockViewState extends ConsumerState<PlannerBlockView> {
                 icon: const Icon(Icons.check),
                 label: Text(l.plannerDone),
               ),
+            ),
+          if (!running && task != null && !task.completed)
+            ListTile(
+              key: const ValueKey('planner-block-start'),
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.play_arrow),
+              title: Text(l.plannerStartNow),
+              subtitle: Text(l.plannerStartBlockHint),
+              enabled: !_busy,
+              onTap: () => _timer(() => startPlannerBlock(context, ref, block)),
             ),
           if (!started)
             action(
@@ -389,7 +444,9 @@ class _PlannerBlockViewState extends ConsumerState<PlannerBlockView> {
               l.plannerNeedMoreTime,
               () => _needMoreTime(block),
             ),
-          if (passed)
+          if (running)
+            const SizedBox.shrink()
+          else if (passed)
             action(
               Icons.replay,
               l.plannerDidNotDoIt,
@@ -412,7 +469,7 @@ class _PlannerBlockViewState extends ConsumerState<PlannerBlockView> {
               ),
               hint: mark.locked ? null : l.plannerLockHereHint,
             ),
-          action(Icons.open_with, l.move, () => _move(block)),
+          if (!running) action(Icons.open_with, l.move, () => _move(block)),
         ],
         if (!mark.isHabit)
           action(Icons.open_in_new, l.openZtTasks, () {

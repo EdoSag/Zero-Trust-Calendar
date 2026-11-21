@@ -2823,4 +2823,78 @@ class AppL10nHe extends AppL10n {
   @override
   String get plannerAiErrorOther =>
       'עוזר ה-AI לא הצליח לענות. נסו שוב עוד רגע.';
+
+  @override
+  String get plannerForOthers => 'עבור אנשים אחרים';
+
+  @override
+  String get plannerBlocksBusy => 'בלוקים מתוכננים נחשבים כזמן תפוס';
+
+  @override
+  String get plannerBlocksBusyHint =>
+      'דפי קביעת פגישות ו\"מציאת זמן\" מתייחסים לכל בלוק מתוכנן כזמן תפוס. כשזה כבוי, רק בלוקים נעולים ובלוקים שבוצעו תפוסים, ופגישה שנקבעת על בלוק מזיזה את הבלוק.';
+
+  @override
+  String get plannerStartNow => 'להתחיל עכשיו';
+
+  @override
+  String get plannerStartBlockHint =>
+      'מעביר את הבלוק לעכשיו ומודד את זמן העבודה.';
+
+  @override
+  String get plannerStartTaskHint =>
+      'מציב את הבלוק הבא של המשימה ברגע זה ומודד את זמן העבודה.';
+
+  @override
+  String get plannerStop => 'עצירה';
+
+  @override
+  String get plannerStopHint =>
+      'מסיים את הבלוק עכשיו. הזמן שעבדתם נשמר, ושאר המשימה מתוכנן מחדש.';
+
+  @override
+  String get plannerWorkingOn => 'בעבודה על';
+
+  @override
+  String plannerRunningSince(String time, String length) {
+    return 'התחיל ב-$time · $length';
+  }
+
+  @override
+  String get plannerTimerStarted => 'התחיל. עצרו כשתסיימו.';
+
+  @override
+  String plannerTimerStopped(String length) {
+    return 'נעצר. זמן עבודה: $length';
+  }
+
+  @override
+  String plannerTimerStoppedFinished(String length) {
+    return 'נעצר. זמן עבודה: $length. המשימה הושלמה.';
+  }
+
+  @override
+  String get plannerLogTime => 'רישום זמן עבודה';
+
+  @override
+  String get plannerLogTimeHint => 'מוסיף זמן שכבר הושקע במשימה, עד עכשיו.';
+
+  @override
+  String get plannerLogTimeTitle => 'כמה זמן עבדתם?';
+
+  @override
+  String plannerTimeLogged(String length) {
+    return 'נוסף זמן עבודה: $length';
+  }
+
+  @override
+  String plannerTimeLoggedFinished(String length) {
+    return 'נוסף זמן עבודה: $length. המשימה הושלמה.';
+  }
+
+  @override
+  String get plannerLessThanAMinute => 'פחות מדקה';
+
+  @override
+  String get plannerReasonRunning => 'אתם עובדים על זה עכשיו.';
 }

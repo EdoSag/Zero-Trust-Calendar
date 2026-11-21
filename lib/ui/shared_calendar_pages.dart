@@ -10,6 +10,7 @@ import '../data/calendar_store.dart';
 import '../data/find_a_time.dart';
 import '../data/shared_calendars.dart';
 import '../model/calendar_event.dart' show ZtCalendarInfo, calendarPalette;
+import '../planner/planner_controller.dart';
 import '../util/format.dart';
 import 'find_a_time_page.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
@@ -398,6 +399,7 @@ class SharedCalendarPage extends ConsumerWidget {
                 const [ZtCalendarInfo.personal],
             from: dayOf(DateTime.now()),
             exceptCalendarId: shared.id,
+            plannedBusy: ref.read(plannerSettingsProvider).value?.blocksBusy ?? false,
           ),
         );
       } else {
