@@ -156,6 +156,7 @@ PlannerOutcome computePlan({
 
   final stored = <String, CalendarEvent>{};
   final existing = <PlanBlock>[];
+  final timed = <String>{};
   for (final e in events) {
     final mark = PlanMark.of(e);
     if (mark == null) continue;
@@ -168,13 +169,20 @@ PlannerOutcome computePlan({
         task != null &&
         mark.occurrence != null &&
         mark.occurrence != task.occurrence;
+    // A block being timed ("Start now") is in progress until it is
+    // stopped, also after the time it was planned to end: the engine
+    // sees it reach just past now, so it is neither asked about nor
+    // planned again, and the time worked so far counts.
+    final running = mark.runningAt(now);
+    if (running) timed.add(e.id);
+    final nextMinute = DateTime(now.year, now.month, now.day, now.hour, now.minute + 1);
     existing.add(
       PlanBlock(
         id: e.id,
         itemId: earlier ? '${mark.itemId}@${mark.occurrence}' : mark.itemId,
         kind: mark.kind,
-        start: PlanTime.wall(e.start),
-        end: PlanTime.wall(e.end),
+        start: PlanTime.wall(running && e.start.isAfter(now) ? now : e.start),
+        end: PlanTime.wall(running && e.end.isBefore(nextMinute) ? nextMinute : e.end),
         locked: mark.locked,
         // A habit whose time has passed counts as kept unless it was
         // skipped: it isn't asked about, and it stays in the calendar as
@@ -210,8 +218,11 @@ PlannerOutcome computePlan({
   for (final b in result.blocks) {
     final old = stored[b.id];
     final oldMark = PlanMark.of(old);
-    final start = PlanTime.local(b.start);
-    final end = PlanTime.local(b.end);
+    // A block being timed keeps the times it is stored with: stopping it
+    // writes the real ones.
+    final keep = old != null && timed.contains(b.id);
+    final start = keep ? old.start : PlanTime.local(b.start);
+    final end = keep ? old.end : PlanTime.local(b.end);
     if (old == null || oldMark == null) {
       if (b.kind == PlanBlockKind.habit) {
         final habit = habitsById[b.itemId];

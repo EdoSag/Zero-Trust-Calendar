@@ -86,6 +86,16 @@ account, settings and look as the other Zero-Trust apps, built on
   task** suggests the earliest free time on each of the next days, in work
   hours, personal hours or any time, and adds the task as an ordinary event
   linked to it.
+- **Timing a task** (in the Planner): **Start now** on a block or a planned
+  task puts the block at this moment and times the work; **Stop** ends it
+  at the time really worked and marks it done, so the rest of the task is
+  planned again; **Log time worked** adds time already spent, ending now.
+  The time is kept as done blocks in the Planned calendar, so it counts
+  toward the task and syncs like any event. One block is timed at a time,
+  and what is being timed shows across the top of the calendar with Stop.
+- **Planned blocks count as busy** (Planner > Calendars that count as busy,
+  off by default): booking pages and Find a time treat every planned block
+  as taken, not only locked and done ones.
 - **AI helper** (Plus, optional, hidden until the server switches it on;
   each part off until you switch it on, after a screen that says what is
   sent): **Guess task lengths** sends a task's title and gets back minutes;

@@ -12,6 +12,7 @@ import 'month_view.dart';
 import 'navigation.dart';
 import 'planner_page.dart';
 import 'planner_risks.dart';
+import 'planner_timer.dart';
 import 'quick_add_sheet.dart';
 import 'schedule_view.dart';
 import 'search_page.dart';
@@ -117,6 +118,7 @@ class HomePage extends ConsumerWidget {
       body: Column(
         children: [
           const PlannerRiskBanner(),
+          const PlannerRunningBar(),
           Expanded(child: body),
         ],
       ),

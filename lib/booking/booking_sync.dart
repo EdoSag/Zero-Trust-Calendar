@@ -39,11 +39,12 @@ class BookingSync {
     required List<ZtCalendarInfo> calendars,
     required BookingEventText text,
     DateTime? now,
+    bool plannedBusy = false,
   }) async {
     while (_running != null) {
       await _running;
     }
-    final run = _sync(events, calendars, text, now ?? DateTime.now());
+    final run = _sync(events, calendars, text, now ?? DateTime.now(), plannedBusy);
     _running = run;
     try {
       await run;
@@ -57,6 +58,7 @@ class BookingSync {
     List<ZtCalendarInfo> calendars,
     BookingEventText text,
     DateTime now,
+    bool plannedBusy,
   ) async {
     if (_ref.read(vaultControllerProvider) is! VaultUnlocked) return;
     final pages = {for (final p in await _backend.pages()) p.id: p};
@@ -72,6 +74,7 @@ class BookingSync {
       ],
       calendars,
       now,
+      plannedBusy,
     );
     if (changed.isNotEmpty) _ref.read(bookingRevisionProvider.notifier).bump();
   }
@@ -99,9 +102,15 @@ class BookingSync {
     List<CalendarEvent> events,
     List<ZtCalendarInfo> calendars,
     DateTime now,
+    bool plannedBusy,
   ) async {
     final from = DateTime(now.year, now.month, now.day);
-    final blocks = busyBlocks(events: events, calendars: calendars, from: from);
+    final blocks = busyBlocks(
+      events: events,
+      calendars: calendars,
+      from: from,
+      plannedBusy: plannedBusy,
+    );
     final json = jsonEncode(busyJson(blocks));
     final owner = _ref.read(accountServiceProvider).currentUserId;
     if (owner != _lastOwner) reset();
