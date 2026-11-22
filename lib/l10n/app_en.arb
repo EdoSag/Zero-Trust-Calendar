@@ -2034,5 +2034,71 @@
   "useMyWorkingHours": "Use my working hours",
   "myWorkingHours": "My working hours",
   "outOfOffice": "Out of office",
-  "outOfOfficeHint": "Counts as busy, even all day: booking pages and Find a time won't offer this time"
+  "outOfOfficeHint": "Counts as busy, even all day: booking pages and Find a time won't offer this time",
+  "meetingPolls": "Meeting polls",
+  "meetingPollsHint": "Propose a few times and let guests vote",
+  "meetingPollsIntro": "Propose a few times and share the link. Guests mark the times that work for them, no account needed. Then pick a time and it goes into your calendar.",
+  "newMeetingPoll": "New poll",
+  "pollNone": "No polls yet.",
+  "pollCreate": "Create",
+  "pollTitleHint": "What is it for?",
+  "pollHostHint": "Your name (guests see it)",
+  "pollLocationHint": "Place or video link (optional)",
+  "pollDescriptionHint": "Details (optional)",
+  "pollTimes": "Times to vote on",
+  "pollTimesHint": "Suggested from free times in your working hours. Remove or add times as you like.",
+  "pollAddTime": "Add a time",
+  "pollRemoveTime": "Remove this time",
+  "pollNeedsTitle": "Give the poll a title.",
+  "pollNeedsTimes": "Add at least two times.",
+  "pollTimesCount": "Times: {count}",
+  "@pollTimesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pollVoteCount": "Votes: {count}",
+  "@pollVoteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pollShare": "Share the link",
+  "pollShareText": "{title}: which times work for you? Vote here: {link}",
+  "pollYesNames": "Yes ({count}): {names}",
+  "@pollYesNames": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "pollMaybeNames": "Maybe ({count}): {names}",
+  "@pollMaybeNames": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "pollBest": "Best so far",
+  "pollPick": "Pick this time",
+  "pollPickConfirm": "Add the event on {when} to your calendar? Guests who left an email and can make it are added as guests. The poll closes and shows the picked time.",
+  "pollPickedOn": "Picked: {when}",
+  "pollOpenEvent": "Open the event",
+  "pollDelete": "Delete poll",
+  "pollDeleteConfirm": "Guests won't be able to open the link any more. An event you already added stays in your calendar.",
+  "pollGone": "This poll was deleted.",
+  "pollLoadFailed": "Couldn't load the votes: {error}",
+  "pollPrivacy": "The poll and the votes are encrypted with a key that is only in the link, so our server can't read them. Guests' emails are encrypted so that only you can read them."
 }

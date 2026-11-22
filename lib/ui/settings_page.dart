@@ -22,6 +22,7 @@ import 'booking_pages_page.dart';
 import 'calendars_page.dart';
 import 'desktop_bridge_page.dart';
 import 'jewish_calendar_page.dart';
+import 'meeting_polls_page.dart';
 import 'phone_calendar_page.dart';
 import 'subscribe_page.dart';
 import 'working_hours_tile.dart';
@@ -70,6 +71,14 @@ class CalendarSettingsPage extends ConsumerWidget {
           subtitle: Text(context.l10n.bookingPagesHint),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const BookingPagesPage()),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.how_to_vote_outlined),
+          title: Text(context.l10n.meetingPolls),
+          subtitle: Text(context.l10n.meetingPollsHint),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const MeetingPollsPage()),
           ),
         ),
         const WorkingHoursTile(),
