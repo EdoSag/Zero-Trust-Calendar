@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/find_a_time.dart';
 import '../data/shared_calendars.dart';
 import '../model/calendar_event.dart';
+import '../planner/planner_controller.dart';
 import '../util/format.dart';
 import 'event_editor_page.dart';
+import 'working_hours_tile.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Slots when every member who shares their busy times is free, and the
@@ -23,6 +25,9 @@ class _FindATimePageState extends ConsumerState<FindATimePage> {
   Duration _length = const Duration(hours: 1);
   bool _evenings = false;
   bool _weekends = false;
+
+  /// Only slots inside my working hours (K-7). On by default.
+  bool _workingHours = true;
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +51,9 @@ class _FindATimePageState extends ConsumerState<FindATimePage> {
     final busy = [
       for (final b in sharing) ...b.blocks,
       for (final e in shared.events)
-        if (!e.allDay) ...e.occurrencesBetween(from, addDays(from, 15)),
+        if (!e.allDay || e.outOfOffice) ...e.occurrencesBetween(from, addDays(from, 15)),
     ];
+    ref.watch(plannerSettingsProvider); // Working hours live there.
     final slots = freeSlots(
       busy: busy,
       from: from,
@@ -56,6 +62,7 @@ class _FindATimePageState extends ConsumerState<FindATimePage> {
       dayStartHour: 8,
       dayEndHour: _evenings ? 22 : 18,
       weekends: _weekends,
+      hours: _workingHours ? currentWorkingHours(ref) : null,
     );
     final byDay = <DateTime, List<DateTime>>{};
     for (final s in slots) {
@@ -87,15 +94,23 @@ class _FindATimePageState extends ConsumerState<FindATimePage> {
                     onSelected: (_) => setState(() => _length = d),
                   ),
                 FilterChip(
-                  label: Text(l.findATimeEvenings),
-                  selected: _evenings,
-                  onSelected: (v) => setState(() => _evenings = v),
+                  key: const ValueKey('find-a-time-working-hours'),
+                  label: Text(l.myWorkingHours),
+                  selected: _workingHours,
+                  onSelected: (v) => setState(() => _workingHours = v),
                 ),
-                FilterChip(
-                  label: Text(l.findATimeWeekends),
-                  selected: _weekends,
-                  onSelected: (v) => setState(() => _weekends = v),
-                ),
+                if (!_workingHours) ...[
+                  FilterChip(
+                    label: Text(l.findATimeEvenings),
+                    selected: _evenings,
+                    onSelected: (v) => setState(() => _evenings = v),
+                  ),
+                  FilterChip(
+                    label: Text(l.findATimeWeekends),
+                    selected: _weekends,
+                    onSelected: (v) => setState(() => _weekends = v),
+                  ),
+                ],
               ],
             ),
           ),

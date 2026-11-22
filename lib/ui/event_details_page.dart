@@ -314,6 +314,12 @@ class EventDetailsPage extends ConsumerWidget {
                 ],
               ),
             ),
+          if (event.outOfOffice)
+            ListTile(
+              leading: const Icon(Icons.work_off_outlined),
+              title: Text(context.l10n.outOfOffice),
+              subtitle: Text(context.l10n.outOfOfficeHint),
+            ),
           if (event.location.isNotEmpty)
             ListTile(
               leading: const Icon(Icons.place_outlined),

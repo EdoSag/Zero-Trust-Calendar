@@ -3069,4 +3069,24 @@ class AppL10nEn extends AppL10n {
   @override
   String get holidaysScheduleAbroad =>
       'Holidays as kept outside Israel (second festival days)';
+
+  @override
+  String get workingHours => 'Working hours';
+
+  @override
+  String get workingHoursHint =>
+      'Booking pages, Find a time and the Planner use these';
+
+  @override
+  String get useMyWorkingHours => 'Use my working hours';
+
+  @override
+  String get myWorkingHours => 'My working hours';
+
+  @override
+  String get outOfOffice => 'Out of office';
+
+  @override
+  String get outOfOfficeHint =>
+      'Counts as busy, even all day: booking pages and Find a time won\'t offer this time';
 }

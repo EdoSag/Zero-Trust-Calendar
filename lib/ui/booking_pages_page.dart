@@ -14,6 +14,7 @@ import '../reminders/reminders.dart';
 import '../util/format.dart';
 import '../util/time_zones.dart';
 import 'time_zone_picker.dart';
+import 'working_hours_tile.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Settings › Booking pages (K15): the account's booking pages and the
@@ -457,8 +458,27 @@ class _BookingPageEditorState extends ConsumerState<BookingPageEditor> {
           ),
           const Divider(),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Text(l.bookingHours, style: Theme.of(context).textTheme.titleSmall),
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 8, 0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(l.bookingHours, style: Theme.of(context).textTheme.titleSmall),
+                ),
+                TextButton.icon(
+                  key: const ValueKey('booking-use-working-hours'),
+                  onPressed: () {
+                    final hours = currentWorkingHours(ref);
+                    setState(() {
+                      _hours = {
+                        for (var d = 1; d <= 7; d++) d: [...?hours[d]],
+                      };
+                    });
+                  },
+                  icon: const Icon(Icons.work_history_outlined, size: 18),
+                  label: Text(l.useMyWorkingHours),
+                ),
+              ],
+            ),
           ),
           for (final d in days) _dayRow(d, dayName.format(DateTime(2024, 1, d))),
           const Divider(),

@@ -3045,4 +3045,23 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get holidaysScheduleAbroad => 'חגים כפי שנוהגים בחו״ל (יום טוב שני)';
+
+  @override
+  String get workingHours => 'שעות עבודה';
+
+  @override
+  String get workingHoursHint => 'דפי הזמנה, ״מציאת זמן״ והמתכנן משתמשים בהן';
+
+  @override
+  String get useMyWorkingHours => 'לפי שעות העבודה שלי';
+
+  @override
+  String get myWorkingHours => 'שעות העבודה שלי';
+
+  @override
+  String get outOfOffice => 'מחוץ למשרד';
+
+  @override
+  String get outOfOfficeHint =>
+      'נחשב תפוס, גם כאירוע של יום שלם: דפי הזמנה ו״מציאת זמן״ לא יציעו את הזמן הזה';
 }

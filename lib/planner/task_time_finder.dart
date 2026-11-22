@@ -38,7 +38,7 @@ List<(DateTime, DateTime)> findTaskTimes({
       if (!mark.done && !e.allDay && e.end.isAfter(e.start)) busy.add((e.start, e.end));
       continue;
     }
-    if (skip.contains(e.calendarId) || (e.allDay && !settings.allDayBusy)) continue;
+    if (skip.contains(e.calendarId) || (e.allDay && !settings.allDayBusy && !e.outOfOffice)) continue;
     final gap = e.allDay ? Duration.zero : Duration(minutes: settings.breakAfterMeetings);
     for (final (s, end) in e.occurrencesBetween(today, until)) {
       if (end.isAfter(s)) busy.add((s, end.add(gap)));
