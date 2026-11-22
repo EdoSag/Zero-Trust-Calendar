@@ -7,6 +7,7 @@ import '../data/entries.dart';
 import '../util/format.dart';
 import 'entry_widgets.dart';
 import 'navigation.dart';
+import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// Month grid, swiped left and right. Tapping a day opens it in the day
 /// view; a long press starts a new all-day event on it.
@@ -85,12 +86,26 @@ class _MonthPage extends ConsumerWidget {
     final weekStart = weekStartOf(context, settings);
     final first = startOfWeek(month, weekStart);
     final lastOfMonth = DateTime(month.year, month.month + 1, 0);
-    final weeks =
+    final allWeeks =
         ((lastOfMonth.difference(first).inHours / 24).round() + 1 + 6) ~/ 7;
-    final range = DateRange(first, addDays(first, weeks * 7));
+    final range = DateRange(first, addDays(first, allWeeks * 7));
     final entries = ref.watch(entriesProvider(range)).value ?? const [];
     final theme = Theme.of(context);
     final today = dayOf(DateTime.now());
+    // "Hide weekends": those columns go; so does a row left with no day of
+    // this month.
+    final hidden = settings.hideWeekends ? weekendDays(context) : const <int>{};
+    final columns = [
+      for (var i = 0; i < 7; i++)
+        if (!hidden.contains(addDays(first, i).weekday)) i,
+    ];
+    final weeks = [
+      for (var w = 0; w < allWeeks; w++)
+        if (columns.any((d) => addDays(first, w * 7 + d).month == month.month)) w,
+    ];
+    final labelStyle = theme.textTheme.labelSmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
 
     return Column(
       children: [
@@ -98,14 +113,13 @@ class _MonthPage extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: 6),
           child: Row(
             children: [
-              for (var i = 0; i < 7; i++)
+              if (settings.showWeekNumbers) const SizedBox(width: weekNumberWidth),
+              for (final i in columns)
                 Expanded(
                   child: Center(
                     child: Text(
                       DateFormat.E().format(addDays(first, i)),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                      style: labelStyle,
                     ),
                   ),
                 ),
@@ -115,11 +129,13 @@ class _MonthPage extends ConsumerWidget {
         Expanded(
           child: Column(
             children: [
-              for (var w = 0; w < weeks; w++)
+              for (final w in weeks)
                 Expanded(
                   child: Row(
                     children: [
-                      for (var d = 0; d < 7; d++)
+                      if (settings.showWeekNumbers)
+                        WeekNumberLabel(rowStart: addDays(first, w * 7)),
+                      for (final d in columns)
                         Expanded(
                           child: _DayCell(
                             day: addDays(first, w * 7 + d),
@@ -144,6 +160,53 @@ class _MonthPage extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Width of the week number column beside the month and year views.
+const double weekNumberWidth = 26;
+
+/// The week number beside a row of days starting on [rowStart] ("W47").
+class WeekNumberLabel extends StatelessWidget {
+  const WeekNumberLabel({
+    super.key,
+    required this.rowStart,
+    this.width = weekNumberWidth,
+    this.fontSize,
+    this.centered = false,
+  });
+
+  final DateTime rowStart;
+  final double width;
+  final double? fontSize;
+
+  /// Centred in its row (the small month grids); otherwise at the top,
+  /// level with the day numbers.
+  final bool centered;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final n = weekNumberOfRow(rowStart);
+    return SizedBox(
+      width: width,
+      child: Semantics(
+        label: context.l10n.weekNumberLong(n),
+        excludeSemantics: true,
+        child: Container(
+          alignment: centered ? Alignment.center : Alignment.topCenter,
+          padding: centered ? null : const EdgeInsets.only(top: 6),
+          child: Text(
+            '$n',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelSmall?.copyWith(
+              fontSize: fontSize,
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

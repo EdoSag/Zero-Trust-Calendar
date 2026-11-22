@@ -4709,6 +4709,66 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Video call link'**
   String get insertEventLink;
+
+  /// No description provided for @year.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get year;
+
+  /// No description provided for @showWeekNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Show week numbers'**
+  String get showWeekNumbers;
+
+  /// No description provided for @showWeekNumbersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Beside the month and year views, and over the day columns'**
+  String get showWeekNumbersHint;
+
+  /// No description provided for @hideWeekends.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide weekends'**
+  String get hideWeekends;
+
+  /// No description provided for @hideWeekendsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The week and month views leave out {days}'**
+  String hideWeekendsHint(String days);
+
+  /// No description provided for @weekNumberLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Week {n}'**
+  String weekNumberLong(int n);
+
+  /// No description provided for @twoDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{first} and {second}'**
+  String twoDays(String first, String second);
+
+  /// No description provided for @previousMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get previousMonth;
+
+  /// No description provided for @nextMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get nextMonth;
+
+  /// No description provided for @views.
+  ///
+  /// In en, this message translates to:
+  /// **'Views'**
+  String get views;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

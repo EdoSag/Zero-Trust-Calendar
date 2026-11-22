@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
 /// The calendar view on screen.
-enum CalendarView { schedule, day, threeDay, week, month }
+/// [year] is last so older saved values keep their meaning.
+enum CalendarView { schedule, day, threeDay, week, month, year }
 
 /// Calendar's own per-install settings, kept with the core's preferences.
 @immutable
@@ -21,6 +22,8 @@ class CalendarSettings {
     this.phoneCalendarIds = const {},
     this.phoneCalendarOwner,
     this.showCompletedTasks = true,
+    this.showWeekNumbers = false,
+    this.hideWeekends = false,
   });
 
   final CalendarView view;
@@ -64,6 +67,14 @@ class CalendarSettings {
   /// Ticked-off ZT Tasks tasks stay on the calendar, crossed out.
   final bool showCompletedTasks;
 
+  /// Week numbers beside the month and year views and over the day columns
+  /// (K11).
+  final bool showWeekNumbers;
+
+  /// The week and month views leave out the weekend (Friday and Saturday
+  /// in Hebrew, Saturday and Sunday elsewhere; see [weekendDaysFor]).
+  final bool hideWeekends;
+
   static const _unset = Object();
 
   CalendarSettings copyWith({
@@ -79,6 +90,8 @@ class CalendarSettings {
     Set<String>? phoneCalendarIds,
     String? phoneCalendarOwner,
     bool? showCompletedTasks,
+    bool? showWeekNumbers,
+    bool? hideWeekends,
   }) => CalendarSettings(
     view: view ?? this.view,
     showTasks: showTasks ?? this.showTasks,
@@ -96,6 +109,8 @@ class CalendarSettings {
     phoneCalendarIds: phoneCalendarIds ?? this.phoneCalendarIds,
     phoneCalendarOwner: phoneCalendarOwner ?? this.phoneCalendarOwner,
     showCompletedTasks: showCompletedTasks ?? this.showCompletedTasks,
+    showWeekNumbers: showWeekNumbers ?? this.showWeekNumbers,
+    hideWeekends: hideWeekends ?? this.hideWeekends,
   );
 
   Map<String, String> toPrefs() => {
@@ -111,6 +126,8 @@ class CalendarSettings {
     'phoneCalendars': (phoneCalendarIds.toList()..sort()).join(','),
     'phoneCalendarsOwner': phoneCalendarOwner ?? '',
     'showCompletedTasks': '$showCompletedTasks',
+    'showWeekNumbers': '$showWeekNumbers',
+    'hideWeekends': '$hideWeekends',
   };
 
   static CalendarSettings fromPrefs(Map<String, String?> p) {
@@ -138,6 +155,8 @@ class CalendarSettings {
           if (id.isNotEmpty) id,
       },
       showCompletedTasks: b('showCompletedTasks', d.showCompletedTasks),
+      showWeekNumbers: b('showWeekNumbers', d.showWeekNumbers),
+      hideWeekends: b('hideWeekends', d.hideWeekends),
     );
   }
 }

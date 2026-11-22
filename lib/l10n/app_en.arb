@@ -1944,5 +1944,39 @@
   "insertEventWhen": "Date and time",
   "insertEventDate": "Date",
   "insertEventPlace": "Place",
-  "insertEventLink": "Video call link"
+  "insertEventLink": "Video call link",
+  "year": "Year",
+  "showWeekNumbers": "Show week numbers",
+  "showWeekNumbersHint": "Beside the month and year views, and over the day columns",
+  "hideWeekends": "Hide weekends",
+  "hideWeekendsHint": "The week and month views leave out {days}",
+  "@hideWeekendsHint": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "weekNumberLong": "Week {n}",
+  "@weekNumberLong": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "twoDays": "{first} and {second}",
+  "@twoDays": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month",
+  "views": "Views"
 }

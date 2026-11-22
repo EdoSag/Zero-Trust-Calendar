@@ -24,6 +24,33 @@ int localeWeekStart(BuildContext context) {
   return index == 0 ? DateTime.sunday : index;
 }
 
+/// The ISO 8601 week number of [d] (weeks start on Monday; week 1 holds
+/// the year's first Thursday).
+int isoWeekNumber(DateTime d) {
+  final day = DateTime.utc(d.year, d.month, d.day);
+  final thursday = day.add(Duration(days: DateTime.thursday - day.weekday));
+  final firstOfYear = DateTime.utc(thursday.year);
+  return thursday.difference(firstOfYear).inDays ~/ 7 + 1;
+}
+
+/// The week number shown beside a row of days starting on [rowStart]. The
+/// row's fourth day decides, so a row starting on Sunday or Saturday gets
+/// the number of the Monday-to-Sunday week it mostly covers.
+int weekNumberOfRow(DateTime rowStart) => isoWeekNumber(addDays(rowStart, 3));
+
+/// The weekend for [languageCode] and [countryCode]: Friday and Saturday in
+/// Hebrew or in Israel, Saturday and Sunday elsewhere.
+Set<int> weekendDaysFor(String languageCode, String? countryCode) =>
+    languageCode == 'he' || languageCode == 'iw' || countryCode == 'IL'
+        ? const {DateTime.friday, DateTime.saturday}
+        : const {DateTime.saturday, DateTime.sunday};
+
+/// The weekend in the app's language.
+Set<int> weekendDays(BuildContext context) {
+  final locale = Localizations.maybeLocaleOf(context);
+  return weekendDaysFor(locale?.languageCode ?? 'en', locale?.countryCode);
+}
+
 String formatTime(BuildContext context, DateTime t) {
   final use24 = MediaQuery.maybeOf(context)?.alwaysUse24HourFormat ?? false;
   return MaterialLocalizations.of(context).formatTimeOfDay(

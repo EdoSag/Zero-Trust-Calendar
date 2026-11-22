@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Long-press the app icon (K10). Each opens ZT Calendar the way a home-screen widget
+     tap does (home_widget's LAUNCH action), so a shortcut used while the app is locked
+     still opens the editor once it is unlocked (see pendingWidgetTap in app_gate.dart). -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="new_event"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_new_event"
+        android:shortcutShortLabel="@string/shortcut_new_event"
+        android:shortcutLongLabel="@string/shortcut_new_event">
+        <intent
+            android:action="es.antonborri.home_widget.action.LAUNCH"
+            android:targetPackage="dev.sagron.zerotrustcalendar"
+            android:targetClass="dev.sagron.zerotrustcalendar.MainActivity"
+            android:data="ztcalendar://new-event"/>
+    </shortcut>
+    <shortcut
+        android:shortcutId="quick_add"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_quick_add"
+        android:shortcutShortLabel="@string/shortcut_quick_add"
+        android:shortcutLongLabel="@string/shortcut_quick_add_long">
+        <intent
+            android:action="es.antonborri.home_widget.action.LAUNCH"
+            android:targetPackage="dev.sagron.zerotrustcalendar"
+            android:targetClass="dev.sagron.zerotrustcalendar.MainActivity"
+            android:data="ztcalendar://quick-add"/>
+    </shortcut>
+    <shortcut
+        android:shortcutId="today"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_today"
+        android:shortcutShortLabel="@string/shortcut_today"
+        android:shortcutLongLabel="@string/shortcut_today">
+        <intent
+            android:action="es.antonborri.home_widget.action.LAUNCH"
+            android:targetPackage="dev.sagron.zerotrustcalendar"
+            android:targetClass="dev.sagron.zerotrustcalendar.MainActivity"
+            android:data="ztcalendar://today"/>
+    </shortcut>
+</shortcuts>

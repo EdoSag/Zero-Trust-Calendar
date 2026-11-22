@@ -51,4 +51,8 @@
     <string name="agenda_preview_3_time">17:30</string>
     <string name="date_icon_widget_label">Date</string>
     <string name="date_icon_widget_description">Today\'s date, like a calendar icon</string>
+    <string name="shortcut_new_event">New event</string>
+    <string name="shortcut_quick_add">Quick add</string>
+    <string name="shortcut_quick_add_long">Quick add an event or task</string>
+    <string name="shortcut_today">Today</string>
 </resources>

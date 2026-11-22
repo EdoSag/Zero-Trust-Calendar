@@ -29,6 +29,7 @@ import '../ui/event_details_page.dart';
 import '../ui/home_page.dart';
 import '../ui/navigation.dart';
 import '../ui/pick_for_keyboard_page.dart';
+import '../ui/quick_add_sheet.dart';
 import '../ui/planner_widgets.dart';
 import '../util/format.dart';
 import '../booking/booking_pages.dart';
@@ -267,8 +268,8 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     await KeyboardPick.finish(picked);
   }
 
-  /// "Up next" and "My day" open today; their + opens a new event. Each tap
-  /// is taken once.
+  /// "Up next" and "My day" open today; their + opens a new event. The app
+  /// icon's shortcuts (K10) come the same way. Each tap is taken once.
   void _takeWidgetTap() {
     final uri = pendingWidgetTap.value;
     if (uri == null || !mounted) return;
@@ -289,6 +290,8 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
       );
     }
     if (uri.host == 'new-event') createEvent(context);
+    // The app icon's long-press "Quick add" (K10).
+    if (uri.host == 'quick-add') showQuickAdd(context).ignore();
     // "My day": its task list opens ZT Tasks.
     if (uri.host == 'tasks') openLinkedApp(LinkedApp.tasks).ignore();
   }

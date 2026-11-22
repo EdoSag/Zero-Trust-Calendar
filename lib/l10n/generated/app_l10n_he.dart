@@ -2924,4 +2924,40 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get insertEventLink => 'קישור לשיחת וידאו';
+
+  @override
+  String get year => 'שנה';
+
+  @override
+  String get showWeekNumbers => 'הצגת מספרי שבועות';
+
+  @override
+  String get showWeekNumbersHint => 'ליד תצוגות החודש והשנה, ומעל עמודות הימים';
+
+  @override
+  String get hideWeekends => 'הסתרת סופי שבוע';
+
+  @override
+  String hideWeekendsHint(String days) {
+    return 'תצוגות השבוע והחודש לא יציגו את $days';
+  }
+
+  @override
+  String weekNumberLong(int n) {
+    return 'שבוע $n';
+  }
+
+  @override
+  String twoDays(String first, String second) {
+    return '$first ו$second';
+  }
+
+  @override
+  String get previousMonth => 'החודש הקודם';
+
+  @override
+  String get nextMonth => 'החודש הבא';
+
+  @override
+  String get views => 'תצוגות';
 }
