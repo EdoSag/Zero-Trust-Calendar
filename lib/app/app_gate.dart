@@ -199,6 +199,42 @@ class _AppGateState extends ConsumerState<AppGate> with WidgetsBindingObserver {
   }
 }
 
+/// The notifications for bookings just added (K-6): "New booking" with
+/// who and when, or only when if event titles are kept out of
+/// notifications. More than three at once (the app was closed a while)
+/// become one notification.
+List<Notice> bookingNotices(
+  List<CalendarEvent> added, {
+  required bool showTitles,
+  required DateTime now,
+  required String Function(DateTime) formatTime,
+}) {
+  final l = currentL10n;
+  String when(CalendarEvent e) =>
+      '${relativeDay(e.start, now: now)}, ${l.spanTo(formatTime(e.start), formatTime(e.end))}';
+  final sorted = [...added]..sort((a, b) => a.start.compareTo(b.start));
+  if (sorted.length > 3) {
+    final first = sorted.first;
+    return [
+      Notice(
+        eventId: first.id,
+        start: first.start,
+        title: l.newBookingsCount(sorted.length),
+        body: l.newBookingsFirst(when(first)),
+      ),
+    ];
+  }
+  return [
+    for (final e in sorted)
+      Notice(
+        eventId: e.id,
+        start: e.start,
+        title: l.newBookingTitle,
+        body: showTitles ? '${e.title}\n${when(e)}' : when(e),
+      ),
+  ];
+}
+
 /// The calendar once unlocked: runs sync, keeps reminders, the home widget
 /// and "Show on this phone" in step with the events, refreshes subscribed
 /// calendars, and handles reminder buttons and files other apps open
@@ -482,8 +518,9 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     List<ZtCalendarInfo> calendars,
     DateTime now,
   ) async {
+    List<CalendarEvent> added;
     try {
-      await ref.read(bookingSyncProvider).sync(
+      added = await ref.read(bookingSyncProvider).sync(
         events: events,
         calendars: calendars,
         plannedBusy: _plannedBusy,
@@ -495,6 +532,23 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
       );
     } on Object {
       // Offline, or booking pages not set up on the server: next time.
+      return;
+    }
+    if (added.isEmpty || !mounted) return;
+    // K-6: someone booked a slot. The phone that takes the booking says so.
+    final settings = ref.read(calendarSettingsProvider);
+    final scheduler = ref.read(reminderSchedulerProvider);
+    for (final notice in bookingNotices(
+      added,
+      showTitles: settings.notificationTitles,
+      now: now,
+      formatTime: (t) => formatTime(context, t),
+    )) {
+      try {
+        await scheduler.showNotice(notice);
+      } on Object {
+        // Notifications off: the booking is in the calendar all the same.
+      }
     }
   }
 

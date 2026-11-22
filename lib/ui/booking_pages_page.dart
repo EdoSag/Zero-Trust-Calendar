@@ -10,6 +10,7 @@ import '../booking/booking_pages.dart';
 import '../data/calendar_store.dart';
 import '../model/calendar_event.dart';
 import '../planner/planner_model.dart';
+import '../reminders/reminders.dart';
 import '../util/format.dart';
 import '../util/time_zones.dart';
 import 'time_zone_picker.dart';
@@ -270,6 +271,10 @@ class _BookingPageEditorState extends ConsumerState<BookingPageEditor> {
         ),
       );
       ref.read(bookingRevisionProvider.notifier).bump();
+      // A new page: ask once for notifications, so "New booking" can show.
+      if (widget.page == null) {
+        await ref.read(reminderSchedulerProvider).requestPermission().catchError((Object _) => false);
+      }
       if (mounted) Navigator.of(context).pop();
     } on Object catch (e) {
       say(l.couldNotSave('$e'));
@@ -301,6 +306,10 @@ class _BookingPageEditorState extends ConsumerState<BookingPageEditor> {
         BookingPageKey.itemIdFor(page.id),
       );
       ref.read(bookingRevisionProvider.notifier).bump();
+      // A new page: ask once for notifications, so "New booking" can show.
+      if (widget.page == null) {
+        await ref.read(reminderSchedulerProvider).requestPermission().catchError((Object _) => false);
+      }
       if (mounted) Navigator.of(context).pop();
     } on Object catch (e) {
       messenger.showSnackBar(

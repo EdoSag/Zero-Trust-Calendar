@@ -34,7 +34,8 @@ class BookingSync {
   BookingBackend get _backend => _ref.read(bookingBackendProvider);
 
   /// Runs one pass (a pass already running is joined, then run again).
-  Future<void> sync({
+  /// Returns the bookings this pass added to the calendar.
+  Future<List<CalendarEvent>> sync({
     required List<CalendarEvent> events,
     required List<ZtCalendarInfo> calendars,
     required BookingEventText text,
@@ -47,22 +48,22 @@ class BookingSync {
     final run = _sync(events, calendars, text, now ?? DateTime.now(), plannedBusy);
     _running = run;
     try {
-      await run;
+      return await run;
     } finally {
       if (identical(_running, run)) _running = null;
     }
   }
 
-  Future<void> _sync(
+  Future<List<CalendarEvent>> _sync(
     List<CalendarEvent> events,
     List<ZtCalendarInfo> calendars,
     BookingEventText text,
     DateTime now,
     bool plannedBusy,
   ) async {
-    if (_ref.read(vaultControllerProvider) is! VaultUnlocked) return;
+    if (_ref.read(vaultControllerProvider) is! VaultUnlocked) return const [];
     final pages = {for (final p in await _backend.pages()) p.id: p};
-    if (pages.isEmpty) return;
+    if (pages.isEmpty) return const [];
     final (:added, :changed) = await _takeBookings(pages, calendars, text);
     final removed = {for (final id in changed) id};
     await _uploadBusy(
@@ -77,6 +78,7 @@ class BookingSync {
       plannedBusy,
     );
     if (changed.isNotEmpty) _ref.read(bookingRevisionProvider.notifier).bump();
+    return added;
   }
 
   Future<({List<CalendarEvent> added, List<String> changed})> _takeBookings(

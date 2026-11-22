@@ -4769,6 +4769,36 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Views'**
   String get views;
+
+  /// No description provided for @newBookingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New booking'**
+  String get newBookingTitle;
+
+  /// No description provided for @newBookingsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new bookings'**
+  String newBookingsCount(int count);
+
+  /// No description provided for @newBookingsFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'First: {when}'**
+  String newBookingsFirst(String when);
+
+  /// No description provided for @newBookingsChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'New bookings'**
+  String get newBookingsChannel;
+
+  /// No description provided for @newBookingsChannelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone books a time on one of your booking pages'**
+  String get newBookingsChannelHint;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
