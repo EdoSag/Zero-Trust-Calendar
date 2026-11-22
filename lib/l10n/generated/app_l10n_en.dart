@@ -2917,4 +2917,31 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get plannerReasonRunning => 'You are working on it now.';
+
+  @override
+  String get insertIntoKeyboard => 'Insert into ZT Keyboard';
+
+  @override
+  String get insertPickHint => 'Tap a date, or an event and then what to type.';
+
+  @override
+  String get insertAnotherDate => 'Another date';
+
+  @override
+  String get insertNoEvents => 'No events in the next 30 days.';
+
+  @override
+  String get insertEventTitle => 'Title';
+
+  @override
+  String get insertEventWhen => 'Date and time';
+
+  @override
+  String get insertEventDate => 'Date';
+
+  @override
+  String get insertEventPlace => 'Place';
+
+  @override
+  String get insertEventLink => 'Video call link';
 }

@@ -28,6 +28,7 @@ import '../ui/linked_pickers.dart';
 import '../ui/event_details_page.dart';
 import '../ui/home_page.dart';
 import '../ui/navigation.dart';
+import '../ui/pick_for_keyboard_page.dart';
 import '../ui/planner_widgets.dart';
 import '../util/format.dart';
 import '../booking/booking_pages.dart';
@@ -252,7 +253,18 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
       _takeFiles();
       _refreshFeeds();
       _takeWidgetTap();
+      _takeKeyboardPick();
     });
+  }
+
+  /// ZT Keyboard's "Insert from ZT apps" key: pick a date or an event's time
+  /// for the keyboard to type. Only reached once the vault is unlocked.
+  Future<void> _takeKeyboardPick() async {
+    if (!await KeyboardPick.requested() || !mounted) return;
+    final picked = await Navigator.of(
+      context,
+    ).push<String>(MaterialPageRoute(builder: (_) => const PickForKeyboardPage()));
+    await KeyboardPick.finish(picked);
   }
 
   /// "Up next" and "My day" open today; their + opens a new event. Each tap

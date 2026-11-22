@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.OpenableColumns
@@ -34,9 +35,36 @@ class MainActivity : FlutterFragmentActivity() {
     private var permissionResult: MethodChannel.Result? = null
     private val main = Handler(Looper.getMainLooper())
 
+    /** ZT Keyboard is waiting for the user to pick a text here (see [TextPick]). */
+    private var pickingText = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (TextPick.isPick(intent)) {
+            // Only another Zero-Trust app may ask; anyone else gets nothing.
+            if (TextPick.callerAllowed(this)) pickingText = true else TextPick.answer(this, null)
+        }
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         val messenger = flutterEngine.dartExecutor.binaryMessenger
+        MethodChannel(messenger, "zt_calendar/text_pick").setMethodCallHandler { call, result ->
+            when (call.method) {
+                // configureFlutterEngine runs inside super.onCreate, before pickingText is
+                // set, so the question is answered from the intent and the caller check.
+                "isPick" -> result.success(TextPick.isPick(intent) && TextPick.callerAllowed(this))
+                "finish" -> {
+                    // Answers only the screen the keyboard itself opened.
+                    if (pickingText) {
+                        pickingText = false
+                        TextPick.answer(this, call.argument<String>("text"))
+                    }
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
         MethodChannel(messenger, "zt_calendar/apps").setMethodCallHandler { call, result ->
             when (call.method) {
                 "open" -> result.success(openApp(call.argument<String>("package")))
@@ -103,6 +131,9 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        // A pick request is only honoured when it opens its own screen (onCreate), where
+        // Android tells who is asking.
+        if (TextPick.isPick(intent)) return
         setIntent(intent)
         handleIntent(intent)
     }
