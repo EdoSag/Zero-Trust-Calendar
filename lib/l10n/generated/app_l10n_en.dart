@@ -3001,4 +3001,13 @@ class AppL10nEn extends AppL10n {
   @override
   String get newBookingsChannelHint =>
       'When someone books a time on one of your booking pages';
+
+  @override
+  String get logAsTimeEntry => 'Log as time entry';
+
+  @override
+  String get loggedInZtTime => 'Saved in ZT Time';
+
+  @override
+  String get couldNotOpenZtTime => 'Could not open ZT Time';
 }

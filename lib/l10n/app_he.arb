@@ -782,5 +782,8 @@
   "newBookingsCount": "{count} הזמנות חדשות",
   "newBookingsFirst": "הראשונה: {when}",
   "newBookingsChannel": "הזמנות חדשות",
-  "newBookingsChannelHint": "כשמישהו קובע זמן באחד מדפי ההזמנה שלך"
+  "newBookingsChannelHint": "כשמישהו קובע זמן באחד מדפי ההזמנה שלך",
+  "logAsTimeEntry": "רישום כרשומת זמן",
+  "loggedInZtTime": "נשמר ב־ZT Time",
+  "couldNotOpenZtTime": "לא ניתן לפתוח את ZT Time"
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 import '../data/subscriptions.dart';
+import '../data/time_links.dart';
 import '../model/calendar_event.dart';
 import '../util/format.dart';
 
@@ -72,10 +73,14 @@ String pickWhen(BuildContext context, PickOccurrence o) {
 /// unlocked: the user taps a date, or an event and then what to type of it.
 /// Pops with that text, or with nothing when the user goes back.
 class PickForKeyboardPage extends ConsumerStatefulWidget {
-  const PickForKeyboardPage({super.key, this.now});
+  const PickForKeyboardPage({super.key, this.now, this.wantItem = false});
 
   /// For tests; the current time otherwise.
   final DateTime? now;
+
+  /// ZT Time asked for an event: tapping one answers at once with a
+  /// [PickedItem] (its title as the text), instead of asking what to type.
+  final bool wantItem;
 
   @override
   ConsumerState<PickForKeyboardPage> createState() => _PickForKeyboardPageState();
@@ -100,6 +105,19 @@ class _PickForKeyboardPageState extends ConsumerState<PickForKeyboardPage> {
   }
 
   Future<void> _open(PickOccurrence o) async {
+    if (widget.wantItem) {
+      final title = o.event.title.trim().isEmpty ? context.l10n.noTitle : o.event.title.trim();
+      Navigator.of(context).pop(
+        PickedItem(
+          text: title,
+          id: timeItemId(o.event, o.start),
+          title: title,
+          start: o.event.allDay ? null : o.start,
+          end: o.event.allDay ? null : o.end,
+        ),
+      );
+      return;
+    }
     final l10n = context.l10n;
     final e = o.event;
     final values = <(IconData, String, String)>[

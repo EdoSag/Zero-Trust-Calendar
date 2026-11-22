@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 /// calendar invite.
 @immutable
 class IncomingFile {
-  const IncomingFile({this.name, this.bytes, this.url, this.invite});
+  const IncomingFile({this.name, this.bytes, this.url, this.invite, this.openItem});
   final String? name;
   final Uint8List? bytes;
 
@@ -19,6 +19,9 @@ class IncomingFile {
 
   /// For a subscribe link: the https:// address of the calendar.
   final String? url;
+
+  /// ZT Time asked to show an event it is linked to (see `timeItemId`).
+  final String? openItem;
 }
 
 bool get _android => !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
@@ -53,6 +56,7 @@ class IncomingFiles {
               bytes: item['bytes'] as Uint8List?,
               url: item['url'] as String?,
               invite: item['invite'] as String?,
+              openItem: item['open'] as String?,
             ),
       ];
     } on MissingPluginException {
@@ -81,12 +85,22 @@ class KeyboardPick {
     }
   }
 
+  /// Whether the asking app (ZT Time) wants an event, not only a text.
+  static Future<bool> wantsItem() async {
+    if (!_android) return false;
+    try {
+      return await _channel.invokeMethod<bool>('wantsItem') ?? false;
+    } on Object {
+      return false;
+    }
+  }
+
   /// Answers the keyboard with the picked [text] (null: nothing) and closes
-  /// the pick screen.
-  static Future<void> finish(String? text) async {
+  /// the pick screen. [item] goes along when the asker wants an event.
+  static Future<void> finish(String? text, {Map<String, Object?>? item}) async {
     if (!_android) return;
     try {
-      await _channel.invokeMethod<void>('finish', {'text': text});
+      await _channel.invokeMethod<void>('finish', {'text': text, 'item': ?item});
     } on MissingPluginException {
       // Not running on the Android app (tests).
     } on PlatformException {

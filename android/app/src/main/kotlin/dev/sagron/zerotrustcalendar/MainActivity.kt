@@ -21,11 +21,12 @@ import java.io.File
  * (local_auth) needs a FragmentActivity.
  *
  * Channels:
- * - `zt_calendar/apps` opens a sibling Zero-Trust app (or its store page)
- *   and hands an invitation file to the mail app.
- * - `zt_calendar/files` holds .ics files, webcal links and shared calendar
- *   invites other apps opened Calendar with, until the unlocked app takes
- *   them.
+ * - `zt_calendar/apps` opens a sibling Zero-Trust app (or its store page),
+ *   hands an invitation file to the mail app, and logs an event's time in
+ *   ZT Time (see [ZtLinks]).
+ * - `zt_calendar/files` holds .ics files, webcal links, shared calendar
+ *   invites and ZT Time's "open this event" other apps opened Calendar
+ *   with, until the unlocked app takes them.
  * - `zt_calendar/phone_calendar` copies events into Android's calendar,
  *   only for calendars the user turned on (see PhoneCalendar).
  */
@@ -34,6 +35,9 @@ class MainActivity : FlutterFragmentActivity() {
     private val pending = mutableListOf<Map<String, Any?>>()
     private var permissionResult: MethodChannel.Result? = null
     private val main = Handler(Looper.getMainLooper())
+
+    /** Waiting for ZT Time's answer to "Log as time entry" (see [ZtLinks]). */
+    private var trackResult: MethodChannel.Result? = null
 
     /** ZT Keyboard is waiting for the user to pick a text here (see [TextPick]). */
     private var pickingText = false
@@ -54,11 +58,13 @@ class MainActivity : FlutterFragmentActivity() {
                 // configureFlutterEngine runs inside super.onCreate, before pickingText is
                 // set, so the question is answered from the intent and the caller check.
                 "isPick" -> result.success(TextPick.isPick(intent) && TextPick.callerAllowed(this))
+                // ZT Time asks for an event, not only a text (WANT_ITEM).
+                "wantsItem" -> result.success(TextPick.isPick(intent) && ZtLinks.wantsItem(intent))
                 "finish" -> {
                     // Answers only the screen the keyboard itself opened.
                     if (pickingText) {
                         pickingText = false
-                        TextPick.answer(this, call.argument<String>("text"))
+                        TextPick.answer(this, call.argument<String>("text"), call.argument<Map<String, Any?>>("item"))
                     }
                     result.success(null)
                 }
@@ -67,6 +73,24 @@ class MainActivity : FlutterFragmentActivity() {
         }
         MethodChannel(messenger, "zt_calendar/apps").setMethodCallHandler { call, result ->
             when (call.method) {
+                "timeInstalled" -> result.success(ZtLinks.timeInstalled(this))
+                "trackTime" -> {
+                    if (trackResult != null) {
+                        result.success(null)
+                    } else if (ZtLinks.trackTime(
+                            this,
+                            itemId = call.argument<String>("id") ?: "",
+                            title = call.argument<String>("title") ?: "",
+                            startMs = call.argument<Number>("startMs")?.toLong(),
+                            endMs = call.argument<Number>("endMs")?.toLong(),
+                        )
+                    ) {
+                        // Answered in onActivityResult: true saved, false cancelled.
+                        trackResult = result
+                    } else {
+                        result.success(null)
+                    }
+                }
                 "open" -> result.success(openApp(call.argument<String>("package")))
                 "sendInvite" -> {
                     sendInvite(
@@ -139,6 +163,15 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     @Deprecated("Deprecated in Android, still the simplest hook here")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ZtLinks.REQUEST_TRACK_TIME) {
+            trackResult?.success(resultCode == RESULT_OK)
+            trackResult = null
+        }
+    }
+
+    @Deprecated("Deprecated in Android, still the simplest hook here")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CALENDAR) {
@@ -154,6 +187,13 @@ class MainActivity : FlutterFragmentActivity() {
     /** Queues an opened or shared .ics file, or a webcal:// link. */
     private fun handleIntent(intent: Intent?) {
         if (intent == null) return
+        // ZT Time opens an event it is linked to; shown once unlocked.
+        ZtLinks.openItemId(intent)?.let { id ->
+            intent.action = null
+            pending.add(mapOf("open" to id))
+            files?.invokeMethod("filesArrived", null)
+            return
+        }
         val uri: Uri = when (intent.action) {
             Intent.ACTION_VIEW -> intent.data
             Intent.ACTION_SEND -> if (Build.VERSION.SDK_INT >= 33) {

@@ -16,6 +16,7 @@ import '../data/linked_apps.dart';
 import '../data/phone_calendar_sync.dart';
 import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
+import '../data/time_links.dart';
 import '../model/calendar_event.dart';
 import '../planner/planner_controller.dart';
 import '../planner/planner_model.dart';
@@ -296,12 +297,23 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
 
   /// ZT Keyboard's "Insert from ZT apps" key: pick a date or an event's time
   /// for the keyboard to type. Only reached once the vault is unlocked.
+  /// ZT Time asks the same way for an event to link a time entry to
+  /// (WANT_ITEM): an event tapped then goes back with its id and times.
   Future<void> _takeKeyboardPick() async {
     if (!await KeyboardPick.requested() || !mounted) return;
+    final wantItem = await KeyboardPick.wantsItem();
+    if (!mounted) return;
     final picked = await Navigator.of(
       context,
-    ).push<String>(MaterialPageRoute(builder: (_) => const PickForKeyboardPage()));
-    await KeyboardPick.finish(picked);
+    ).push<Object>(MaterialPageRoute(builder: (_) => PickForKeyboardPage(wantItem: wantItem)));
+    switch (picked) {
+      case PickedItem item:
+        await KeyboardPick.finish(item.text, item: item.toChannel());
+      case String text:
+        await KeyboardPick.finish(text);
+      default:
+        await KeyboardPick.finish(null);
+    }
   }
 
   /// "Up next" and "My day" open today; their + opens a new event. The app
