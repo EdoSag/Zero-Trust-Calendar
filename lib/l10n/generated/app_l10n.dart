@@ -4817,6 +4817,114 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Could not open ZT Time'**
   String get couldNotOpenZtTime;
+
+  /// No description provided for @candleLighting.
+  ///
+  /// In en, this message translates to:
+  /// **'Candle lighting'**
+  String get candleLighting;
+
+  /// No description provided for @candleLightingAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Candle lighting (not before)'**
+  String get candleLightingAfter;
+
+  /// No description provided for @havdalah.
+  ///
+  /// In en, this message translates to:
+  /// **'Havdalah'**
+  String get havdalah;
+
+  /// No description provided for @jewishCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Jewish calendar'**
+  String get jewishCalendar;
+
+  /// No description provided for @jewishCalendarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hebrew dates, holidays and Shabbat times'**
+  String get jewishCalendarHint;
+
+  /// No description provided for @hebrewDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Hebrew dates'**
+  String get hebrewDates;
+
+  /// No description provided for @hebrewDatesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Beside the day numbers'**
+  String get hebrewDatesHint;
+
+  /// No description provided for @jewishHolidays.
+  ///
+  /// In en, this message translates to:
+  /// **'Jewish holidays'**
+  String get jewishHolidays;
+
+  /// No description provided for @jewishHolidaysHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Holidays, fasts and memorial days, worked out on this phone'**
+  String get jewishHolidaysHint;
+
+  /// No description provided for @shabbatTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Shabbat and holiday times'**
+  String get shabbatTimes;
+
+  /// No description provided for @shabbatTimesOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get shabbatTimesOff;
+
+  /// No description provided for @shabbatTimesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Candle lighting and Havdalah for a city. Worked out on this phone; your location is never used.'**
+  String get shabbatTimesHint;
+
+  /// No description provided for @pickCity.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get pickCity;
+
+  /// No description provided for @israelCities.
+  ///
+  /// In en, this message translates to:
+  /// **'Israel'**
+  String get israelCities;
+
+  /// No description provided for @otherCities.
+  ///
+  /// In en, this message translates to:
+  /// **'Outside Israel'**
+  String get otherCities;
+
+  /// No description provided for @jewishTimesAt.
+  ///
+  /// In en, this message translates to:
+  /// **'{city}: candles {candles} minutes before sunset, Havdalah when the sun is 8.5° below the horizon'**
+  String jewishTimesAt(String city, int candles);
+
+  /// No description provided for @holidaysScheduleIsrael.
+  ///
+  /// In en, this message translates to:
+  /// **'Holidays as kept in Israel'**
+  String get holidaysScheduleIsrael;
+
+  /// No description provided for @holidaysScheduleAbroad.
+  ///
+  /// In en, this message translates to:
+  /// **'Holidays as kept outside Israel (second festival days)'**
+  String get holidaysScheduleAbroad;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

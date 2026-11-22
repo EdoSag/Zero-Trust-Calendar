@@ -24,6 +24,9 @@ class CalendarSettings {
     this.showCompletedTasks = true,
     this.showWeekNumbers = false,
     this.hideWeekends = false,
+    this.hebrewDates = false,
+    this.jewishHolidays = false,
+    this.shabbatCity,
   });
 
   final CalendarView view;
@@ -75,6 +78,16 @@ class CalendarSettings {
   /// in Hebrew, Saturday and Sunday elsewhere; see [weekendDaysFor]).
   final bool hideWeekends;
 
+  /// Hebrew dates beside the day numbers (K-1).
+  final bool hebrewDates;
+
+  /// Jewish holidays and fasts as all-day entries (K-1).
+  final bool jewishHolidays;
+
+  /// The city candle lighting and Havdalah times are shown for (an id in
+  /// `zmanimCities`), or null for none (K-1).
+  final String? shabbatCity;
+
   static const _unset = Object();
 
   CalendarSettings copyWith({
@@ -92,6 +105,9 @@ class CalendarSettings {
     bool? showCompletedTasks,
     bool? showWeekNumbers,
     bool? hideWeekends,
+    bool? hebrewDates,
+    bool? jewishHolidays,
+    Object? shabbatCity = _unset,
   }) => CalendarSettings(
     view: view ?? this.view,
     showTasks: showTasks ?? this.showTasks,
@@ -111,6 +127,9 @@ class CalendarSettings {
     showCompletedTasks: showCompletedTasks ?? this.showCompletedTasks,
     showWeekNumbers: showWeekNumbers ?? this.showWeekNumbers,
     hideWeekends: hideWeekends ?? this.hideWeekends,
+    hebrewDates: hebrewDates ?? this.hebrewDates,
+    jewishHolidays: jewishHolidays ?? this.jewishHolidays,
+    shabbatCity: identical(shabbatCity, _unset) ? this.shabbatCity : shabbatCity as String?,
   );
 
   Map<String, String> toPrefs() => {
@@ -128,6 +147,9 @@ class CalendarSettings {
     'showCompletedTasks': '$showCompletedTasks',
     'showWeekNumbers': '$showWeekNumbers',
     'hideWeekends': '$hideWeekends',
+    'hebrewDates': '$hebrewDates',
+    'jewishHolidays': '$jewishHolidays',
+    'shabbatCity': shabbatCity ?? '',
   };
 
   static CalendarSettings fromPrefs(Map<String, String?> p) {
@@ -157,6 +179,9 @@ class CalendarSettings {
       showCompletedTasks: b('showCompletedTasks', d.showCompletedTasks),
       showWeekNumbers: b('showWeekNumbers', d.showWeekNumbers),
       hideWeekends: b('hideWeekends', d.hideWeekends),
+      hebrewDates: b('hebrewDates', d.hebrewDates),
+      jewishHolidays: b('jewishHolidays', d.jewishHolidays),
+      shabbatCity: (p['shabbatCity'] ?? '').isEmpty ? null : p['shabbatCity'],
     );
   }
 }

@@ -3010,4 +3010,63 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get couldNotOpenZtTime => 'Could not open ZT Time';
+
+  @override
+  String get candleLighting => 'Candle lighting';
+
+  @override
+  String get candleLightingAfter => 'Candle lighting (not before)';
+
+  @override
+  String get havdalah => 'Havdalah';
+
+  @override
+  String get jewishCalendar => 'Jewish calendar';
+
+  @override
+  String get jewishCalendarHint => 'Hebrew dates, holidays and Shabbat times';
+
+  @override
+  String get hebrewDates => 'Hebrew dates';
+
+  @override
+  String get hebrewDatesHint => 'Beside the day numbers';
+
+  @override
+  String get jewishHolidays => 'Jewish holidays';
+
+  @override
+  String get jewishHolidaysHint =>
+      'Holidays, fasts and memorial days, worked out on this phone';
+
+  @override
+  String get shabbatTimes => 'Shabbat and holiday times';
+
+  @override
+  String get shabbatTimesOff => 'Off';
+
+  @override
+  String get shabbatTimesHint =>
+      'Candle lighting and Havdalah for a city. Worked out on this phone; your location is never used.';
+
+  @override
+  String get pickCity => 'City';
+
+  @override
+  String get israelCities => 'Israel';
+
+  @override
+  String get otherCities => 'Outside Israel';
+
+  @override
+  String jewishTimesAt(String city, int candles) {
+    return '$city: candles $candles minutes before sunset, Havdalah when the sun is 8.5° below the horizon';
+  }
+
+  @override
+  String get holidaysScheduleIsrael => 'Holidays as kept in Israel';
+
+  @override
+  String get holidaysScheduleAbroad =>
+      'Holidays as kept outside Israel (second festival days)';
 }

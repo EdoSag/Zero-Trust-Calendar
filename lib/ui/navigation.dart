@@ -10,6 +10,7 @@ import '../data/linked_apps.dart';
 import '../model/linked_items.dart';
 import '../util/format.dart';
 import 'event_details_page.dart';
+import 'jewish_calendar_page.dart';
 import 'event_editor_page.dart';
 import 'linked_app_launcher.dart';
 import 'planner_block_sheet.dart';
@@ -95,6 +96,8 @@ Future<void> openEntry(BuildContext context, WidgetRef ref, CalendarEntry entry)
           ),
         ),
       );
+    case EntryKind.jewish:
+      await showJewishEntry(context, entry);
     case EntryKind.birthday:
       final contact = entry.contact!;
       final year = contact.birthdays

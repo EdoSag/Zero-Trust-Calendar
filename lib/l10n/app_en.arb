@@ -2000,5 +2000,33 @@
   "newBookingsChannelHint": "When someone books a time on one of your booking pages",
   "logAsTimeEntry": "Log as time entry",
   "loggedInZtTime": "Saved in ZT Time",
-  "couldNotOpenZtTime": "Could not open ZT Time"
+  "couldNotOpenZtTime": "Could not open ZT Time",
+  "candleLighting": "Candle lighting",
+  "candleLightingAfter": "Candle lighting (not before)",
+  "havdalah": "Havdalah",
+  "jewishCalendar": "Jewish calendar",
+  "jewishCalendarHint": "Hebrew dates, holidays and Shabbat times",
+  "hebrewDates": "Hebrew dates",
+  "hebrewDatesHint": "Beside the day numbers",
+  "jewishHolidays": "Jewish holidays",
+  "jewishHolidaysHint": "Holidays, fasts and memorial days, worked out on this phone",
+  "shabbatTimes": "Shabbat and holiday times",
+  "shabbatTimesOff": "Off",
+  "shabbatTimesHint": "Candle lighting and Havdalah for a city. Worked out on this phone; your location is never used.",
+  "pickCity": "City",
+  "israelCities": "Israel",
+  "otherCities": "Outside Israel",
+  "jewishTimesAt": "{city}: candles {candles} minutes before sunset, Havdalah when the sun is 8.5° below the horizon",
+  "@jewishTimesAt": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      },
+      "candles": {
+        "type": "int"
+      }
+    }
+  },
+  "holidaysScheduleIsrael": "Holidays as kept in Israel",
+  "holidaysScheduleAbroad": "Holidays as kept outside Israel (second festival days)"
 }

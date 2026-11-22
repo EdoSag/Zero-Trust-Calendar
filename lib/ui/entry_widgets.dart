@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/entries.dart';
+import '../jewish/zmanim.dart';
 import '../util/format.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
@@ -10,6 +11,11 @@ const IconData plannerIcon = Icons.view_timeline_outlined;
 IconData? entryIcon(CalendarEntry e) => switch (e.kind) {
   EntryKind.task => Icons.task_alt,
   EntryKind.birthday => Icons.cake_outlined,
+  EntryKind.jewish => switch (e.jewish?.zman) {
+    ZmanKind.candles || ZmanKind.candlesAfter => Icons.local_fire_department_outlined,
+    ZmanKind.havdalah => Icons.nights_stay_outlined,
+    null => (e.jewish?.holiday?.fast ?? false) ? Icons.no_food_outlined : Icons.star_border,
+  },
   EntryKind.event when e.done => Icons.check_circle_outline,
   EntryKind.event when e.plan != null =>
     e.plan!.locked ? Icons.lock_outline : plannerIcon,
@@ -120,6 +126,8 @@ class EntryTile extends StatelessWidget {
     } else {
       when = entry.kind == EntryKind.task
           ? context.l10n.dueAt(formatTime(context, entry.start))
+          : entry.kind == EntryKind.jewish
+          ? formatTime(context, entry.start)
           : formatSpan(context, entry.start, entry.end, false);
     }
     final location = entry.event?.location ?? '';

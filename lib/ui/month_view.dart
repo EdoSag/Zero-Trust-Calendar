@@ -6,6 +6,7 @@ import '../app/calendar_settings.dart';
 import '../data/entries.dart';
 import '../util/format.dart';
 import 'entry_widgets.dart';
+import 'jewish_calendar_page.dart';
 import 'navigation.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
@@ -255,8 +256,10 @@ class _DayCell extends ConsumerWidget {
               children: [
                 SizedBox(
                   height: header,
-                  child: Center(
-                    child: Container(
+                  child: _withHebrewDate(
+                    context,
+                    ref,
+                    Container(
                       width: 22,
                       height: 22,
                       alignment: Alignment.center,
@@ -291,6 +294,34 @@ class _DayCell extends ConsumerWidget {
           },
         ),
       ),
+    );
+  }
+
+  /// The day number centred, or with "Hebrew dates" on, at the start with
+  /// the Hebrew day at the end (K-1).
+  Widget _withHebrewDate(BuildContext context, WidgetRef ref, Widget number) {
+    if (!ref.watch(calendarSettingsProvider.select((s) => s.hebrewDates))) {
+      return Center(child: number);
+    }
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        number,
+        const SizedBox(width: 2),
+        Expanded(
+          child: Text(
+            hebrewCellLabel(context, day),
+            maxLines: 1,
+            overflow: TextOverflow.fade,
+            softWrap: false,
+            textAlign: TextAlign.end,
+            style: theme.textTheme.labelSmall?.copyWith(
+              fontSize: 9.5,
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: inMonth ? 0.9 : 0.5),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
