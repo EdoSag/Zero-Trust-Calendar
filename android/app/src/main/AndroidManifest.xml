@@ -50,6 +50,13 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="https" android:host="zerotrust.bz" android:pathPrefix="/auth/calendar/"/>
             </intent-filter>
+            <!-- ZT Keyboard's "Insert from ZT apps" key: pick a date or an event's time to
+                 type. MainActivity only answers a caller signed with this app's own key
+                 (see TextPick). -->
+            <intent-filter>
+                <action android:name="bz.zerotrust.action.PICK_TEXT"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
             <!-- Taps on the "Up next" home-screen widget (home_widget). -->
             <intent-filter>
                 <action android:name="es.antonborri.home_widget.action.LAUNCH"/>

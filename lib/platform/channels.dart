@@ -61,6 +61,40 @@ class IncomingFiles {
   }
 }
 
+/// ZT Keyboard's "Insert from ZT apps" key opened Calendar so the user can
+/// pick a date or an event's time to type. The Android side has already
+/// checked that the asking app is signed with this app's own key (see
+/// `TextPick.kt`).
+class KeyboardPick {
+  const KeyboardPick._();
+  static const _channel = MethodChannel('zt_calendar/text_pick');
+
+  /// Whether this screen was opened by the keyboard for a pick.
+  static Future<bool> requested() async {
+    if (!_android) return false;
+    try {
+      return await _channel.invokeMethod<bool>('isPick') ?? false;
+    } on MissingPluginException {
+      return false;
+    } on PlatformException {
+      return false;
+    }
+  }
+
+  /// Answers the keyboard with the picked [text] (null: nothing) and closes
+  /// the pick screen.
+  static Future<void> finish(String? text) async {
+    if (!_android) return;
+    try {
+      await _channel.invokeMethod<void>('finish', {'text': text});
+    } on MissingPluginException {
+      // Not running on the Android app (tests).
+    } on PlatformException {
+      // Nothing to answer.
+    }
+  }
+}
+
 /// Opens the mail app with an invitation: guests, subject, text and the
 /// .ics file attached. Returns false where that isn't supported.
 Future<bool> sendInvitation({

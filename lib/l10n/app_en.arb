@@ -1935,5 +1935,14 @@
     }
   },
   "plannerLessThanAMinute": "less than a minute",
-  "plannerReasonRunning": "You are working on it now."
+  "plannerReasonRunning": "You are working on it now.",
+  "insertIntoKeyboard": "Insert into ZT Keyboard",
+  "insertPickHint": "Tap a date, or an event and then what to type.",
+  "insertAnotherDate": "Another date",
+  "insertNoEvents": "No events in the next 30 days.",
+  "insertEventTitle": "Title",
+  "insertEventWhen": "Date and time",
+  "insertEventDate": "Date",
+  "insertEventPlace": "Place",
+  "insertEventLink": "Video call link"
 }

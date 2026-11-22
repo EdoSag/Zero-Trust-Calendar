@@ -4655,6 +4655,60 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'You are working on it now.'**
   String get plannerReasonRunning;
+
+  /// No description provided for @insertIntoKeyboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Insert into ZT Keyboard'**
+  String get insertIntoKeyboard;
+
+  /// No description provided for @insertPickHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a date, or an event and then what to type.'**
+  String get insertPickHint;
+
+  /// No description provided for @insertAnotherDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Another date'**
+  String get insertAnotherDate;
+
+  /// No description provided for @insertNoEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'No events in the next 30 days.'**
+  String get insertNoEvents;
+
+  /// No description provided for @insertEventTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get insertEventTitle;
+
+  /// No description provided for @insertEventWhen.
+  ///
+  /// In en, this message translates to:
+  /// **'Date and time'**
+  String get insertEventWhen;
+
+  /// No description provided for @insertEventDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get insertEventDate;
+
+  /// No description provided for @insertEventPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Place'**
+  String get insertEventPlace;
+
+  /// No description provided for @insertEventLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Video call link'**
+  String get insertEventLink;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
