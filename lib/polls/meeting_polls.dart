@@ -306,6 +306,11 @@ CalendarEvent pollEvent(MeetingPoll poll, DateTime time, List<PollVote> votes, {
 /// tests.
 abstract interface class PollBackend {
   Future<void> savePoll(MeetingPoll poll, {bool closed = false});
+
+  /// Puts [poll] on the server only if it isn't there yet, in one step on
+  /// the server. A poll already there (maybe with a time picked on another
+  /// device) is left exactly as it is.
+  Future<void> publishPoll(MeetingPoll poll);
   Future<void> deletePoll(String id);
   Future<List<SealedVote>> votes(String pollId);
 }
@@ -329,6 +334,19 @@ class SupabasePollBackend implements PollBackend {
         'closed': closed,
         'expires_at': poll.expiresAt.toUtc().toIso8601String(),
       });
+
+  @override
+  Future<void> publishPoll(MeetingPoll poll) => _client.from('zt_polls').upsert(
+    {
+      'id': poll.id,
+      'owner': _me,
+      'sealed': poll.sealed(),
+      'closed': false,
+      'expires_at': poll.expiresAt.toUtc().toIso8601String(),
+    },
+    onConflict: 'id',
+    ignoreDuplicates: true,
+  );
 
   @override
   Future<void> deletePoll(String id) => _client.from('zt_polls').delete().eq('id', id);

@@ -34,6 +34,16 @@ class _FakePolls implements PollBackend {
     saved.add((poll.sealed(), closed));
   }
 
+  /// Polls the server has: what publishPoll would not overwrite.
+  final published = <String>{};
+
+  @override
+  Future<void> publishPoll(MeetingPoll poll) async {
+    if (saveError case final e?) throw e;
+    if (!published.add(poll.id)) return;
+    saved.add((poll.sealed(), false));
+  }
+
   @override
   Future<void> deletePoll(String id) async {}
 
@@ -192,6 +202,13 @@ void main() {
     expect(fake.saved, hasLength(1));
     expect(fake.saved.single.$2, isFalse, reason: 'published as open');
     expect(shared, hasLength(1));
+
+    // Already on the server (a time may have been picked elsewhere): sharing
+    // again leaves it as it is.
+    await tester.tap(find.text('Share the link'));
+    await tester.pumpAndSettle();
+    expect(fake.saved, hasLength(1));
+    expect(shared, hasLength(2));
   });
 
   testWidgets('while a time is being picked, no other time can be picked', (tester) async {

@@ -331,15 +331,16 @@ class _PollDetailsPageState extends ConsumerState<PollDetailsPage> {
   /// A time is being picked: no second pick (or share) until it is done.
   bool _busy = false;
 
-  /// Publishes the poll again before its link goes out: the first upload
-  /// may have failed after the poll was kept on the phone, and a link to a
-  /// poll the server doesn't have would be dead. Saving is idempotent.
+  /// Makes sure the server has the poll before its link goes out: the first
+  /// upload may have failed after the poll was kept on the phone, and a link
+  /// to a poll the server doesn't have would be dead. A poll already there
+  /// is left as it is, so a time picked on another device stays picked.
   Future<void> _share(BuildContext context, WidgetRef ref, MeetingPoll poll) async {
     final l = context.l10n;
     final messenger = ScaffoldMessenger.of(context);
     setState(() => _busy = true);
     try {
-      await ref.read(pollBackendProvider).savePoll(poll);
+      await ref.read(pollBackendProvider).publishPoll(poll);
       if (!context.mounted) return;
       await sharePollLink(context, poll);
     } on Object catch (e) {
