@@ -131,6 +131,8 @@ void main() {
     expect(e.start, dinner.start);
     expect(e.attachments, isEmpty);
     expect(e.extra.containsKey('zt'), isFalse);
+    // One item alone reads the same (how the repository finds one event).
+    expect(readFamilyCircle(circle.id, [there]).events.single.title, 'Dinner at Grandma');
   });
 
   test('family circles become calendars, with the member\'s own colour and hidden choice', () {

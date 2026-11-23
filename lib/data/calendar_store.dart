@@ -296,14 +296,22 @@ class CalendarRepository {
         return e.copyWith(calendarId: sharedCalendarId(key));
       }
     }
+    for (final MapEntry(:key, :value) in _circles.entries) {
+      if (await value.store.get(familyEventItemId(id)) case final item?) {
+        if (readFamilyCircle(key, [item]).events.firstOrNull case final e?) return e;
+      }
+    }
     return null;
   }
 
-  /// The account's own events and its shared calendars' events.
+  /// The account's own events, its shared calendars' events and the open
+  /// family circles' events.
   Future<List<CalendarEvent>> allEvents() async => [
     ...await eventsCollection.list(await _store),
     for (final MapEntry(:key, :value) in _spaces.entries)
       for (final e in await eventsCollection.list(value.store))
         e.copyWith(calendarId: sharedCalendarId(key)),
+    for (final MapEntry(:key, :value) in _circles.entries)
+      ...readFamilyCircle(key, await value.store.all()).events,
   ];
 }
