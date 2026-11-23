@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:zerotrust_calendar/model/calendar_event.dart';
 import 'package:zerotrust_calendar/polls/meeting_polls.dart';
@@ -24,8 +26,13 @@ class _FakePolls implements PollBackend {
   final saved = <(String, bool)>[];
   List<SealedVote> rows = const [];
 
+  Object? saveError;
+
   @override
-  Future<void> savePoll(MeetingPoll poll, {bool closed = false}) async => saved.add((poll.sealed(), closed));
+  Future<void> savePoll(MeetingPoll poll, {bool closed = false}) async {
+    if (saveError case final e?) throw e;
+    saved.add((poll.sealed(), closed));
+  }
 
   @override
   Future<void> deletePoll(String id) async {}
@@ -141,6 +148,80 @@ void main() {
     expect(times, [DateTime(2026, 11, 17, 12), DateTime(2026, 11, 18, 10), DateTime(2026, 11, 19, 10)]);
   });
 
+  test('a poll\'s event id is the same on every try, and its own', () {
+    final a = _poll();
+    expect(pollEventId(a), pollEventId(_poll()));
+    expect(pollEventId(a), isNot(pollEventId(_poll(id: 'pBBBBBBBBBBBBBBBBBBBBBB'))));
+  });
+
+  testWidgets('sharing publishes the poll again first; no link when that fails', (tester) async {
+    usePhoneScreen(tester);
+    final shared = <Object?>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('dev.fluttercommunity.plus/share'),
+      (call) async {
+        shared.add(call.arguments);
+        return 'dev.fluttercommunity.plus/share/unavailable';
+      },
+    );
+    addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('dev.fluttercommunity.plus/share'),
+      null,
+    ));
+    // Kept on the phone, but the first upload failed.
+    final fake = _FakePolls()..saveError = Exception('offline');
+    final poll = _poll();
+    await tester.pumpWidget(app(
+      PollDetailsPage(pollId: poll.id),
+      const [],
+      overrides: [
+        meetingPollsProvider.overrideWith((ref) => Stream.value([poll])),
+        pollBackendProvider.overrideWithValue(fake),
+      ],
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Share the link'));
+    await tester.pumpAndSettle();
+    expect(shared, isEmpty);
+    expect(find.textContaining('offline'), findsOneWidget);
+
+    // Back online: published, then shared.
+    fake.saveError = null;
+    await tester.tap(find.text('Share the link'));
+    await tester.pumpAndSettle();
+    expect(fake.saved, hasLength(1));
+    expect(fake.saved.single.$2, isFalse, reason: 'published as open');
+    expect(shared, hasLength(1));
+  });
+
+  testWidgets('while a time is being picked, no other time can be picked', (tester) async {
+    usePhoneScreen(tester);
+    final votes = Completer<List<SealedVote>>();
+    final fake = _SlowVotes(votes)..rows = [(id: 'v1', sealed: _web['vote']!, updatedAt: null)];
+    final poll = _poll();
+    await tester.pumpWidget(app(
+      PollDetailsPage(pollId: poll.id),
+      const [],
+      overrides: [
+        meetingPollsProvider.overrideWith((ref) => Stream.value([poll])),
+        pollBackendProvider.overrideWithValue(fake),
+      ],
+    ));
+    await tester.pumpAndSettle();
+    expect(find.text('Pick this time'), findsNWidgets(3));
+    fake.slow = true;
+    await tester.tap(find.text('Pick this time').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Pick this time'));
+    await tester.pumpAndSettle();
+    // Still saving: the other times can't be picked (or the link shared)
+    // meanwhile.
+    expect(find.text('Pick this time'), findsNothing);
+    FilledButton share() => tester.widget<FilledButton>(find.byKey(const ValueKey('poll-share')));
+    expect(share().onPressed, isNull);
+    expect(fake.saved, isEmpty);
+  });
+
   for (final locale in const [Locale('en'), Locale('he')]) {
     final he = locale.languageCode == 'he';
     testWidgets('a poll shows the answers per time and can pick one ($locale)', (tester) async {
@@ -200,4 +281,15 @@ void main() {
       expect(find.text(he ? 'נא לתת לסקר כותרת.' : 'Give the poll a title.'), findsOneWidget);
     });
   }
+}
+
+/// Answers the first votes load at once, then waits for [_next] once
+/// [slow] is set (the refresh a pick makes).
+class _SlowVotes extends _FakePolls {
+  _SlowVotes(this._next);
+  final Completer<List<SealedVote>> _next;
+  bool slow = false;
+
+  @override
+  Future<List<SealedVote>> votes(String pollId) => slow ? _next.future : super.votes(pollId);
 }

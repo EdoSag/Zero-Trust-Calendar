@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../booking/booking_crypto.dart';
@@ -276,6 +277,11 @@ Set<DateTime> bestTimes(List<PollTally> tallies) {
 
 /// The event for [poll] at [time]: guests who left an email and said yes or
 /// maybe to that time are invited.
+/// The id of the calendar event a poll's picked time becomes: the same for
+/// every try, so picking again after a failure (or twice at once) saves one
+/// event, not two.
+String pollEventId(MeetingPoll poll) => const Uuid().v5(Namespace.url.value, 'zt-meeting-poll:${poll.id}');
+
 CalendarEvent pollEvent(MeetingPoll poll, DateTime time, List<PollVote> votes, {required String id}) {
   final emails = <String>{
     for (final v in votes)
