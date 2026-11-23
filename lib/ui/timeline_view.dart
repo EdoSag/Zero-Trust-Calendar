@@ -186,13 +186,32 @@ class _TimelinePageState extends ConsumerState<_TimelinePage> {
     if (d == null) return;
     final delta = position - d.origin;
     final minutes = _snap(delta.dy / _hourHeight * 60);
-    final days = d.resize || widget.days == 1 ? 0 : (delta.dx / _columnWidth).round();
+    final days = d.resize || widget.days == 1 ? 0 : _dayShift(d.entry.start, (delta.dx / _columnWidth).round());
     if (minutes != d.minutes || days != d.days) {
       setState(() {
         d.minutes = minutes;
         d.days = days;
       });
     }
+  }
+
+  /// The days shown: all of them, or a week without its weekend.
+  List<DateTime> _visibleDays() {
+    final all = [for (var i = 0; i < widget.days; i++) addDays(widget.start, i)];
+    if (widget.days != 7 || !ref.read(calendarSettingsProvider).hideWeekends) return all;
+    final weekend = weekendDays(context);
+    return [for (final d in all) if (!weekend.contains(d.weekday)) d];
+  }
+
+  /// How many days an event starting on [from] moves when dragged
+  /// [columns] columns over (hidden weekend days are jumped).
+  int _dayShift(DateTime from, int columns) {
+    if (columns == 0) return 0;
+    final days = _visibleDays();
+    final at = days.indexWhere((d) => sameDay(d, from));
+    if (at < 0) return columns;
+    final to = (at + columns).clamp(0, days.length - 1);
+    return (days[to].difference(days[at]).inHours / 24).round();
   }
 
   Future<void> _endDrag() async {
@@ -223,7 +242,10 @@ class _TimelinePageState extends ConsumerState<_TimelinePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final days = [for (var i = 0; i < widget.days; i++) addDays(widget.start, i)];
+    final settings = ref.watch(calendarSettingsProvider);
+    final days = _visibleDays();
+    // The number of the week row the first day sits in, as in the month view.
+    final week = weekNumberOfRow(startOfWeek(days.first, weekStartOf(context, settings)));
     final range = DateRange(widget.start, addDays(widget.start, widget.days));
     final entries = ref.watch(entriesProvider(range)).value ?? const [];
     final allDay = entries.where((e) => e.spansDays).toList();
@@ -232,10 +254,21 @@ class _TimelinePageState extends ConsumerState<_TimelinePage> {
 
     return Column(
       children: [
-        // Day headers.
+        // Day headers, with the week number over the hours.
         Row(
           children: [
-            const SizedBox(width: _gutter),
+            SizedBox(
+              width: _gutter,
+              child: settings.showWeekNumbers
+                  ? Text(
+                        context.l10n.weekNumberLong(week),
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
+                      )
+                  : null,
+            ),
             for (final d in days)
               Expanded(
                 child: InkWell(

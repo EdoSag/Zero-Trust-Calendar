@@ -51,4 +51,8 @@
     <string name="agenda_preview_3_time">17:30</string>
     <string name="date_icon_widget_label">תאריך</string>
     <string name="date_icon_widget_description">התאריך של היום, כמו סמל של לוח שנה</string>
+    <string name="shortcut_new_event">אירוע חדש</string>
+    <string name="shortcut_quick_add">הוספה מהירה</string>
+    <string name="shortcut_quick_add_long">הוספה מהירה של אירוע או משימה</string>
+    <string name="shortcut_today">היום</string>
 </resources>

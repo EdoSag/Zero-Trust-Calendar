@@ -25,6 +25,12 @@ import 'phone_calendar_page.dart';
 import 'subscribe_page.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
+/// "Friday and Saturday": the weekend that "Hide weekends" leaves out.
+String _weekendLabel(BuildContext context) {
+  final days = weekendDays(context).toList()..sort();
+  return context.l10n.twoDays(weekdayName(days.first), weekdayName(days.last));
+}
+
 /// The shared Zero-Trust settings screen, with Calendar's own rows.
 class CalendarSettingsPage extends ConsumerWidget {
   const CalendarSettingsPage({super.key});
@@ -127,6 +133,20 @@ class CalendarSettingsPage extends ConsumerWidget {
               await ctrl.update((x) => x.copyWith(weekStart: picked == 0 ? null : picked));
             }
           },
+        ),
+        SwitchListTile(
+          secondary: const Icon(Icons.tag),
+          title: Text(context.l10n.showWeekNumbers),
+          subtitle: Text(context.l10n.showWeekNumbersHint),
+          value: s.showWeekNumbers,
+          onChanged: (v) => ctrl.update((x) => x.copyWith(showWeekNumbers: v)),
+        ),
+        SwitchListTile(
+          secondary: const Icon(Icons.weekend_outlined),
+          title: Text(context.l10n.hideWeekends),
+          subtitle: Text(context.l10n.hideWeekendsHint(_weekendLabel(context))),
+          value: s.hideWeekends,
+          onChanged: (v) => ctrl.update((x) => x.copyWith(hideWeekends: v)),
         ),
         ListTile(
           leading: const Icon(Icons.timelapse),

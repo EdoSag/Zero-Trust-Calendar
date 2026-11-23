@@ -767,5 +767,15 @@
   "insertEventWhen": "תאריך ושעה",
   "insertEventDate": "תאריך",
   "insertEventPlace": "מקום",
-  "insertEventLink": "קישור לשיחת וידאו"
+  "insertEventLink": "קישור לשיחת וידאו",
+  "year": "שנה",
+  "showWeekNumbers": "הצגת מספרי שבועות",
+  "showWeekNumbersHint": "ליד תצוגות החודש והשנה, ומעל עמודות הימים",
+  "hideWeekends": "הסתרת סופי שבוע",
+  "hideWeekendsHint": "תצוגות השבוע והחודש לא יציגו את {days}",
+  "weekNumberLong": "שבוע {n}",
+  "twoDays": "{first} ו{second}",
+  "previousMonth": "החודש הקודם",
+  "nextMonth": "החודש הבא",
+  "views": "תצוגות"
 }

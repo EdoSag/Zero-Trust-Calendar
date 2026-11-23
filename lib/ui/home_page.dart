@@ -4,10 +4,12 @@ import 'package:intl/intl.dart';
 
 import '../app/calendar_settings.dart';
 import '../data/calendar_store.dart';
+import '../data/entries.dart';
 import '../model/calendar_event.dart';
 import '../util/format.dart';
 import 'calendars_page.dart';
 import 'entry_widgets.dart';
+import 'mini_month.dart';
 import 'month_view.dart';
 import 'navigation.dart';
 import 'planner_page.dart';
@@ -18,6 +20,7 @@ import 'schedule_view.dart';
 import 'search_page.dart';
 import 'settings_page.dart';
 import 'timeline_view.dart';
+import 'year_view.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 Map<CalendarView, (String, IconData)> get _viewLabels => {
@@ -26,7 +29,19 @@ Map<CalendarView, (String, IconData)> get _viewLabels => {
   CalendarView.threeDay: (currentL10n.s3Days, Icons.view_column_outlined),
   CalendarView.week: (currentL10n.week, Icons.view_week_outlined),
   CalendarView.month: (currentL10n.month, Icons.calendar_view_month_outlined),
+  CalendarView.year: (currentL10n.year, Icons.calendar_today_outlined),
 };
+
+/// Screens at least this wide (a tablet, an open foldable, a big phone on
+/// its side) keep the calendars and a small month in a side panel (K11).
+const double sidePanelMinWidth = 840;
+
+/// And at least this tall, so a phone on its side keeps the room for the
+/// calendar itself.
+const double sidePanelMinHeight = 480;
+
+bool showsSidePanel(Size size) =>
+    size.width >= sidePanelMinWidth && size.height >= sidePanelMinHeight;
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -45,12 +60,27 @@ class HomePage extends ConsumerWidget {
       _setView(ref, CalendarView.day);
     }
 
+    void openMonth(DateTime month) {
+      final today = DateTime.now();
+      ref.read(focusedDayProvider.notifier).set(
+        today.year == month.year && today.month == month.month ? today : month,
+      );
+      _setView(ref, CalendarView.month);
+    }
+
+    final wide = showsSidePanel(MediaQuery.sizeOf(context));
+
     final body = switch (view) {
       CalendarView.schedule => const ScheduleView(key: ValueKey('schedule')),
       CalendarView.day => TimelineView(key: const ValueKey('day'), days: 1, onOpenDay: openDay),
       CalendarView.threeDay => TimelineView(key: const ValueKey('3day'), days: 3, onOpenDay: openDay),
       CalendarView.week => TimelineView(key: const ValueKey('week'), days: 7, onOpenDay: openDay),
       CalendarView.month => MonthView(key: const ValueKey('month'), onOpenDay: openDay),
+      CalendarView.year => YearView(
+        key: const ValueKey('year'),
+        onOpenDay: openDay,
+        onOpenMonth: openMonth,
+      ),
     };
 
     return Scaffold(
@@ -74,7 +104,9 @@ class HomePage extends ConsumerWidget {
               children: [
                 Flexible(
                   child: Text(
-                    focused.year == DateTime.now().year
+                    view == CalendarView.year
+                        ? '${focused.year}'
+                        : focused.year == DateTime.now().year
                         ? DateFormat.MMMM().format(focused)
                         : formatMonthYear(focused),
                     overflow: TextOverflow.ellipsis,
@@ -113,13 +145,25 @@ class HomePage extends ConsumerWidget {
           ),
         ],
       ),
-      drawer: _CalendarDrawer(onView: (v) => _setView(ref, v)),
+      // Wide: the panel stays open beside the calendar instead.
+      drawer: wide ? null : _CalendarDrawer(onView: (v) => _setView(ref, v)),
       // Tasks the Planner could not fit show across the top of every view.
-      body: Column(
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const PlannerRiskBanner(),
-          const PlannerRunningBar(),
-          Expanded(child: body),
+          if (wide) ...[
+            SizedBox(width: 300, child: _SidePanel(onView: (v) => _setView(ref, v))),
+            const VerticalDivider(width: 1),
+          ],
+          Expanded(
+            child: Column(
+              children: [
+                const PlannerRiskBanner(),
+                const PlannerRunningBar(),
+                Expanded(child: body),
+              ],
+            ),
+          ),
         ],
       ),
       floatingActionButton: Column(
@@ -167,87 +211,166 @@ class _CalendarDrawer extends ConsumerWidget {
   final void Function(CalendarView) onView;
 
   @override
+  Widget build(BuildContext context, WidgetRef ref) => NavigationDrawer(
+    children: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(28, 20, 16, 12),
+        child: Text('ZT Calendar', style: Theme.of(context).textTheme.titleLarge),
+      ),
+      ..._panelRows(context, ref, onView: onView, inDrawer: true),
+    ],
+  );
+}
+
+/// The drawer's rows, kept open beside the calendar on a wide screen, under
+/// a small month for moving around (K11).
+class _SidePanel extends ConsumerWidget {
+  const _SidePanel({required this.onView});
+  final void Function(CalendarView) onView;
+
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final focused = ref.watch(focusedDayProvider);
     final settings = ref.watch(calendarSettingsProvider);
-    final calendars = ref.watch(calendarsProvider).value ?? const [ZtCalendarInfo.personal];
+    final month = DateTime(focused.year, focused.month);
+    final first = startOfWeek(month, weekStartOf(context, settings));
+    final range = DateRange(first, addDays(first, 42));
+    final entries = ref.watch(entriesProvider(range)).value ?? const [];
     final theme = Theme.of(context);
-    void push(Widget page) {
-      Navigator.of(context).pop();
-      Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
+    void go(int months) {
+      final today = DateTime.now();
+      final target = DateTime(month.year, month.month + months);
+      ref.read(focusedDayProvider.notifier).set(
+        today.year == target.year && today.month == target.month ? today : target,
+      );
     }
 
-    return NavigationDrawer(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(28, 20, 16, 12),
-          child: Text('ZT Calendar', style: theme.textTheme.titleLarge),
-        ),
-        for (final v in CalendarView.values)
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 28),
-            leading: Icon(_viewLabels[v]!.$2),
-            title: Text(_viewLabels[v]!.$1),
-            selected: v == settings.view,
-            onTap: () {
-              Navigator.of(context).pop();
-              onView(v);
-            },
+    return Material(
+      color: theme.colorScheme.surfaceContainerLow,
+      child: ListView(
+        padding: const EdgeInsets.only(bottom: 16),
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+            child: MiniMonth(
+              month: month,
+              weekStart: weekStartOf(context, settings),
+              busy: busyDays(entries, range),
+              selected: focused,
+              showOtherMonths: true,
+              showWeekNumbers: settings.showWeekNumbers,
+              onTapDay: (d) => ref.read(focusedDayProvider.notifier).set(d),
+              header: Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsetsDirectional.only(start: 4),
+                      child: Text(formatMonthYear(month), style: theme.textTheme.titleSmall),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: context.l10n.previousMonth,
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: () => go(-1),
+                  ),
+                  IconButton(
+                    tooltip: context.l10n.nextMonth,
+                    icon: const Icon(Icons.chevron_right),
+                    onPressed: () => go(1),
+                  ),
+                ],
+              ),
+            ),
           ),
-        const Divider(indent: 28, endIndent: 28),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(28, 8, 16, 4),
-          child: Text(context.l10n.calendars, style: theme.textTheme.titleSmall),
-        ),
-        for (final c in calendars)
-          CheckboxListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-            controlAffinity: ListTileControlAffinity.leading,
-            activeColor: Color(c.color),
-            side: BorderSide(color: Color(c.color), width: 2),
-            value: !c.hidden,
-            title: Text(c.name),
-            onChanged: (on) => ref
-                .read(calendarRepositoryProvider)
-                .saveCalendar(c.copyWith(hidden: on != true)),
-          ),
-        CheckboxListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-          controlAffinity: ListTileControlAffinity.leading,
-          value: settings.showTasks,
-          title: Text(context.l10n.tasksFromZtTasks),
-          onChanged: (on) => ref
-              .read(calendarSettingsProvider.notifier)
-              .update((s) => s.copyWith(showTasks: on == true)),
-        ),
-        CheckboxListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-          controlAffinity: ListTileControlAffinity.leading,
-          value: settings.showBirthdays,
-          title: Text(context.l10n.birthdaysFromZtContacts),
-          onChanged: (on) => ref
-              .read(calendarSettingsProvider.notifier)
-              .update((s) => s.copyWith(showBirthdays: on == true)),
-        ),
-        ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 28),
-          leading: const Icon(Icons.edit_calendar_outlined),
-          title: Text(context.l10n.manageCalendars),
-          onTap: () => push(const CalendarsPage()),
-        ),
-        const Divider(indent: 28, endIndent: 28),
-        ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 28),
-          leading: const Icon(plannerIcon),
-          title: Text(context.l10n.planner),
-          onTap: () => push(const PlannerPage()),
-        ),
-        ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 28),
-          leading: const Icon(Icons.settings_outlined),
-          title: Text(context.l10n.settings),
-          onTap: () => push(const CalendarSettingsPage()),
-        ),
-      ],
+          const Divider(indent: 28, endIndent: 28),
+          ..._panelRows(context, ref, onView: onView, inDrawer: false),
+        ],
+      ),
     );
   }
+}
+
+/// Views, calendars and the links under them. In the drawer, a tap also
+/// closes it.
+List<Widget> _panelRows(
+  BuildContext context,
+  WidgetRef ref, {
+  required void Function(CalendarView) onView,
+  required bool inDrawer,
+}) {
+  final settings = ref.watch(calendarSettingsProvider);
+  final calendars = ref.watch(calendarsProvider).value ?? const [ZtCalendarInfo.personal];
+  final theme = Theme.of(context);
+  void push(Widget page) {
+    if (inDrawer) Navigator.of(context).pop();
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
+  }
+
+  return [
+    for (final v in CalendarView.values)
+      ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 28),
+        leading: Icon(_viewLabels[v]!.$2),
+        title: Text(_viewLabels[v]!.$1),
+        selected: v == settings.view,
+        onTap: () {
+          if (inDrawer) Navigator.of(context).pop();
+          onView(v);
+        },
+      ),
+    const Divider(indent: 28, endIndent: 28),
+    Padding(
+      padding: const EdgeInsets.fromLTRB(28, 8, 16, 4),
+      child: Text(context.l10n.calendars, style: theme.textTheme.titleSmall),
+    ),
+    for (final c in calendars)
+      CheckboxListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+        controlAffinity: ListTileControlAffinity.leading,
+        activeColor: Color(c.color),
+        side: BorderSide(color: Color(c.color), width: 2),
+        value: !c.hidden,
+        title: Text(c.name),
+        onChanged: (on) => ref
+            .read(calendarRepositoryProvider)
+            .saveCalendar(c.copyWith(hidden: on != true)),
+      ),
+    CheckboxListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+      controlAffinity: ListTileControlAffinity.leading,
+      value: settings.showTasks,
+      title: Text(context.l10n.tasksFromZtTasks),
+      onChanged: (on) => ref
+          .read(calendarSettingsProvider.notifier)
+          .update((s) => s.copyWith(showTasks: on == true)),
+    ),
+    CheckboxListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+      controlAffinity: ListTileControlAffinity.leading,
+      value: settings.showBirthdays,
+      title: Text(context.l10n.birthdaysFromZtContacts),
+      onChanged: (on) => ref
+          .read(calendarSettingsProvider.notifier)
+          .update((s) => s.copyWith(showBirthdays: on == true)),
+    ),
+    ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 28),
+      leading: const Icon(Icons.edit_calendar_outlined),
+      title: Text(context.l10n.manageCalendars),
+      onTap: () => push(const CalendarsPage()),
+    ),
+    const Divider(indent: 28, endIndent: 28),
+    ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 28),
+      leading: const Icon(plannerIcon),
+      title: Text(context.l10n.planner),
+      onTap: () => push(const PlannerPage()),
+    ),
+    ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 28),
+      leading: const Icon(Icons.settings_outlined),
+      title: Text(context.l10n.settings),
+      onTap: () => push(const CalendarSettingsPage()),
+    ),
+  ];
 }

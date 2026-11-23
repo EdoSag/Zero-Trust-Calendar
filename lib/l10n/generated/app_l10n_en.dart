@@ -2944,4 +2944,41 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get insertEventLink => 'Video call link';
+
+  @override
+  String get year => 'Year';
+
+  @override
+  String get showWeekNumbers => 'Show week numbers';
+
+  @override
+  String get showWeekNumbersHint =>
+      'Beside the month and year views, and over the day columns';
+
+  @override
+  String get hideWeekends => 'Hide weekends';
+
+  @override
+  String hideWeekendsHint(String days) {
+    return 'The week and month views leave out $days';
+  }
+
+  @override
+  String weekNumberLong(int n) {
+    return 'Week $n';
+  }
+
+  @override
+  String twoDays(String first, String second) {
+    return '$first and $second';
+  }
+
+  @override
+  String get previousMonth => 'Previous month';
+
+  @override
+  String get nextMonth => 'Next month';
+
+  @override
+  String get views => 'Views';
 }
