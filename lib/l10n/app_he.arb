@@ -777,5 +777,10 @@
   "twoDays": "{first} ו{second}",
   "previousMonth": "החודש הקודם",
   "nextMonth": "החודש הבא",
-  "views": "תצוגות"
+  "views": "תצוגות",
+  "newBookingTitle": "הזמנה חדשה",
+  "newBookingsCount": "{count} הזמנות חדשות",
+  "newBookingsFirst": "הראשונה: {when}",
+  "newBookingsChannel": "הזמנות חדשות",
+  "newBookingsChannelHint": "כשמישהו קובע זמן באחד מדפי ההזמנה שלך"
 }

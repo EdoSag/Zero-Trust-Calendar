@@ -1978,5 +1978,24 @@
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month",
-  "views": "Views"
+  "views": "Views",
+  "newBookingTitle": "New booking",
+  "newBookingsCount": "{count} new bookings",
+  "@newBookingsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newBookingsFirst": "First: {when}",
+  "@newBookingsFirst": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "newBookingsChannel": "New bookings",
+  "newBookingsChannelHint": "When someone books a time on one of your booking pages"
 }

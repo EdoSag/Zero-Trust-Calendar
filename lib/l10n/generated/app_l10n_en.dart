@@ -2981,4 +2981,24 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get views => 'Views';
+
+  @override
+  String get newBookingTitle => 'New booking';
+
+  @override
+  String newBookingsCount(int count) {
+    return '$count new bookings';
+  }
+
+  @override
+  String newBookingsFirst(String when) {
+    return 'First: $when';
+  }
+
+  @override
+  String get newBookingsChannel => 'New bookings';
+
+  @override
+  String get newBookingsChannelHint =>
+      'When someone books a time on one of your booking pages';
 }

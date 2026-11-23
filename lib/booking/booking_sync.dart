@@ -34,7 +34,8 @@ class BookingSync {
   BookingBackend get _backend => _ref.read(bookingBackendProvider);
 
   /// Runs one pass (a pass already running is joined, then run again).
-  Future<void> sync({
+  /// Returns the bookings this pass added to the calendar.
+  Future<List<CalendarEvent>> sync({
     required List<CalendarEvent> events,
     required List<ZtCalendarInfo> calendars,
     required BookingEventText text,
@@ -47,36 +48,40 @@ class BookingSync {
     final run = _sync(events, calendars, text, now ?? DateTime.now(), plannedBusy);
     _running = run;
     try {
-      await run;
+      return await run;
     } finally {
       if (identical(_running, run)) _running = null;
     }
   }
 
-  Future<void> _sync(
+  Future<List<CalendarEvent>> _sync(
     List<CalendarEvent> events,
     List<ZtCalendarInfo> calendars,
     BookingEventText text,
     DateTime now,
     bool plannedBusy,
   ) async {
-    if (_ref.read(vaultControllerProvider) is! VaultUnlocked) return;
+    if (_ref.read(vaultControllerProvider) is! VaultUnlocked) return const [];
     final pages = {for (final p in await _backend.pages()) p.id: p};
-    if (pages.isEmpty) return;
+    if (pages.isEmpty) return const [];
     final (:added, :changed) = await _takeBookings(pages, calendars, text);
     final removed = {for (final id in changed) id};
-    await _uploadBusy(
-      [
-        for (final e in events)
-          if (!removed.contains(e.id)) e,
-        for (final e in added)
-          if (!events.any((x) => x.id == e.id)) e,
-      ],
-      calendars,
-      now,
-      plannedBusy,
-    );
     if (changed.isNotEmpty) _ref.read(bookingRevisionProvider.notifier).bump();
+    await uploadAfterTaking(
+      tookAny: changed.isNotEmpty,
+      upload: () => _uploadBusy(
+        [
+          for (final e in events)
+            if (!removed.contains(e.id)) e,
+          for (final e in added)
+            if (!events.any((x) => x.id == e.id)) e,
+        ],
+        calendars,
+        now,
+        plannedBusy,
+      ),
+    );
+    return added;
   }
 
   Future<({List<CalendarEvent> added, List<String> changed})> _takeBookings(
@@ -133,6 +138,22 @@ class BookingSync {
 }
 
 final bookingSyncProvider = Provider<BookingSync>(BookingSync.new);
+
+/// Uploads busy times after a pass took bookings. When it took some, a
+/// failed upload (offline, say) is let go: the bookings are already saved
+/// and marked on the server, so the pass must still report them (or their
+/// new-booking notices would be lost for good), and the busy times are not
+/// marked as sent, so the next pass uploads them.
+Future<void> uploadAfterTaking({
+  required bool tookAny,
+  required Future<void> Function() upload,
+}) async {
+  try {
+    await upload();
+  } on Object {
+    if (!tookAny) rethrow;
+  }
+}
 
 /// Adds new bookings to the calendar and removes the ones visitors
 /// cancelled, marking each on the server. Returns the events it added and

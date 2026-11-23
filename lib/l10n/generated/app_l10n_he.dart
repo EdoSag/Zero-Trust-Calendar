@@ -2960,4 +2960,23 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get views => 'תצוגות';
+
+  @override
+  String get newBookingTitle => 'הזמנה חדשה';
+
+  @override
+  String newBookingsCount(int count) {
+    return '$count הזמנות חדשות';
+  }
+
+  @override
+  String newBookingsFirst(String when) {
+    return 'הראשונה: $when';
+  }
+
+  @override
+  String get newBookingsChannel => 'הזמנות חדשות';
+
+  @override
+  String get newBookingsChannelHint => 'כשמישהו קובע זמן באחד מדפי ההזמנה שלך';
 }
