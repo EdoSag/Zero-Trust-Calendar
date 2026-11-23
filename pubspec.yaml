@@ -24,11 +24,11 @@ dependencies:
     git:
       url: https://github.com/EdoSag/Zero-Trust-Core.git
       path: packages/zero_trust_core
-      # Core Dev: everything the shared spaces and booking pages need
-      # (Core PRs #35, #37, #41, #42), plus the Planner's AI helper
-      # functions (Core PR #65), which the release checks look for.
-      # Switch to the release tag once one is pushed.
-      ref: 5ac7562562574187e94529c4b3400897f32c8e46
+      # Core Dev (shared spaces, booking pages, the Planner's AI helper, the
+      # family circles of S-10) plus the meeting poll tables (Core PR #86),
+      # which the release checks look for. Move to #86's merge commit on
+      # Core Dev once it merges, then to the release tag.
+      ref: de906d248d93717fb1c59b8a68c18193f9ccf7d7
   # The Planner's engine (R0, R1): pure Dart, fits tasks into free time.
   # Independent of zero_trust_core, so it may be newer.
   zt_scheduler:
@@ -65,7 +65,7 @@ dev_dependencies:
     git:
       url: https://github.com/EdoSag/Zero-Trust-Core.git
       path: packages/zt_release_checks
-      ref: b43fcd045722bc364ef2eaa739db181f9dac144f
+      ref: de906d248d93717fb1c59b8a68c18193f9ccf7d7
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
