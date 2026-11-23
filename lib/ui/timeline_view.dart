@@ -10,6 +10,7 @@ import '../data/entries.dart';
 import '../util/day_layout.dart';
 import '../util/format.dart';
 import 'entry_widgets.dart';
+import 'jewish_calendar_page.dart';
 import 'navigation.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
@@ -298,6 +299,18 @@ class _TimelinePageState extends ConsumerState<_TimelinePage> {
                             ),
                           ),
                         ),
+                        if (settings.hebrewDates)
+                          Text(
+                            widget.days > 3
+                                ? hebrewCellLabel(context, d)
+                                : hebrewDateLabel(context, d, withYear: widget.days == 1),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              fontSize: 10,
+                              color: scheme.onSurfaceVariant,
+                            ),
+                          ),
                       ],
                     ),
                   ),

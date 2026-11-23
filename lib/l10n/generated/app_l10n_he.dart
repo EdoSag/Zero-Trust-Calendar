@@ -2988,4 +2988,61 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get couldNotOpenZtTime => 'לא ניתן לפתוח את ZT Time';
+
+  @override
+  String get candleLighting => 'הדלקת נרות';
+
+  @override
+  String get candleLightingAfter => 'הדלקת נרות (לא לפני)';
+
+  @override
+  String get havdalah => 'הבדלה';
+
+  @override
+  String get jewishCalendar => 'לוח שנה עברי';
+
+  @override
+  String get jewishCalendarHint => 'תאריכים עבריים, חגים וזמני שבת';
+
+  @override
+  String get hebrewDates => 'תאריכים עבריים';
+
+  @override
+  String get hebrewDatesHint => 'ליד מספרי הימים';
+
+  @override
+  String get jewishHolidays => 'חגים ומועדים';
+
+  @override
+  String get jewishHolidaysHint => 'חגים, צומות וימי זיכרון, מחושבים בטלפון';
+
+  @override
+  String get shabbatTimes => 'זמני שבת וחג';
+
+  @override
+  String get shabbatTimesOff => 'כבוי';
+
+  @override
+  String get shabbatTimesHint =>
+      'הדלקת נרות והבדלה לעיר. מחושבים בטלפון, בלי להשתמש במיקום שלך.';
+
+  @override
+  String get pickCity => 'עיר';
+
+  @override
+  String get israelCities => 'ישראל';
+
+  @override
+  String get otherCities => 'מחוץ לישראל';
+
+  @override
+  String jewishTimesAt(String city, int candles) {
+    return '$city: הדלקת נרות $candles דקות לפני השקיעה, הבדלה כשהשמש 8.5° מתחת לאופק';
+  }
+
+  @override
+  String get holidaysScheduleIsrael => 'חגים כפי שנוהגים בישראל';
+
+  @override
+  String get holidaysScheduleAbroad => 'חגים כפי שנוהגים בחו״ל (יום טוב שני)';
 }
