@@ -75,7 +75,8 @@ List<PlanHours> planHoursOf(PlannerSettings settings) => [
 
 /// The times the Planner keeps clear: timed events of every calendar that
 /// counts (not hidden, not marked free), repeating events expanded, and
-/// all-day events when [PlannerSettings.allDayBusy] is on. The Planner's own
+/// all-day events when [PlannerSettings.allDayBusy] is on or they are out of
+/// office. The Planner's own
 /// blocks are not busy times: the engine gets those as blocks.
 List<PlanBusy> planBusyOf({
   required PlannerSettings settings,
@@ -93,7 +94,7 @@ List<PlanBusy> planBusyOf({
     for (final e in events)
       if (PlanMark.of(e) == null &&
           !skip.contains(e.calendarId) &&
-          (!e.allDay || settings.allDayBusy))
+          (!e.allDay || settings.allDayBusy || e.outOfOffice))
         for (final (s, end) in e.occurrencesBetween(from, to))
           if (end.isAfter(s))
             PlanBusy(PlanTime.wall(s), PlanTime.wall(end), buffered: !e.allDay),

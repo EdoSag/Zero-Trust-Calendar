@@ -41,6 +41,7 @@ class CalendarEvent {
     this.guestEmails = const [],
     this.guestStatus = const {},
     this.inviteSequence = 0,
+    this.outOfOffice = false,
     this.readOnly = false,
     this.createdAt,
     this.updatedAt,
@@ -107,6 +108,10 @@ class CalendarEvent {
   /// Bumped each time an invitation is emailed, so mail apps treat the new
   /// one as an update of the old (iCalendar SEQUENCE).
   final int inviteSequence;
+
+  /// Out of office (K-7): the time is busy even when the event is all day,
+  /// so booking pages, Find a time and the Planner keep it clear.
+  final bool outOfOffice;
 
   /// From a subscribed calendar (holidays, an .ics link): shown, not edited.
   /// Not stored.
@@ -220,6 +225,7 @@ class CalendarEvent {
     'guestEmails',
     'rsvp',
     'inviteSeq',
+    'ooo',
     'createdAt',
     'kind',
     '_v',
@@ -250,6 +256,7 @@ class CalendarEvent {
     'guestEmails': guestEmails,
     'rsvp': guestStatus,
     'inviteSeq': inviteSequence,
+    if (outOfOffice) 'ooo': true,
     'createdAt': createdAt?.toUtc().toIso8601String(),
   };
 
@@ -314,6 +321,7 @@ class CalendarEvent {
               e.key as String: e.value as String,
       },
       inviteSequence: (json['inviteSeq'] as num?)?.toInt() ?? 0,
+      outOfOffice: json['ooo'] == true,
       createdAt: _parseDate(json['createdAt']),
       updatedAt: updatedAt,
       extra: {
@@ -350,6 +358,7 @@ class CalendarEvent {
     List<String>? guestEmails,
     Map<String, String>? guestStatus,
     int? inviteSequence,
+    bool? outOfOffice,
     bool? readOnly,
     DateTime? createdAt,
     Map<String, Object?>? extra,
@@ -382,6 +391,7 @@ class CalendarEvent {
     guestEmails: guestEmails ?? this.guestEmails,
     guestStatus: guestStatus ?? this.guestStatus,
     inviteSequence: inviteSequence ?? this.inviteSequence,
+    outOfOffice: outOfOffice ?? this.outOfOffice,
     readOnly: readOnly ?? this.readOnly,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt,

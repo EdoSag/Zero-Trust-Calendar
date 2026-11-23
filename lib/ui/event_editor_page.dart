@@ -84,6 +84,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
   late DateTime _start;
   late DateTime _end; // Exclusive for all-day.
   late bool _allDay;
+  bool _outOfOffice = false;
   RecurrenceRule? _rule;
   late String _calendarId;
   int? _color;
@@ -115,6 +116,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
           ? addDays(dayOf(occ), (e.duration.inHours / 24).round())
           : e.end.add(shift);
       _allDay = e.allDay;
+      _outOfOffice = e.outOfOffice;
       _rule = e.recurrence;
       _calendarId = e.calendarId;
       _color = e.color;
@@ -151,6 +153,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
         _start = d.start;
         _end = d.end;
         _allDay = d.allDay;
+        _outOfOffice = d.outOfOffice;
         _rule = d.recurrence;
         _calendarId = d.calendarId;
         if (d.allDay != widget.initialAllDay) {
@@ -212,6 +215,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
       guestEmails: _guestEmails,
       guestStatus: base?.guestStatus ?? const {},
       inviteSequence: _isNew ? 0 : base!.inviteSequence,
+      outOfOffice: _outOfOffice,
       createdAt: _isNew ? null : base!.createdAt,
       extra: _isNew ? const {} : base!.extra,
     );
@@ -556,6 +560,17 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
                   if (picked != null) _set(() => _rule = picked.$1);
                 },
               ),
+            SwitchListTile(
+              key: const ValueKey('event-out-of-office'),
+              secondary: const Icon(Icons.work_off_outlined),
+              title: Text(context.l10n.outOfOffice),
+              subtitle: Text(context.l10n.outOfOfficeHint),
+              value: _outOfOffice,
+              onChanged: (v) => _set(() {
+                _outOfOffice = v;
+                if (v && _title.text.trim().isEmpty) _title.text = context.l10n.outOfOffice;
+              }),
+            ),
             const Divider(),
             ListTile(
               leading: Icon(Icons.circle, color: Color(_color ?? calendar.color)),

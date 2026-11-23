@@ -24,6 +24,7 @@ import 'desktop_bridge_page.dart';
 import 'jewish_calendar_page.dart';
 import 'phone_calendar_page.dart';
 import 'subscribe_page.dart';
+import 'working_hours_tile.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
 /// "Friday and Saturday": the weekend that "Hide weekends" leaves out.
@@ -71,6 +72,7 @@ class CalendarSettingsPage extends ConsumerWidget {
             MaterialPageRoute<void>(builder: (_) => const BookingPagesPage()),
           ),
         ),
+        const WorkingHoursTile(),
         ListTile(
           leading: const Icon(Icons.public),
           title: Text(context.l10n.holidaysAndSubscribedCalendars),

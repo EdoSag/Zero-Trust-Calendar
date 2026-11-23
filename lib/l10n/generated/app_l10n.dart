@@ -4925,6 +4925,42 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Holidays as kept outside Israel (second festival days)'**
   String get holidaysScheduleAbroad;
+
+  /// No description provided for @workingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Working hours'**
+  String get workingHours;
+
+  /// No description provided for @workingHoursHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking pages, Find a time and the Planner use these'**
+  String get workingHoursHint;
+
+  /// No description provided for @useMyWorkingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my working hours'**
+  String get useMyWorkingHours;
+
+  /// No description provided for @myWorkingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'My working hours'**
+  String get myWorkingHours;
+
+  /// No description provided for @outOfOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of office'**
+  String get outOfOffice;
+
+  /// No description provided for @outOfOfficeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts as busy, even all day: booking pages and Find a time won\'t offer this time'**
+  String get outOfOfficeHint;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

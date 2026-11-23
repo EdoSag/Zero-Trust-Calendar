@@ -90,7 +90,8 @@ List<(DateTime, DateTime)> mergeBlocks(Iterable<(DateTime, DateTime)> blocks) {
 /// When this account is busy from [from] for [busyHorizon]: timed events
 /// of its visible calendars, except [exceptCalendarId] (that calendar's
 /// events are already in the space for everyone). All-day events don't
-/// count, as in Google Calendar (holidays, birthdays, reminders).
+/// count, as in Google Calendar (holidays, birthdays, reminders), except
+/// out-of-office ones: those keep the whole day busy.
 /// A Planner block that can still move counts only with [plannedBusy]
 /// (the Planner's "planned blocks count as busy" setting).
 List<(DateTime, DateTime)> busyBlocks({
@@ -107,7 +108,9 @@ List<(DateTime, DateTime)> busyBlocks({
   final to = from.add(busyHorizon);
   return mergeBlocks([
     for (final e in events)
-      if (!e.allDay && visible.contains(e.calendarId) && !_flexible(e, plannedBusy))
+      if ((!e.allDay || e.outOfOffice) &&
+          visible.contains(e.calendarId) &&
+          !_flexible(e, plannedBusy))
         for (final o in e.occurrencesBetween(from, to)) o,
   ]);
 }
@@ -127,6 +130,11 @@ bool _flexible(CalendarEvent e, bool plannedBusy) {
 /// Start times of free slots of [length], on a [step] grid, between
 /// [dayStartHour] and [dayEndHour] on each of [days] days from [from]'s day,
 /// later than [now], that overlap none of [busy].
+///
+/// With [hours] (working hours: weekday, then minute ranges), a slot must
+/// fit inside one of that weekday's ranges instead, and days without
+/// ranges are skipped ([dayStartHour], [dayEndHour] and [weekends] are
+/// then not used).
 List<DateTime> freeSlots({
   required List<(DateTime, DateTime)> busy,
   required DateTime from,
@@ -137,11 +145,34 @@ List<DateTime> freeSlots({
   int dayEndHour = 20,
   Duration step = const Duration(minutes: 30),
   bool weekends = false,
+  Map<int, List<MinuteRange>>? hours,
 }) {
   final merged = mergeBlocks(busy);
   final out = <DateTime>[];
+  bool free(DateTime s) {
+    final e = s.add(length);
+    return !merged.any((b) => b.$1.isBefore(e) && b.$2.isAfter(s));
+  }
+
   for (var d = 0; d < days; d++) {
     final day = DateTime(from.year, from.month, from.day + d);
+    if (hours != null) {
+      final seen = <DateTime>{};
+      for (final (startMin, endMin) in hours[day.weekday] ?? const <MinuteRange>[]) {
+        final end = DateTime(day.year, day.month, day.day, 0, endMin);
+        // On the step grid from midnight, from the range's start on.
+        final stepMin = step.inMinutes < 1 ? 1 : step.inMinutes;
+        final first = ((startMin + stepMin - 1) ~/ stepMin) * stepMin;
+        for (
+          var s = DateTime(day.year, day.month, day.day, 0, first);
+          !s.add(length).isAfter(end);
+          s = s.add(step)
+        ) {
+          if (s.isAfter(now) && free(s) && seen.add(s)) out.add(s);
+        }
+      }
+      continue;
+    }
     if (!weekends &&
         (day.weekday == DateTime.saturday || day.weekday == DateTime.sunday)) {
       continue;
@@ -152,11 +183,8 @@ List<DateTime> freeSlots({
       !s.add(length).isAfter(end);
       s = s.add(step)
     ) {
-      if (!s.isAfter(now)) continue;
-      final e = s.add(length);
-      final clash = merged.any((b) => b.$1.isBefore(e) && b.$2.isAfter(s));
-      if (!clash) out.add(s);
+      if (s.isAfter(now) && free(s)) out.add(s);
     }
   }
-  return out;
+  return out..sort();
 }

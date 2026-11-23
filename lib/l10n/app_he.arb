@@ -803,5 +803,11 @@
   "otherCities": "מחוץ לישראל",
   "jewishTimesAt": "{city}: הדלקת נרות {candles} דקות לפני השקיעה, הבדלה כשהשמש 8.5° מתחת לאופק",
   "holidaysScheduleIsrael": "חגים כפי שנוהגים בישראל",
-  "holidaysScheduleAbroad": "חגים כפי שנוהגים בחו״ל (יום טוב שני)"
+  "holidaysScheduleAbroad": "חגים כפי שנוהגים בחו״ל (יום טוב שני)",
+  "workingHours": "שעות עבודה",
+  "workingHoursHint": "דפי הזמנה, ״מציאת זמן״ והמתכנן משתמשים בהן",
+  "useMyWorkingHours": "לפי שעות העבודה שלי",
+  "myWorkingHours": "שעות העבודה שלי",
+  "outOfOffice": "מחוץ למשרד",
+  "outOfOfficeHint": "נחשב תפוס, גם כאירוע של יום שלם: דפי הזמנה ו״מציאת זמן״ לא יציעו את הזמן הזה"
 }
