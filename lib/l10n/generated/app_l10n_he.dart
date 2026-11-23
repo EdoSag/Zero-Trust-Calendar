@@ -3064,4 +3064,120 @@ class AppL10nHe extends AppL10n {
   @override
   String get outOfOfficeHint =>
       'נחשב תפוס, גם כאירוע של יום שלם: דפי הזמנה ו״מציאת זמן״ לא יציעו את הזמן הזה';
+
+  @override
+  String get meetingPolls => 'סקרי פגישה';
+
+  @override
+  String get meetingPollsHint => 'להציע כמה מועדים ולתת למוזמנים להצביע';
+
+  @override
+  String get meetingPollsIntro =>
+      'מציעים כמה מועדים ומשתפים את הקישור. המוזמנים מסמנים מה מתאים להם, בלי חשבון. אחר כך בוחרים מועד והוא נכנס ליומן.';
+
+  @override
+  String get newMeetingPoll => 'סקר חדש';
+
+  @override
+  String get pollNone => 'אין עדיין סקרים.';
+
+  @override
+  String get pollCreate => 'יצירה';
+
+  @override
+  String get pollTitleHint => 'בשביל מה?';
+
+  @override
+  String get pollHostHint => 'השם שלך (המוזמנים יראו אותו)';
+
+  @override
+  String get pollLocationHint => 'מקום או קישור לשיחת וידאו (לא חובה)';
+
+  @override
+  String get pollDescriptionHint => 'פרטים (לא חובה)';
+
+  @override
+  String get pollTimes => 'מועדים להצבעה';
+
+  @override
+  String get pollTimesHint =>
+      'הוצעו לפי זמנים פנויים בשעות העבודה שלך. אפשר להסיר ולהוסיף מועדים.';
+
+  @override
+  String get pollAddTime => 'הוספת מועד';
+
+  @override
+  String get pollRemoveTime => 'הסרת המועד';
+
+  @override
+  String get pollNeedsTitle => 'נא לתת לסקר כותרת.';
+
+  @override
+  String get pollNeedsTimes => 'נא להוסיף לפחות שני מועדים.';
+
+  @override
+  String pollTimesCount(int count) {
+    return 'מועדים: $count';
+  }
+
+  @override
+  String pollVoteCount(int count) {
+    return 'הצבעות: $count';
+  }
+
+  @override
+  String get pollShare => 'שיתוף הקישור';
+
+  @override
+  String pollShareText(Object link, Object title) {
+    return '$title: אילו מועדים מתאימים לך? אפשר להצביע כאן: $link';
+  }
+
+  @override
+  String pollYesNames(int count, String names) {
+    return 'כן ($count): $names';
+  }
+
+  @override
+  String pollMaybeNames(int count, String names) {
+    return 'אולי ($count): $names';
+  }
+
+  @override
+  String get pollBest => 'המוביל כרגע';
+
+  @override
+  String get pollPick => 'בחירת המועד';
+
+  @override
+  String pollPickConfirm(Object when) {
+    return 'להוסיף ליומן את האירוע ב־$when? מוזמנים שהשאירו מייל ויכולים להגיע יתווספו כמוזמנים. הסקר ייסגר ויציג את המועד שנבחר.';
+  }
+
+  @override
+  String pollPickedOn(Object when) {
+    return 'נבחר: $when';
+  }
+
+  @override
+  String get pollOpenEvent => 'פתיחת האירוע';
+
+  @override
+  String get pollDelete => 'מחיקת הסקר';
+
+  @override
+  String get pollDeleteConfirm =>
+      'המוזמנים לא יוכלו לפתוח את הקישור יותר. אירוע שכבר נוסף נשאר ביומן.';
+
+  @override
+  String get pollGone => 'הסקר נמחק.';
+
+  @override
+  String pollLoadFailed(Object error) {
+    return 'לא ניתן לטעון את ההצבעות: $error';
+  }
+
+  @override
+  String get pollPrivacy =>
+      'הסקר וההצבעות מוצפנים במפתח שנמצא רק בקישור, כך שהשרת שלנו לא יכול לקרוא אותם. המיילים של המוזמנים מוצפנים כך שרק את/ה יכול/ה לקרוא אותם.';
 }

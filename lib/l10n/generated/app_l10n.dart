@@ -4961,6 +4961,198 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Counts as busy, even all day: booking pages and Find a time won\'t offer this time'**
   String get outOfOfficeHint;
+
+  /// No description provided for @meetingPolls.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting polls'**
+  String get meetingPolls;
+
+  /// No description provided for @meetingPollsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose a few times and let guests vote'**
+  String get meetingPollsHint;
+
+  /// No description provided for @meetingPollsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose a few times and share the link. Guests mark the times that work for them, no account needed. Then pick a time and it goes into your calendar.'**
+  String get meetingPollsIntro;
+
+  /// No description provided for @newMeetingPoll.
+  ///
+  /// In en, this message translates to:
+  /// **'New poll'**
+  String get newMeetingPoll;
+
+  /// No description provided for @pollNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No polls yet.'**
+  String get pollNone;
+
+  /// No description provided for @pollCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get pollCreate;
+
+  /// No description provided for @pollTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What is it for?'**
+  String get pollTitleHint;
+
+  /// No description provided for @pollHostHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name (guests see it)'**
+  String get pollHostHint;
+
+  /// No description provided for @pollLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Place or video link (optional)'**
+  String get pollLocationHint;
+
+  /// No description provided for @pollDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Details (optional)'**
+  String get pollDescriptionHint;
+
+  /// No description provided for @pollTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Times to vote on'**
+  String get pollTimes;
+
+  /// No description provided for @pollTimesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested from free times in your working hours. Remove or add times as you like.'**
+  String get pollTimesHint;
+
+  /// No description provided for @pollAddTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a time'**
+  String get pollAddTime;
+
+  /// No description provided for @pollRemoveTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this time'**
+  String get pollRemoveTime;
+
+  /// No description provided for @pollNeedsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Give the poll a title.'**
+  String get pollNeedsTitle;
+
+  /// No description provided for @pollNeedsTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least two times.'**
+  String get pollNeedsTimes;
+
+  /// No description provided for @pollTimesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Times: {count}'**
+  String pollTimesCount(int count);
+
+  /// No description provided for @pollVoteCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Votes: {count}'**
+  String pollVoteCount(int count);
+
+  /// No description provided for @pollShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the link'**
+  String get pollShare;
+
+  /// No description provided for @pollShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'{title}: which times work for you? Vote here: {link}'**
+  String pollShareText(Object link, Object title);
+
+  /// No description provided for @pollYesNames.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes ({count}): {names}'**
+  String pollYesNames(int count, String names);
+
+  /// No description provided for @pollMaybeNames.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe ({count}): {names}'**
+  String pollMaybeNames(int count, String names);
+
+  /// No description provided for @pollBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Best so far'**
+  String get pollBest;
+
+  /// No description provided for @pollPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick this time'**
+  String get pollPick;
+
+  /// No description provided for @pollPickConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the event on {when} to your calendar? Guests who left an email and can make it are added as guests. The poll closes and shows the picked time.'**
+  String pollPickConfirm(Object when);
+
+  /// No description provided for @pollPickedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Picked: {when}'**
+  String pollPickedOn(Object when);
+
+  /// No description provided for @pollOpenEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the event'**
+  String get pollOpenEvent;
+
+  /// No description provided for @pollDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete poll'**
+  String get pollDelete;
+
+  /// No description provided for @pollDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests won\'t be able to open the link any more. An event you already added stays in your calendar.'**
+  String get pollDeleteConfirm;
+
+  /// No description provided for @pollGone.
+  ///
+  /// In en, this message translates to:
+  /// **'This poll was deleted.'**
+  String get pollGone;
+
+  /// No description provided for @pollLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the votes: {error}'**
+  String pollLoadFailed(Object error);
+
+  /// No description provided for @pollPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'The poll and the votes are encrypted with a key that is only in the link, so our server can\'t read them. Guests\' emails are encrypted so that only you can read them.'**
+  String get pollPrivacy;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

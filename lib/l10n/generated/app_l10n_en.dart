@@ -3089,4 +3089,120 @@ class AppL10nEn extends AppL10n {
   @override
   String get outOfOfficeHint =>
       'Counts as busy, even all day: booking pages and Find a time won\'t offer this time';
+
+  @override
+  String get meetingPolls => 'Meeting polls';
+
+  @override
+  String get meetingPollsHint => 'Propose a few times and let guests vote';
+
+  @override
+  String get meetingPollsIntro =>
+      'Propose a few times and share the link. Guests mark the times that work for them, no account needed. Then pick a time and it goes into your calendar.';
+
+  @override
+  String get newMeetingPoll => 'New poll';
+
+  @override
+  String get pollNone => 'No polls yet.';
+
+  @override
+  String get pollCreate => 'Create';
+
+  @override
+  String get pollTitleHint => 'What is it for?';
+
+  @override
+  String get pollHostHint => 'Your name (guests see it)';
+
+  @override
+  String get pollLocationHint => 'Place or video link (optional)';
+
+  @override
+  String get pollDescriptionHint => 'Details (optional)';
+
+  @override
+  String get pollTimes => 'Times to vote on';
+
+  @override
+  String get pollTimesHint =>
+      'Suggested from free times in your working hours. Remove or add times as you like.';
+
+  @override
+  String get pollAddTime => 'Add a time';
+
+  @override
+  String get pollRemoveTime => 'Remove this time';
+
+  @override
+  String get pollNeedsTitle => 'Give the poll a title.';
+
+  @override
+  String get pollNeedsTimes => 'Add at least two times.';
+
+  @override
+  String pollTimesCount(int count) {
+    return 'Times: $count';
+  }
+
+  @override
+  String pollVoteCount(int count) {
+    return 'Votes: $count';
+  }
+
+  @override
+  String get pollShare => 'Share the link';
+
+  @override
+  String pollShareText(Object link, Object title) {
+    return '$title: which times work for you? Vote here: $link';
+  }
+
+  @override
+  String pollYesNames(int count, String names) {
+    return 'Yes ($count): $names';
+  }
+
+  @override
+  String pollMaybeNames(int count, String names) {
+    return 'Maybe ($count): $names';
+  }
+
+  @override
+  String get pollBest => 'Best so far';
+
+  @override
+  String get pollPick => 'Pick this time';
+
+  @override
+  String pollPickConfirm(Object when) {
+    return 'Add the event on $when to your calendar? Guests who left an email and can make it are added as guests. The poll closes and shows the picked time.';
+  }
+
+  @override
+  String pollPickedOn(Object when) {
+    return 'Picked: $when';
+  }
+
+  @override
+  String get pollOpenEvent => 'Open the event';
+
+  @override
+  String get pollDelete => 'Delete poll';
+
+  @override
+  String get pollDeleteConfirm =>
+      'Guests won\'t be able to open the link any more. An event you already added stays in your calendar.';
+
+  @override
+  String get pollGone => 'This poll was deleted.';
+
+  @override
+  String pollLoadFailed(Object error) {
+    return 'Couldn\'t load the votes: $error';
+  }
+
+  @override
+  String get pollPrivacy =>
+      'The poll and the votes are encrypted with a key that is only in the link, so our server can\'t read them. Guests\' emails are encrypted so that only you can read them.';
 }
