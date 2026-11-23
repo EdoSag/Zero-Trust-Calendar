@@ -6,6 +6,7 @@ import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../booking/booking_crypto.dart';
 import '../data/calendar_store.dart';
+import '../data/subscriptions.dart';
 import '../data/find_a_time.dart';
 import '../model/calendar_event.dart';
 import '../polls/meeting_polls.dart';
@@ -140,7 +141,9 @@ class _PollEditorPageState extends ConsumerState<PollEditorPage> {
   }
 
   List<DateTime> _suggested() => suggestPollTimes(
-    events: [...?ref.read(eventsProvider).value],
+    // Shared, family and subscribed calendars' events too: a suggested
+    // time is free in every calendar shown.
+    events: [...?ref.read(allEventsProvider).value],
     calendars: ref.read(calendarsProvider).value ?? const [ZtCalendarInfo.personal],
     hours: currentWorkingHours(ref),
     length: Duration(minutes: _duration),
@@ -211,7 +214,7 @@ class _PollEditorPageState extends ConsumerState<PollEditorPage> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     // Suggested once the events are in.
-    if (_times == null && ref.watch(eventsProvider).hasValue) _times = _suggested();
+    if (_times == null && ref.watch(allEventsProvider).hasValue) _times = _suggested();
     final times = _times ?? const <DateTime>[];
     return Scaffold(
       appBar: AppBar(
@@ -319,8 +322,7 @@ class PollDetailsPage extends ConsumerWidget {
   const PollDetailsPage({super.key, required this.pollId});
   final String pollId;
 
-  Future<void> _pick(BuildContext context, WidgetRef ref, MeetingPoll poll, DateTime time,
-      List<PollVote> votes) async {
+  Future<void> _pick(BuildContext context, WidgetRef ref, MeetingPoll poll, DateTime time) async {
     final l = context.l10n;
     final ok = await showDialog<bool>(
       context: context,
@@ -337,16 +339,19 @@ class PollDetailsPage extends ConsumerWidget {
     final messenger = ScaffoldMessenger.of(context);
     final pickedText = l.pollPickedOn(_when(context, time));
     try {
+      // The latest answers, so every guest who said yes is invited.
+      final votes = await ref.refresh(pollVotesProvider(poll.id).future);
       final event = pollEvent(poll, time, votes, id: const Uuid().v4());
-      await ref.read(calendarRepositoryProvider).saveEvent(event);
       final picked = poll.copyWith(chosen: time, eventId: event.id);
+      // Guests see the picked time; no more votes. Done first: if it fails
+      // nothing is kept as picked, so picking again retries it.
+      await ref.read(pollBackendProvider).savePoll(picked, closed: true);
+      await ref.read(calendarRepositoryProvider).saveEvent(event);
       await meetingPollsCollection.save(
         ref.read(ztSyncControllerProvider.notifier),
         await ref.read(ztLocalStoreProvider.future),
         picked,
       );
-      // Guests see the picked time; no more votes.
-      await ref.read(pollBackendProvider).savePoll(picked, closed: true);
       messenger.showSnackBar(
         SnackBar(content: Text(pickedText), duration: const Duration(seconds: 4)),
       );
@@ -470,7 +475,10 @@ class PollDetailsPage extends ConsumerWidget {
                 tally: t,
                 best: best.contains(t.time),
                 chosen: poll.chosen != null && poll.chosen!.isAtSameMomentAs(t.time),
-                onPick: poll.chosen == null ? () => _pick(context, ref, poll, t.time, votes) : null,
+                // Only once the answers are in: picking invites the yeses.
+                onPick: poll.chosen == null && votesAsync.hasValue && !votesAsync.hasError
+                    ? () => _pick(context, ref, poll, t.time)
+                    : null,
               ),
           ],
         ),

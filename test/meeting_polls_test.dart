@@ -30,8 +30,13 @@ class _FakePolls implements PollBackend {
   @override
   Future<void> deletePoll(String id) async {}
 
+  Object? votesError;
+
   @override
-  Future<List<SealedVote>> votes(String pollId) async => rows;
+  Future<List<SealedVote>> votes(String pollId) async {
+    if (votesError case final e?) throw e;
+    return rows;
+  }
 }
 
 MeetingPoll _poll({String? id, String? key, String? privateKey, List<DateTime>? times}) => MeetingPoll(
@@ -163,6 +168,24 @@ void main() {
       // Each time's pick button sits below its own answers.
       final first = tester.getRect(find.textContaining('Dana').first);
       expect(tester.getRect(pick.first).top, greaterThan(first.bottom - 1));
+    });
+
+    testWidgets('a time can be picked only once the answers are in ($locale)', (tester) async {
+      usePhoneScreen(tester);
+      final fake = _FakePolls()..votesError = Exception('offline');
+      final poll = _poll();
+      await tester.pumpWidget(app(
+        PollDetailsPage(pollId: poll.id),
+        const [],
+        locale: locale,
+        overrides: [
+          meetingPollsProvider.overrideWith((ref) => Stream.value([poll])),
+          pollBackendProvider.overrideWithValue(fake),
+        ],
+      ));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.cloud_off), findsOneWidget);
+      expect(find.text(he ? 'בחירת המועד' : 'Pick this time'), findsNothing);
     });
 
     testWidgets('a new poll suggests three times ($locale)', (tester) async {
