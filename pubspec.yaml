@@ -1,7 +1,7 @@
 name: zerotrust_calendar
 description: "Zero-Trust Calendar: an end-to-end encrypted calendar, linked with ZT Notes, Tasks and Contacts."
 publish_to: none
-version: 0.10.0+25
+version: 0.10.1+26
 
 environment:
   sdk: ^3.9.0
@@ -25,10 +25,11 @@ dependencies:
       url: https://github.com/EdoSag/Zero-Trust-Core.git
       path: packages/zero_trust_core
       # Core Dev (shared spaces, booking pages, the Planner's AI helper, the
-      # family circles of S-10) plus the meeting poll tables (Core PR #86),
-      # which the release checks look for. Move to #86's merge commit on
-      # Core Dev once it merges, then to the release tag.
-      ref: 2a11bcbe537e0f82552bdbba9eab6de96f1d18ed
+      # family circles of S-10, the meeting poll tables) plus the sync fix of
+      # Core PR #89: rows already on the device are skipped before any
+      # crypto, so a large import no longer freezes every later sync. Move
+      # to the release tag once Core is released.
+      ref: 60cf0969fc8d57b31921063e83339f3f5e0400e4
   # The Planner's engine (R0, R1): pure Dart, fits tasks into free time.
   # Independent of zero_trust_core, so it may be newer.
   zt_scheduler:
@@ -65,7 +66,7 @@ dev_dependencies:
     git:
       url: https://github.com/EdoSag/Zero-Trust-Core.git
       path: packages/zt_release_checks
-      ref: 2a11bcbe537e0f82552bdbba9eab6de96f1d18ed
+      ref: 60cf0969fc8d57b31921063e83339f3f5e0400e4
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
