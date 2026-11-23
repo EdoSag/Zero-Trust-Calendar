@@ -145,7 +145,11 @@ List<Zman> shabbatTimes(DateTime from, DateTime to, ZmanimCity city) {
     final next = DateTime(day.year, day.month, day.day + 1);
     final holyToday = isHolyDay(day, israel: city.israel);
     final holyTomorrow = isHolyDay(next, israel: city.israel);
-    if (!holyToday && holyTomorrow) {
+    // Candles before sunset when a holy day starts this evening, also when
+    // a Yom Tov on Friday runs into Shabbat (no lighting once Shabbat has
+    // begun).
+    final intoShabbat = holyToday && holyTomorrow && next.weekday == DateTime.saturday;
+    if ((!holyToday && holyTomorrow) || intoShabbat) {
       final sunset = sunDownAt(day, city);
       if (sunset != null) {
         out.add(Zman(ZmanKind.candles, sunset.subtract(Duration(minutes: city.candleMinutes))));

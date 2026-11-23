@@ -182,6 +182,19 @@ void main() {
     expect(find.text(name(DateTime.sunday)), findsOneWidget);
   });
 
+  testWidgets('English on a phone set to Israel hides Friday and Saturday', (tester) async {
+    usePhoneScreen(tester);
+    tester.platformDispatcher.localeTestValue = const Locale('en', 'IL');
+    addTearDown(tester.platformDispatcher.clearLocaleTestValue);
+    final prefs = await prefsWith({'view': 'month', 'hideWeekends': 'true'});
+    await tester.pumpWidget(app(const HomePage(), events, prefs: prefs));
+    await tester.pumpAndSettle();
+    String name(int weekday) => DateFormat.E().format(DateTime(2024, 1, weekday));
+    expect(find.text(name(DateTime.friday)), findsNothing);
+    expect(find.text(name(DateTime.saturday)), findsNothing);
+    expect(find.text(name(DateTime.sunday)), findsOneWidget);
+  });
+
   testWidgets('week numbers sit at the start of each month row', (tester) async {
     usePhoneScreen(tester);
     final prefs = await prefsWith({'view': 'month', 'showWeekNumbers': 'true'});

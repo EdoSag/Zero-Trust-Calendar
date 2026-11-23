@@ -7,6 +7,7 @@ import 'package:zerotrust_calendar/data/subscriptions.dart';
 import 'package:zerotrust_calendar/data/time_links.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 import 'package:zerotrust_calendar/model/calendar_event.dart';
+import 'package:zerotrust_calendar/ui/import_sheet.dart';
 import 'package:zerotrust_calendar/ui/pick_for_keyboard_page.dart';
 
 void main() {
@@ -131,5 +132,26 @@ void main() {
     await tester.pumpAndSettle();
     expect(picked(), isNull);
     expect(find.text('Date and time'), findsOneWidget);
+  });
+
+  testWidgets('a ZT Time link to a subscribed calendar\'s event still opens it', (tester) async {
+    final feed = CalendarEvent(
+      id: 'feed:holidays:1',
+      title: 'Holiday',
+      start: DateTime(2026, 12, 25),
+      end: DateTime(2026, 12, 26),
+      allDay: true,
+    );
+    late WidgetRef widgetRef;
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [feedEventsProvider.overrideWithValue([feed])],
+        child: Consumer(builder: (_, ref, _) {
+          widgetRef = ref;
+          return const SizedBox();
+        }),
+      ),
+    );
+    expect(await linkedEventExists(widgetRef, feed.id), isTrue);
   });
 }
