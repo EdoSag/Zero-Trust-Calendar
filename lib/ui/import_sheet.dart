@@ -6,16 +6,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../data/calendar_store.dart';
+import '../data/subscriptions.dart';
 import '../ics/ics.dart';
 import '../ics/import_service.dart';
 import '../model/calendar_event.dart';
 import '../planner/planner_model.dart';
+import '../data/time_links.dart';
 import '../platform/channels.dart';
+import 'event_details_page.dart';
+import 'navigation.dart';
 import 'shared_calendar_pages.dart';
 import '../util/format.dart';
 import 'subscribe_page.dart';
 import 'inline_button_style.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
+
+/// Whether the event a ZT Time link names is still there: the account's
+/// own and shared events, or one from a subscribed calendar (the same
+/// events the picker offers).
+Future<bool> linkedEventExists(WidgetRef ref, String eventId) async {
+  if (ref.read(feedEventsProvider).any((e) => e.id == eventId)) return true;
+  return await ref.read(calendarRepositoryProvider).event(eventId) != null;
+}
 
 /// Handles a file or link another app opened Calendar with: an .ics file
 /// or invitation ("Add to ZT Calendar"), or a webcal:// subscribe link.
@@ -24,6 +36,19 @@ Future<void> handleIncomingFile(
   WidgetRef ref,
   IncomingFile file,
 ) async {
+  // ZT Time: show the event it is linked to (a deleted one: just the app).
+  if (file.openItem != null) {
+    final (:eventId, :occurrence) = parseTimeItemId(file.openItem!);
+    final exists = await linkedEventExists(ref, eventId);
+    if (!exists || !context.mounted) return;
+    if (occurrence != null) ref.read(focusedDayProvider.notifier).set(occurrence);
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => EventDetailsPage(eventId: eventId, occurrenceStart: occurrence),
+      ),
+    );
+    return;
+  }
   if (file.invite != null) {
     await Navigator.of(context).push(
       MaterialPageRoute<void>(

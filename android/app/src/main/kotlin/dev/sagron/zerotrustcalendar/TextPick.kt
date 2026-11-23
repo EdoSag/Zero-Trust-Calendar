@@ -34,11 +34,22 @@ object TextPick {
         }
     }
 
-    fun answer(activity: Activity, text: String?) {
+    /**
+     * Answers with [text]. When the caller asked for an item ([ZtLinks.EXTRA_WANT_ITEM], ZT
+     * Time) and an event was picked, its id, title and times go along ([item]).
+     */
+    fun answer(activity: Activity, text: String?, item: Map<String, Any?>? = null) {
         if (text.isNullOrEmpty()) {
             activity.setResult(Activity.RESULT_CANCELED)
         } else {
-            activity.setResult(Activity.RESULT_OK, Intent().putExtra(EXTRA_TEXT, text))
+            val data = Intent().putExtra(EXTRA_TEXT, text)
+            if (item != null && ZtLinks.wantsItem(activity.intent)) {
+                (item["id"] as? String)?.let { data.putExtra(ZtLinks.EXTRA_ITEM_ID, it) }
+                (item["title"] as? String)?.let { data.putExtra(ZtLinks.EXTRA_TITLE, it) }
+                (item["startMs"] as? Number)?.let { data.putExtra(ZtLinks.EXTRA_START_MS, it.toLong()) }
+                (item["endMs"] as? Number)?.let { data.putExtra(ZtLinks.EXTRA_END_MS, it.toLong()) }
+            }
+            activity.setResult(Activity.RESULT_OK, data)
         }
         activity.finish()
     }

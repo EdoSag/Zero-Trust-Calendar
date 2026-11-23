@@ -4799,6 +4799,24 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'When someone books a time on one of your booking pages'**
   String get newBookingsChannelHint;
+
+  /// No description provided for @logAsTimeEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Log as time entry'**
+  String get logAsTimeEntry;
+
+  /// No description provided for @loggedInZtTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved in ZT Time'**
+  String get loggedInZtTime;
+
+  /// No description provided for @couldNotOpenZtTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open ZT Time'**
+  String get couldNotOpenZtTime;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

@@ -59,6 +59,12 @@
                 <action android:name="bz.zerotrust.action.PICK_TEXT"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
+            <!-- ZT Time opens an event it is linked to ("ZT Time links"). Only says which
+                 event to show after the normal unlock. -->
+            <intent-filter>
+                <action android:name="bz.zerotrust.action.OPEN_ITEM"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
             <!-- Taps on the "Up next" home-screen widget (home_widget). -->
             <intent-filter>
                 <action android:name="es.antonborri.home_widget.action.LAUNCH"/>
@@ -192,6 +198,8 @@
         <package android:name="dev.sagron.zerotrustnotes"/>
         <package android:name="dev.sagron.zerotrusttasks"/>
         <package android:name="dev.sagron.zerotrustcontacts"/>
+        <!-- "Log as time entry" hands an event to ZT Time. -->
+        <package android:name="dev.sagron.zerotrusttime"/>
         <!-- Event locations open in the phone's maps app. -->
         <intent>
             <action android:name="android.intent.action.VIEW"/>

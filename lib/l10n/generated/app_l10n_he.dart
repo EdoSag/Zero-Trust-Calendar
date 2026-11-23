@@ -2979,4 +2979,13 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get newBookingsChannelHint => 'כשמישהו קובע זמן באחד מדפי ההזמנה שלך';
+
+  @override
+  String get logAsTimeEntry => 'רישום כרשומת זמן';
+
+  @override
+  String get loggedInZtTime => 'נשמר ב־ZT Time';
+
+  @override
+  String get couldNotOpenZtTime => 'לא ניתן לפתוח את ZT Time';
 }
