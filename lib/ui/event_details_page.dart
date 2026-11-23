@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../data/calendar_store.dart';
+import '../data/time_links.dart';
 import '../data/event_done.dart';
 import '../data/event_actions.dart';
 import '../data/linked_apps.dart';
@@ -199,6 +200,14 @@ class EventDetailsPage extends ConsumerWidget {
                   if (context.mounted) {
                     await sendRunningLate(context, event, guests);
                   }
+                case 'time':
+                  final messenger = ScaffoldMessenger.of(context);
+                  final saved = await ref.read(timeLinkProvider).logTime(event, occ, occEnd);
+                  if (saved == null) {
+                    messenger.showSnackBar(SnackBar(content: Text(currentL10n.couldNotOpenZtTime)));
+                  } else if (saved) {
+                    messenger.showSnackBar(SnackBar(content: Text(currentL10n.loggedInZtTime)));
+                  }
               }
             },
             itemBuilder: (_) => [
@@ -212,6 +221,9 @@ class EventDetailsPage extends ConsumerWidget {
               ),
               if (guests.isNotEmpty)
                 PopupMenuItem(value: 'late', child: Text(context.l10n.runningLate)),
+              // TM-5: the time spent on this event, as a ZT Time entry.
+              if (ref.watch(timeInstalledProvider).value ?? false)
+                PopupMenuItem(value: 'time', child: Text(context.l10n.logAsTimeEntry)),
             ],
           ),
         ],
@@ -301,6 +313,12 @@ class EventDetailsPage extends ConsumerWidget {
                   ),
                 ],
               ),
+            ),
+          if (event.outOfOffice)
+            ListTile(
+              leading: const Icon(Icons.work_off_outlined),
+              title: Text(context.l10n.outOfOffice),
+              subtitle: Text(context.l10n.outOfOfficeHint),
             ),
           if (event.location.isNotEmpty)
             ListTile(

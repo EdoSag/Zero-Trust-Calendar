@@ -4655,6 +4655,528 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'You are working on it now.'**
   String get plannerReasonRunning;
+
+  /// No description provided for @insertIntoKeyboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Insert into ZT Keyboard'**
+  String get insertIntoKeyboard;
+
+  /// No description provided for @insertPickHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a date, or an event and then what to type.'**
+  String get insertPickHint;
+
+  /// No description provided for @insertAnotherDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Another date'**
+  String get insertAnotherDate;
+
+  /// No description provided for @insertNoEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'No events in the next 30 days.'**
+  String get insertNoEvents;
+
+  /// No description provided for @insertEventTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get insertEventTitle;
+
+  /// No description provided for @insertEventWhen.
+  ///
+  /// In en, this message translates to:
+  /// **'Date and time'**
+  String get insertEventWhen;
+
+  /// No description provided for @insertEventDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get insertEventDate;
+
+  /// No description provided for @insertEventPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Place'**
+  String get insertEventPlace;
+
+  /// No description provided for @insertEventLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Video call link'**
+  String get insertEventLink;
+
+  /// No description provided for @year.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get year;
+
+  /// No description provided for @showWeekNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Show week numbers'**
+  String get showWeekNumbers;
+
+  /// No description provided for @showWeekNumbersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Beside the month and year views, and over the day columns'**
+  String get showWeekNumbersHint;
+
+  /// No description provided for @hideWeekends.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide weekends'**
+  String get hideWeekends;
+
+  /// No description provided for @hideWeekendsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The week and month views leave out {days}'**
+  String hideWeekendsHint(String days);
+
+  /// No description provided for @weekNumberLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Week {n}'**
+  String weekNumberLong(int n);
+
+  /// No description provided for @twoDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{first} and {second}'**
+  String twoDays(String first, String second);
+
+  /// No description provided for @previousMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get previousMonth;
+
+  /// No description provided for @nextMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get nextMonth;
+
+  /// No description provided for @views.
+  ///
+  /// In en, this message translates to:
+  /// **'Views'**
+  String get views;
+
+  /// No description provided for @newBookingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New booking'**
+  String get newBookingTitle;
+
+  /// No description provided for @newBookingsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new bookings'**
+  String newBookingsCount(int count);
+
+  /// No description provided for @newBookingsFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'First: {when}'**
+  String newBookingsFirst(String when);
+
+  /// No description provided for @newBookingsChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'New bookings'**
+  String get newBookingsChannel;
+
+  /// No description provided for @newBookingsChannelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone books a time on one of your booking pages'**
+  String get newBookingsChannelHint;
+
+  /// No description provided for @logAsTimeEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Log as time entry'**
+  String get logAsTimeEntry;
+
+  /// No description provided for @loggedInZtTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved in ZT Time'**
+  String get loggedInZtTime;
+
+  /// No description provided for @couldNotOpenZtTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open ZT Time'**
+  String get couldNotOpenZtTime;
+
+  /// No description provided for @candleLighting.
+  ///
+  /// In en, this message translates to:
+  /// **'Candle lighting'**
+  String get candleLighting;
+
+  /// No description provided for @candleLightingAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Candle lighting (not before)'**
+  String get candleLightingAfter;
+
+  /// No description provided for @havdalah.
+  ///
+  /// In en, this message translates to:
+  /// **'Havdalah'**
+  String get havdalah;
+
+  /// No description provided for @jewishCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Jewish calendar'**
+  String get jewishCalendar;
+
+  /// No description provided for @jewishCalendarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hebrew dates, holidays and Shabbat times'**
+  String get jewishCalendarHint;
+
+  /// No description provided for @hebrewDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Hebrew dates'**
+  String get hebrewDates;
+
+  /// No description provided for @hebrewDatesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Beside the day numbers'**
+  String get hebrewDatesHint;
+
+  /// No description provided for @jewishHolidays.
+  ///
+  /// In en, this message translates to:
+  /// **'Jewish holidays'**
+  String get jewishHolidays;
+
+  /// No description provided for @jewishHolidaysHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Holidays, fasts and memorial days, worked out on this phone'**
+  String get jewishHolidaysHint;
+
+  /// No description provided for @shabbatTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Shabbat and holiday times'**
+  String get shabbatTimes;
+
+  /// No description provided for @shabbatTimesOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get shabbatTimesOff;
+
+  /// No description provided for @shabbatTimesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Candle lighting and Havdalah for a city. Worked out on this phone; your location is never used.'**
+  String get shabbatTimesHint;
+
+  /// No description provided for @pickCity.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get pickCity;
+
+  /// No description provided for @israelCities.
+  ///
+  /// In en, this message translates to:
+  /// **'Israel'**
+  String get israelCities;
+
+  /// No description provided for @otherCities.
+  ///
+  /// In en, this message translates to:
+  /// **'Outside Israel'**
+  String get otherCities;
+
+  /// No description provided for @jewishTimesAt.
+  ///
+  /// In en, this message translates to:
+  /// **'{city}: candles {candles} minutes before sunset, Havdalah when the sun is 8.5° below the horizon'**
+  String jewishTimesAt(String city, int candles);
+
+  /// No description provided for @holidaysScheduleIsrael.
+  ///
+  /// In en, this message translates to:
+  /// **'Holidays as kept in Israel'**
+  String get holidaysScheduleIsrael;
+
+  /// No description provided for @holidaysScheduleAbroad.
+  ///
+  /// In en, this message translates to:
+  /// **'Holidays as kept outside Israel (second festival days)'**
+  String get holidaysScheduleAbroad;
+
+  /// No description provided for @workingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Working hours'**
+  String get workingHours;
+
+  /// No description provided for @workingHoursHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking pages, Find a time and the Planner use these'**
+  String get workingHoursHint;
+
+  /// No description provided for @useMyWorkingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my working hours'**
+  String get useMyWorkingHours;
+
+  /// No description provided for @myWorkingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'My working hours'**
+  String get myWorkingHours;
+
+  /// No description provided for @outOfOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of office'**
+  String get outOfOffice;
+
+  /// No description provided for @outOfOfficeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts as busy, even all day: booking pages and Find a time won\'t offer this time'**
+  String get outOfOfficeHint;
+
+  /// No description provided for @meetingPolls.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting polls'**
+  String get meetingPolls;
+
+  /// No description provided for @meetingPollsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose a few times and let guests vote'**
+  String get meetingPollsHint;
+
+  /// No description provided for @meetingPollsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose a few times and share the link. Guests mark the times that work for them, no account needed. Then pick a time and it goes into your calendar.'**
+  String get meetingPollsIntro;
+
+  /// No description provided for @newMeetingPoll.
+  ///
+  /// In en, this message translates to:
+  /// **'New poll'**
+  String get newMeetingPoll;
+
+  /// No description provided for @pollNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No polls yet.'**
+  String get pollNone;
+
+  /// No description provided for @pollCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get pollCreate;
+
+  /// No description provided for @pollTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What is it for?'**
+  String get pollTitleHint;
+
+  /// No description provided for @pollHostHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name (guests see it)'**
+  String get pollHostHint;
+
+  /// No description provided for @pollLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Place or video link (optional)'**
+  String get pollLocationHint;
+
+  /// No description provided for @pollDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Details (optional)'**
+  String get pollDescriptionHint;
+
+  /// No description provided for @pollTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Times to vote on'**
+  String get pollTimes;
+
+  /// No description provided for @pollTimesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested from free times in your working hours. Remove or add times as you like.'**
+  String get pollTimesHint;
+
+  /// No description provided for @pollAddTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a time'**
+  String get pollAddTime;
+
+  /// No description provided for @pollRemoveTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this time'**
+  String get pollRemoveTime;
+
+  /// No description provided for @pollNeedsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Give the poll a title.'**
+  String get pollNeedsTitle;
+
+  /// No description provided for @pollNeedsTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least two times.'**
+  String get pollNeedsTimes;
+
+  /// No description provided for @pollTimesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Times: {count}'**
+  String pollTimesCount(int count);
+
+  /// No description provided for @pollVoteCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Votes: {count}'**
+  String pollVoteCount(int count);
+
+  /// No description provided for @pollShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the link'**
+  String get pollShare;
+
+  /// No description provided for @pollShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'{title}: which times work for you? Vote here: {link}'**
+  String pollShareText(Object link, Object title);
+
+  /// No description provided for @pollYesNames.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes ({count}): {names}'**
+  String pollYesNames(int count, String names);
+
+  /// No description provided for @pollMaybeNames.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe ({count}): {names}'**
+  String pollMaybeNames(int count, String names);
+
+  /// No description provided for @pollBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Best so far'**
+  String get pollBest;
+
+  /// No description provided for @pollPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick this time'**
+  String get pollPick;
+
+  /// No description provided for @pollPickConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the event on {when} to your calendar? Guests who left an email and can make it are added as guests. The poll closes and shows the picked time.'**
+  String pollPickConfirm(Object when);
+
+  /// No description provided for @pollPickedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Picked: {when}'**
+  String pollPickedOn(Object when);
+
+  /// No description provided for @pollOpenEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the event'**
+  String get pollOpenEvent;
+
+  /// No description provided for @pollDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete poll'**
+  String get pollDelete;
+
+  /// No description provided for @pollDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests won\'t be able to open the link any more. An event you already added stays in your calendar.'**
+  String get pollDeleteConfirm;
+
+  /// No description provided for @pollGone.
+  ///
+  /// In en, this message translates to:
+  /// **'This poll was deleted.'**
+  String get pollGone;
+
+  /// No description provided for @pollLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the votes: {error}'**
+  String pollLoadFailed(Object error);
+
+  /// No description provided for @pollPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'The poll and the votes are encrypted with a key that is only in the link, so our server can\'t read them. Guests\' emails are encrypted so that only you can read them.'**
+  String get pollPrivacy;
+
+  /// No description provided for @familyCircleUnnamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get familyCircleUnnamed;
+
+  /// No description provided for @familyCircleFromZtFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'family circle from ZT Family'**
+  String get familyCircleFromZtFamily;
+
+  /// No description provided for @familyCircleCalendarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Events here are shared with your ZT Family circle and show in its family hub. Members and the name are managed in ZT Family.'**
+  String get familyCircleCalendarHint;
+
+  /// No description provided for @hideThisCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide this calendar'**
+  String get hideThisCalendar;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../app/calendar_settings.dart';
+import '../jewish/jewish_entries.dart';
+import '../jewish/zmanim.dart';
 import '../model/calendar_event.dart';
 import '../model/linked_items.dart';
 import '../planner/planner_model.dart';
@@ -13,7 +15,8 @@ import 'linked_apps.dart';
 import 'subscriptions.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
 
-enum EntryKind { event, task, birthday }
+/// [jewish]: a Jewish holiday, or a candle lighting or Havdalah time (K-1).
+enum EntryKind { event, task, birthday, jewish }
 
 /// One thing on the calendar: an event occurrence, a ZT Tasks task due that
 /// day, or a ZT Contacts birthday.
@@ -31,6 +34,7 @@ class CalendarEntry {
     this.contact,
     this.plan,
     this.done = false,
+    this.jewish,
   });
 
   final EntryKind kind;
@@ -53,6 +57,9 @@ class CalendarEntry {
   /// Shown crossed out: a Planner block that is done, or an event the user
   /// marked as done.
   final bool done;
+
+  /// What a [EntryKind.jewish] entry is.
+  final JewishMark? jewish;
 
   bool get isOccurrenceOfSeries => event?.repeats ?? false;
 
@@ -203,16 +210,29 @@ final entriesProvider = Provider.family<AsyncValue<List<CalendarEntry>>, DateRan
   if (events.hasError) return AsyncError(events.error!, events.stackTrace!);
   final list = events.value;
   if (list == null) return const AsyncLoading();
+  final entries = buildEntries(
+    range: range,
+    events: list,
+    calendars: calendars.value ?? const [ZtCalendarInfo.personal],
+    tasks: settings.showCompletedTasks
+        ? tasks
+        : tasks.where((t) => !t.completed).toList(),
+    contacts: contacts,
+    l10n: l10n,
+  );
+  final city = zmanimCity(settings.shabbatCity);
+  if (!settings.jewishHolidays && city == null) return AsyncData(entries);
   return AsyncData(
-    buildEntries(
-      range: range,
-      events: list,
-      calendars: calendars.value ?? const [ZtCalendarInfo.personal],
-      tasks: settings.showCompletedTasks
-          ? tasks
-          : tasks.where((t) => !t.completed).toList(),
-      contacts: contacts,
-      l10n: l10n,
-    ),
+    [
+      ...entries,
+      ...jewishEntries(
+        range: range,
+        holidays: settings.jewishHolidays,
+        city: city,
+        // No city picked: Israel's schedule in Hebrew, the diaspora's otherwise.
+        israel: l10n.localeName.startsWith('he'),
+        l10n: l10n,
+      ),
+    ]..sort(CalendarEntry.compare),
   );
 });

@@ -11,11 +11,13 @@ import 'package:zt_scheduler/zt_scheduler.dart' show PastBlocks;
 import '../caldav/caldav_bridge.dart';
 import '../data/calendar_store.dart';
 import '../data/entries.dart';
+import '../data/family_circles.dart';
 import '../data/find_a_time.dart';
 import '../data/linked_apps.dart';
 import '../data/phone_calendar_sync.dart';
 import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
+import '../data/time_links.dart';
 import '../model/calendar_event.dart';
 import '../planner/planner_controller.dart';
 import '../planner/planner_model.dart';
@@ -28,6 +30,8 @@ import '../ui/linked_pickers.dart';
 import '../ui/event_details_page.dart';
 import '../ui/home_page.dart';
 import '../ui/navigation.dart';
+import '../ui/pick_for_keyboard_page.dart';
+import '../ui/quick_add_sheet.dart';
 import '../ui/planner_widgets.dart';
 import '../util/format.dart';
 import '../booking/booking_pages.dart';
@@ -197,6 +201,42 @@ class _AppGateState extends ConsumerState<AppGate> with WidgetsBindingObserver {
   }
 }
 
+/// The notifications for bookings just added (K-6): "New booking" with
+/// who and when, or only when if event titles are kept out of
+/// notifications. More than three at once (the app was closed a while)
+/// become one notification.
+List<Notice> bookingNotices(
+  List<CalendarEvent> added, {
+  required bool showTitles,
+  required DateTime now,
+  required String Function(DateTime) formatTime,
+}) {
+  final l = currentL10n;
+  String when(CalendarEvent e) =>
+      '${relativeDay(e.start, now: now)}, ${l.spanTo(formatTime(e.start), formatTime(e.end))}';
+  final sorted = [...added]..sort((a, b) => a.start.compareTo(b.start));
+  if (sorted.length > 3) {
+    final first = sorted.first;
+    return [
+      Notice(
+        eventId: first.id,
+        start: first.start,
+        title: l.newBookingsCount(sorted.length),
+        body: l.newBookingsFirst(when(first)),
+      ),
+    ];
+  }
+  return [
+    for (final e in sorted)
+      Notice(
+        eventId: e.id,
+        start: e.start,
+        title: l.newBookingTitle,
+        body: showTitles ? '${e.title}\n${when(e)}' : when(e),
+      ),
+  ];
+}
+
 /// The calendar once unlocked: runs sync, keeps reminders, the home widget
 /// and "Show on this phone" in step with the events, refreshes subscribed
 /// calendars, and handles reminder buttons and files other apps open
@@ -252,11 +292,33 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
       _takeFiles();
       _refreshFeeds();
       _takeWidgetTap();
+      _takeKeyboardPick();
     });
   }
 
-  /// "Up next" and "My day" open today; their + opens a new event. Each tap
-  /// is taken once.
+  /// ZT Keyboard's "Insert from ZT apps" key: pick a date or an event's time
+  /// for the keyboard to type. Only reached once the vault is unlocked.
+  /// ZT Time asks the same way for an event to link a time entry to
+  /// (WANT_ITEM): an event tapped then goes back with its id and times.
+  Future<void> _takeKeyboardPick() async {
+    if (!await KeyboardPick.requested() || !mounted) return;
+    final wantItem = await KeyboardPick.wantsItem();
+    if (!mounted) return;
+    final picked = await Navigator.of(
+      context,
+    ).push<Object>(MaterialPageRoute(builder: (_) => PickForKeyboardPage(wantItem: wantItem)));
+    switch (picked) {
+      case PickedItem item:
+        await KeyboardPick.finish(item.text, item: item.toChannel());
+      case String text:
+        await KeyboardPick.finish(text);
+      default:
+        await KeyboardPick.finish(null);
+    }
+  }
+
+  /// "Up next" and "My day" open today; their + opens a new event. The app
+  /// icon's shortcuts (K10) come the same way. Each tap is taken once.
   void _takeWidgetTap() {
     final uri = pendingWidgetTap.value;
     if (uri == null || !mounted) return;
@@ -277,6 +339,8 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
       );
     }
     if (uri.host == 'new-event') createEvent(context);
+    // The app icon's long-press "Quick add" (K10).
+    if (uri.host == 'quick-add') showQuickAdd(context).ignore();
     // "My day": its task list opens ZT Tasks.
     if (uri.host == 'tasks') openLinkedApp(LinkedApp.tasks).ignore();
   }
@@ -417,6 +481,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     if (!mounted) return;
     await _publishMonthAndAgenda(events, calendars, settings, entries, now);
     await _shareBusyTimes(events, calendars, now);
+    await _refreshFamilySummaries(now);
     // Subscribed calendars' meetings keep visitors off those times too.
     await _syncBookings(
       [...events, ...ref.read(feedEventsProvider)],
@@ -467,8 +532,9 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     List<ZtCalendarInfo> calendars,
     DateTime now,
   ) async {
+    List<CalendarEvent> added;
     try {
-      await ref.read(bookingSyncProvider).sync(
+      added = await ref.read(bookingSyncProvider).sync(
         events: events,
         calendars: calendars,
         plannedBusy: _plannedBusy,
@@ -480,6 +546,45 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
       );
     } on Object {
       // Offline, or booking pages not set up on the server: next time.
+      return;
+    }
+    if (added.isEmpty || !mounted) return;
+    // K-6: someone booked a slot. The phone that takes the booking says so.
+    final settings = ref.read(calendarSettingsProvider);
+    final scheduler = ref.read(reminderSchedulerProvider);
+    for (final notice in bookingNotices(
+      added,
+      showTitles: settings.notificationTitles,
+      now: now,
+      formatTime: (t) => formatTime(context, t),
+    )) {
+      try {
+        await scheduler.showNotice(notice);
+      } on Object {
+        // Notifications off: the booking is in the calendar all the same.
+      }
+    }
+  }
+
+  /// Keeps ZT Family's hub showing the next time of repeating family events
+  /// (it lists what the summary says, and a series' summary would stay on
+  /// its first time).
+  Future<void> _refreshFamilySummaries(DateTime now) async {
+    final circles = ref.read(ztFamilySpacesProvider);
+    for (final e in circles.entries) {
+      final space = e.space;
+      if (space == null) continue;
+      try {
+        for (final event in staleFamilySummaries(await space.store.all(), now)) {
+          await ref.read(ztFamilySpacesProvider.notifier).save(
+            e.info.id,
+            familyEventItemId(event.id),
+            familyEventJson(event, now: now),
+          );
+        }
+      } on Object {
+        // Offline or locked: next time.
+      }
     }
   }
 

@@ -21,9 +21,18 @@ import '../util/format.dart';
 import 'booking_pages_page.dart';
 import 'calendars_page.dart';
 import 'desktop_bridge_page.dart';
+import 'jewish_calendar_page.dart';
+import 'meeting_polls_page.dart';
 import 'phone_calendar_page.dart';
 import 'subscribe_page.dart';
+import 'working_hours_tile.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
+
+/// "Friday and Saturday": the weekend that "Hide weekends" leaves out.
+String _weekendLabel(BuildContext context) {
+  final days = weekendDays(context).toList()..sort();
+  return context.l10n.twoDays(weekdayName(days.first), weekdayName(days.last));
+}
 
 /// The shared Zero-Trust settings screen, with Calendar's own rows.
 class CalendarSettingsPage extends ConsumerWidget {
@@ -65,11 +74,28 @@ class CalendarSettingsPage extends ConsumerWidget {
           ),
         ),
         ListTile(
+          leading: const Icon(Icons.how_to_vote_outlined),
+          title: Text(context.l10n.meetingPolls),
+          subtitle: Text(context.l10n.meetingPollsHint),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const MeetingPollsPage()),
+          ),
+        ),
+        const WorkingHoursTile(),
+        ListTile(
           leading: const Icon(Icons.public),
           title: Text(context.l10n.holidaysAndSubscribedCalendars),
           subtitle: Text(context.l10n.publicHolidaysSchoolOrTeam),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const HolidaysPage()),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.star_border),
+          title: Text(context.l10n.jewishCalendar),
+          subtitle: Text(context.l10n.jewishCalendarHint),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const JewishCalendarPage()),
           ),
         ),
         ListTile(
@@ -127,6 +153,20 @@ class CalendarSettingsPage extends ConsumerWidget {
               await ctrl.update((x) => x.copyWith(weekStart: picked == 0 ? null : picked));
             }
           },
+        ),
+        SwitchListTile(
+          secondary: const Icon(Icons.tag),
+          title: Text(context.l10n.showWeekNumbers),
+          subtitle: Text(context.l10n.showWeekNumbersHint),
+          value: s.showWeekNumbers,
+          onChanged: (v) => ctrl.update((x) => x.copyWith(showWeekNumbers: v)),
+        ),
+        SwitchListTile(
+          secondary: const Icon(Icons.weekend_outlined),
+          title: Text(context.l10n.hideWeekends),
+          subtitle: Text(context.l10n.hideWeekendsHint(_weekendLabel(context))),
+          value: s.hideWeekends,
+          onChanged: (v) => ctrl.update((x) => x.copyWith(hideWeekends: v)),
         ),
         ListTile(
           leading: const Icon(Icons.timelapse),

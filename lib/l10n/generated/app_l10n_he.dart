@@ -2897,4 +2897,300 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get plannerReasonRunning => 'אתם עובדים על זה עכשיו.';
+
+  @override
+  String get insertIntoKeyboard => 'הוספה ל-ZT Keyboard';
+
+  @override
+  String get insertPickHint => 'בוחרים תאריך, או אירוע ואז מה להקליד.';
+
+  @override
+  String get insertAnotherDate => 'תאריך אחר';
+
+  @override
+  String get insertNoEvents => 'אין אירועים ב-30 הימים הקרובים.';
+
+  @override
+  String get insertEventTitle => 'כותרת';
+
+  @override
+  String get insertEventWhen => 'תאריך ושעה';
+
+  @override
+  String get insertEventDate => 'תאריך';
+
+  @override
+  String get insertEventPlace => 'מקום';
+
+  @override
+  String get insertEventLink => 'קישור לשיחת וידאו';
+
+  @override
+  String get year => 'שנה';
+
+  @override
+  String get showWeekNumbers => 'הצגת מספרי שבועות';
+
+  @override
+  String get showWeekNumbersHint => 'ליד תצוגות החודש והשנה, ומעל עמודות הימים';
+
+  @override
+  String get hideWeekends => 'הסתרת סופי שבוע';
+
+  @override
+  String hideWeekendsHint(String days) {
+    return 'תצוגות השבוע והחודש לא יציגו את $days';
+  }
+
+  @override
+  String weekNumberLong(int n) {
+    return 'שבוע $n';
+  }
+
+  @override
+  String twoDays(String first, String second) {
+    return '$first ו$second';
+  }
+
+  @override
+  String get previousMonth => 'החודש הקודם';
+
+  @override
+  String get nextMonth => 'החודש הבא';
+
+  @override
+  String get views => 'תצוגות';
+
+  @override
+  String get newBookingTitle => 'הזמנה חדשה';
+
+  @override
+  String newBookingsCount(int count) {
+    return '$count הזמנות חדשות';
+  }
+
+  @override
+  String newBookingsFirst(String when) {
+    return 'הראשונה: $when';
+  }
+
+  @override
+  String get newBookingsChannel => 'הזמנות חדשות';
+
+  @override
+  String get newBookingsChannelHint => 'כשמישהו קובע זמן באחד מדפי ההזמנה שלך';
+
+  @override
+  String get logAsTimeEntry => 'רישום כרשומת זמן';
+
+  @override
+  String get loggedInZtTime => 'נשמר ב־ZT Time';
+
+  @override
+  String get couldNotOpenZtTime => 'לא ניתן לפתוח את ZT Time';
+
+  @override
+  String get candleLighting => 'הדלקת נרות';
+
+  @override
+  String get candleLightingAfter => 'הדלקת נרות (לא לפני)';
+
+  @override
+  String get havdalah => 'הבדלה';
+
+  @override
+  String get jewishCalendar => 'לוח שנה עברי';
+
+  @override
+  String get jewishCalendarHint => 'תאריכים עבריים, חגים וזמני שבת';
+
+  @override
+  String get hebrewDates => 'תאריכים עבריים';
+
+  @override
+  String get hebrewDatesHint => 'ליד מספרי הימים';
+
+  @override
+  String get jewishHolidays => 'חגים ומועדים';
+
+  @override
+  String get jewishHolidaysHint => 'חגים, צומות וימי זיכרון, מחושבים בטלפון';
+
+  @override
+  String get shabbatTimes => 'זמני שבת וחג';
+
+  @override
+  String get shabbatTimesOff => 'כבוי';
+
+  @override
+  String get shabbatTimesHint =>
+      'הדלקת נרות והבדלה לעיר. מחושבים בטלפון, בלי להשתמש במיקום שלך.';
+
+  @override
+  String get pickCity => 'עיר';
+
+  @override
+  String get israelCities => 'ישראל';
+
+  @override
+  String get otherCities => 'מחוץ לישראל';
+
+  @override
+  String jewishTimesAt(String city, int candles) {
+    return '$city: הדלקת נרות $candles דקות לפני השקיעה, הבדלה כשהשמש 8.5° מתחת לאופק';
+  }
+
+  @override
+  String get holidaysScheduleIsrael => 'חגים כפי שנוהגים בישראל';
+
+  @override
+  String get holidaysScheduleAbroad => 'חגים כפי שנוהגים בחו״ל (יום טוב שני)';
+
+  @override
+  String get workingHours => 'שעות עבודה';
+
+  @override
+  String get workingHoursHint => 'דפי הזמנה, ״מציאת זמן״ והמתכנן משתמשים בהן';
+
+  @override
+  String get useMyWorkingHours => 'לפי שעות העבודה שלי';
+
+  @override
+  String get myWorkingHours => 'שעות העבודה שלי';
+
+  @override
+  String get outOfOffice => 'מחוץ למשרד';
+
+  @override
+  String get outOfOfficeHint =>
+      'נחשב תפוס, גם כאירוע של יום שלם: דפי הזמנה ו״מציאת זמן״ לא יציעו את הזמן הזה';
+
+  @override
+  String get meetingPolls => 'סקרי פגישה';
+
+  @override
+  String get meetingPollsHint => 'להציע כמה מועדים ולתת למוזמנים להצביע';
+
+  @override
+  String get meetingPollsIntro =>
+      'מציעים כמה מועדים ומשתפים את הקישור. המוזמנים מסמנים מה מתאים להם, בלי חשבון. אחר כך בוחרים מועד והוא נכנס ליומן.';
+
+  @override
+  String get newMeetingPoll => 'סקר חדש';
+
+  @override
+  String get pollNone => 'אין עדיין סקרים.';
+
+  @override
+  String get pollCreate => 'יצירה';
+
+  @override
+  String get pollTitleHint => 'בשביל מה?';
+
+  @override
+  String get pollHostHint => 'השם שלך (המוזמנים יראו אותו)';
+
+  @override
+  String get pollLocationHint => 'מקום או קישור לשיחת וידאו (לא חובה)';
+
+  @override
+  String get pollDescriptionHint => 'פרטים (לא חובה)';
+
+  @override
+  String get pollTimes => 'מועדים להצבעה';
+
+  @override
+  String get pollTimesHint =>
+      'הוצעו לפי זמנים פנויים בשעות העבודה שלך. אפשר להסיר ולהוסיף מועדים.';
+
+  @override
+  String get pollAddTime => 'הוספת מועד';
+
+  @override
+  String get pollRemoveTime => 'הסרת המועד';
+
+  @override
+  String get pollNeedsTitle => 'נא לתת לסקר כותרת.';
+
+  @override
+  String get pollNeedsTimes => 'נא להוסיף לפחות שני מועדים.';
+
+  @override
+  String pollTimesCount(int count) {
+    return 'מועדים: $count';
+  }
+
+  @override
+  String pollVoteCount(int count) {
+    return 'הצבעות: $count';
+  }
+
+  @override
+  String get pollShare => 'שיתוף הקישור';
+
+  @override
+  String pollShareText(Object link, Object title) {
+    return '$title: אילו מועדים מתאימים לך? אפשר להצביע כאן: $link';
+  }
+
+  @override
+  String pollYesNames(int count, String names) {
+    return 'כן ($count): $names';
+  }
+
+  @override
+  String pollMaybeNames(int count, String names) {
+    return 'אולי ($count): $names';
+  }
+
+  @override
+  String get pollBest => 'המוביל כרגע';
+
+  @override
+  String get pollPick => 'בחירת המועד';
+
+  @override
+  String pollPickConfirm(Object when) {
+    return 'להוסיף ליומן את האירוע ב־$when? מוזמנים שהשאירו מייל ויכולים להגיע יתווספו כמוזמנים. הסקר ייסגר ויציג את המועד שנבחר.';
+  }
+
+  @override
+  String pollPickedOn(Object when) {
+    return 'נבחר: $when';
+  }
+
+  @override
+  String get pollOpenEvent => 'פתיחת האירוע';
+
+  @override
+  String get pollDelete => 'מחיקת הסקר';
+
+  @override
+  String get pollDeleteConfirm =>
+      'המוזמנים לא יוכלו לפתוח את הקישור יותר. אירוע שכבר נוסף נשאר ביומן.';
+
+  @override
+  String get pollGone => 'הסקר נמחק.';
+
+  @override
+  String pollLoadFailed(Object error) {
+    return 'לא ניתן לטעון את ההצבעות: $error';
+  }
+
+  @override
+  String get pollPrivacy =>
+      'הסקר וההצבעות מוצפנים במפתח שנמצא רק בקישור, כך שהשרת שלנו לא יכול לקרוא אותם. המיילים של המוזמנים מוצפנים כך שרק את/ה יכול/ה לקרוא אותם.';
+
+  @override
+  String get familyCircleUnnamed => 'משפחה';
+
+  @override
+  String get familyCircleFromZtFamily => 'מעגל משפחתי מ-ZT Family';
+
+  @override
+  String get familyCircleCalendarHint =>
+      'אירועים כאן משותפים עם המעגל המשפחתי שלך ב-ZT Family ומופיעים במרכז המשפחתי שלו. החברים והשם מנוהלים ב-ZT Family.';
+
+  @override
+  String get hideThisCalendar => 'הסתרת היומן';
 }

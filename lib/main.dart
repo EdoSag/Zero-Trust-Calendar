@@ -51,7 +51,7 @@ class ZeroTrustCalendarApp extends ConsumerWidget {
         locale: ref.watch(ztLanguageProvider),
         supportedLocales: ZtLanguages.supported,
         localizationsDelegates: const [AppL10n.delegate, ...ZtLanguages.delegates],
-        home: home,
+        home: ZtSignInHandoffScope(child: home),
         // Any touch on any screen counts as activity for auto-lock.
         builder: (BuildContext context, Widget? child) => Listener(
           onPointerDown: (_) => ref.read(vaultControllerProvider.notifier).touch(),

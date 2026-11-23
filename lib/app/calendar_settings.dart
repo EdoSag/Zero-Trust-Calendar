@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
 /// The calendar view on screen.
-enum CalendarView { schedule, day, threeDay, week, month }
+/// [year] is last so older saved values keep their meaning.
+enum CalendarView { schedule, day, threeDay, week, month, year }
 
 /// Calendar's own per-install settings, kept with the core's preferences.
 @immutable
@@ -21,6 +22,11 @@ class CalendarSettings {
     this.phoneCalendarIds = const {},
     this.phoneCalendarOwner,
     this.showCompletedTasks = true,
+    this.showWeekNumbers = false,
+    this.hideWeekends = false,
+    this.hebrewDates = false,
+    this.jewishHolidays = false,
+    this.shabbatCity,
   });
 
   final CalendarView view;
@@ -64,6 +70,24 @@ class CalendarSettings {
   /// Ticked-off ZT Tasks tasks stay on the calendar, crossed out.
   final bool showCompletedTasks;
 
+  /// Week numbers beside the month and year views and over the day columns
+  /// (K11).
+  final bool showWeekNumbers;
+
+  /// The week and month views leave out the weekend (Friday and Saturday
+  /// in Hebrew, Saturday and Sunday elsewhere; see [weekendDaysFor]).
+  final bool hideWeekends;
+
+  /// Hebrew dates beside the day numbers (K-1).
+  final bool hebrewDates;
+
+  /// Jewish holidays and fasts as all-day entries (K-1).
+  final bool jewishHolidays;
+
+  /// The city candle lighting and Havdalah times are shown for (an id in
+  /// `zmanimCities`), or null for none (K-1).
+  final String? shabbatCity;
+
   static const _unset = Object();
 
   CalendarSettings copyWith({
@@ -79,6 +103,11 @@ class CalendarSettings {
     Set<String>? phoneCalendarIds,
     String? phoneCalendarOwner,
     bool? showCompletedTasks,
+    bool? showWeekNumbers,
+    bool? hideWeekends,
+    bool? hebrewDates,
+    bool? jewishHolidays,
+    Object? shabbatCity = _unset,
   }) => CalendarSettings(
     view: view ?? this.view,
     showTasks: showTasks ?? this.showTasks,
@@ -96,6 +125,11 @@ class CalendarSettings {
     phoneCalendarIds: phoneCalendarIds ?? this.phoneCalendarIds,
     phoneCalendarOwner: phoneCalendarOwner ?? this.phoneCalendarOwner,
     showCompletedTasks: showCompletedTasks ?? this.showCompletedTasks,
+    showWeekNumbers: showWeekNumbers ?? this.showWeekNumbers,
+    hideWeekends: hideWeekends ?? this.hideWeekends,
+    hebrewDates: hebrewDates ?? this.hebrewDates,
+    jewishHolidays: jewishHolidays ?? this.jewishHolidays,
+    shabbatCity: identical(shabbatCity, _unset) ? this.shabbatCity : shabbatCity as String?,
   );
 
   Map<String, String> toPrefs() => {
@@ -111,6 +145,11 @@ class CalendarSettings {
     'phoneCalendars': (phoneCalendarIds.toList()..sort()).join(','),
     'phoneCalendarsOwner': phoneCalendarOwner ?? '',
     'showCompletedTasks': '$showCompletedTasks',
+    'showWeekNumbers': '$showWeekNumbers',
+    'hideWeekends': '$hideWeekends',
+    'hebrewDates': '$hebrewDates',
+    'jewishHolidays': '$jewishHolidays',
+    'shabbatCity': shabbatCity ?? '',
   };
 
   static CalendarSettings fromPrefs(Map<String, String?> p) {
@@ -138,6 +177,11 @@ class CalendarSettings {
           if (id.isNotEmpty) id,
       },
       showCompletedTasks: b('showCompletedTasks', d.showCompletedTasks),
+      showWeekNumbers: b('showWeekNumbers', d.showWeekNumbers),
+      hideWeekends: b('hideWeekends', d.hideWeekends),
+      hebrewDates: b('hebrewDates', d.hebrewDates),
+      jewishHolidays: b('jewishHolidays', d.jewishHolidays),
+      shabbatCity: (p['shabbatCity'] ?? '').isEmpty ? null : p['shabbatCity'],
     );
   }
 }

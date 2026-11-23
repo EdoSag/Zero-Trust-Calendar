@@ -2917,4 +2917,305 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get plannerReasonRunning => 'You are working on it now.';
+
+  @override
+  String get insertIntoKeyboard => 'Insert into ZT Keyboard';
+
+  @override
+  String get insertPickHint => 'Tap a date, or an event and then what to type.';
+
+  @override
+  String get insertAnotherDate => 'Another date';
+
+  @override
+  String get insertNoEvents => 'No events in the next 30 days.';
+
+  @override
+  String get insertEventTitle => 'Title';
+
+  @override
+  String get insertEventWhen => 'Date and time';
+
+  @override
+  String get insertEventDate => 'Date';
+
+  @override
+  String get insertEventPlace => 'Place';
+
+  @override
+  String get insertEventLink => 'Video call link';
+
+  @override
+  String get year => 'Year';
+
+  @override
+  String get showWeekNumbers => 'Show week numbers';
+
+  @override
+  String get showWeekNumbersHint =>
+      'Beside the month and year views, and over the day columns';
+
+  @override
+  String get hideWeekends => 'Hide weekends';
+
+  @override
+  String hideWeekendsHint(String days) {
+    return 'The week and month views leave out $days';
+  }
+
+  @override
+  String weekNumberLong(int n) {
+    return 'Week $n';
+  }
+
+  @override
+  String twoDays(String first, String second) {
+    return '$first and $second';
+  }
+
+  @override
+  String get previousMonth => 'Previous month';
+
+  @override
+  String get nextMonth => 'Next month';
+
+  @override
+  String get views => 'Views';
+
+  @override
+  String get newBookingTitle => 'New booking';
+
+  @override
+  String newBookingsCount(int count) {
+    return '$count new bookings';
+  }
+
+  @override
+  String newBookingsFirst(String when) {
+    return 'First: $when';
+  }
+
+  @override
+  String get newBookingsChannel => 'New bookings';
+
+  @override
+  String get newBookingsChannelHint =>
+      'When someone books a time on one of your booking pages';
+
+  @override
+  String get logAsTimeEntry => 'Log as time entry';
+
+  @override
+  String get loggedInZtTime => 'Saved in ZT Time';
+
+  @override
+  String get couldNotOpenZtTime => 'Could not open ZT Time';
+
+  @override
+  String get candleLighting => 'Candle lighting';
+
+  @override
+  String get candleLightingAfter => 'Candle lighting (not before)';
+
+  @override
+  String get havdalah => 'Havdalah';
+
+  @override
+  String get jewishCalendar => 'Jewish calendar';
+
+  @override
+  String get jewishCalendarHint => 'Hebrew dates, holidays and Shabbat times';
+
+  @override
+  String get hebrewDates => 'Hebrew dates';
+
+  @override
+  String get hebrewDatesHint => 'Beside the day numbers';
+
+  @override
+  String get jewishHolidays => 'Jewish holidays';
+
+  @override
+  String get jewishHolidaysHint =>
+      'Holidays, fasts and memorial days, worked out on this phone';
+
+  @override
+  String get shabbatTimes => 'Shabbat and holiday times';
+
+  @override
+  String get shabbatTimesOff => 'Off';
+
+  @override
+  String get shabbatTimesHint =>
+      'Candle lighting and Havdalah for a city. Worked out on this phone; your location is never used.';
+
+  @override
+  String get pickCity => 'City';
+
+  @override
+  String get israelCities => 'Israel';
+
+  @override
+  String get otherCities => 'Outside Israel';
+
+  @override
+  String jewishTimesAt(String city, int candles) {
+    return '$city: candles $candles minutes before sunset, Havdalah when the sun is 8.5° below the horizon';
+  }
+
+  @override
+  String get holidaysScheduleIsrael => 'Holidays as kept in Israel';
+
+  @override
+  String get holidaysScheduleAbroad =>
+      'Holidays as kept outside Israel (second festival days)';
+
+  @override
+  String get workingHours => 'Working hours';
+
+  @override
+  String get workingHoursHint =>
+      'Booking pages, Find a time and the Planner use these';
+
+  @override
+  String get useMyWorkingHours => 'Use my working hours';
+
+  @override
+  String get myWorkingHours => 'My working hours';
+
+  @override
+  String get outOfOffice => 'Out of office';
+
+  @override
+  String get outOfOfficeHint =>
+      'Counts as busy, even all day: booking pages and Find a time won\'t offer this time';
+
+  @override
+  String get meetingPolls => 'Meeting polls';
+
+  @override
+  String get meetingPollsHint => 'Propose a few times and let guests vote';
+
+  @override
+  String get meetingPollsIntro =>
+      'Propose a few times and share the link. Guests mark the times that work for them, no account needed. Then pick a time and it goes into your calendar.';
+
+  @override
+  String get newMeetingPoll => 'New poll';
+
+  @override
+  String get pollNone => 'No polls yet.';
+
+  @override
+  String get pollCreate => 'Create';
+
+  @override
+  String get pollTitleHint => 'What is it for?';
+
+  @override
+  String get pollHostHint => 'Your name (guests see it)';
+
+  @override
+  String get pollLocationHint => 'Place or video link (optional)';
+
+  @override
+  String get pollDescriptionHint => 'Details (optional)';
+
+  @override
+  String get pollTimes => 'Times to vote on';
+
+  @override
+  String get pollTimesHint =>
+      'Suggested from free times in your working hours. Remove or add times as you like.';
+
+  @override
+  String get pollAddTime => 'Add a time';
+
+  @override
+  String get pollRemoveTime => 'Remove this time';
+
+  @override
+  String get pollNeedsTitle => 'Give the poll a title.';
+
+  @override
+  String get pollNeedsTimes => 'Add at least two times.';
+
+  @override
+  String pollTimesCount(int count) {
+    return 'Times: $count';
+  }
+
+  @override
+  String pollVoteCount(int count) {
+    return 'Votes: $count';
+  }
+
+  @override
+  String get pollShare => 'Share the link';
+
+  @override
+  String pollShareText(Object link, Object title) {
+    return '$title: which times work for you? Vote here: $link';
+  }
+
+  @override
+  String pollYesNames(int count, String names) {
+    return 'Yes ($count): $names';
+  }
+
+  @override
+  String pollMaybeNames(int count, String names) {
+    return 'Maybe ($count): $names';
+  }
+
+  @override
+  String get pollBest => 'Best so far';
+
+  @override
+  String get pollPick => 'Pick this time';
+
+  @override
+  String pollPickConfirm(Object when) {
+    return 'Add the event on $when to your calendar? Guests who left an email and can make it are added as guests. The poll closes and shows the picked time.';
+  }
+
+  @override
+  String pollPickedOn(Object when) {
+    return 'Picked: $when';
+  }
+
+  @override
+  String get pollOpenEvent => 'Open the event';
+
+  @override
+  String get pollDelete => 'Delete poll';
+
+  @override
+  String get pollDeleteConfirm =>
+      'Guests won\'t be able to open the link any more. An event you already added stays in your calendar.';
+
+  @override
+  String get pollGone => 'This poll was deleted.';
+
+  @override
+  String pollLoadFailed(Object error) {
+    return 'Couldn\'t load the votes: $error';
+  }
+
+  @override
+  String get pollPrivacy =>
+      'The poll and the votes are encrypted with a key that is only in the link, so our server can\'t read them. Guests\' emails are encrypted so that only you can read them.';
+
+  @override
+  String get familyCircleUnnamed => 'Family';
+
+  @override
+  String get familyCircleFromZtFamily => 'family circle from ZT Family';
+
+  @override
+  String get familyCircleCalendarHint =>
+      'Events here are shared with your ZT Family circle and show in its family hub. Members and the name are managed in ZT Family.';
+
+  @override
+  String get hideThisCalendar => 'Hide this calendar';
 }

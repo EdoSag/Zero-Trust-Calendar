@@ -302,6 +302,30 @@ abstract interface class ReminderScheduler {
   /// Reminder taps and button presses, including the one that launched
   /// the app.
   Stream<ReminderTap> get taps;
+
+  /// Shows [notice] now, on its own channel (new bookings, K-6). A tap
+  /// opens its event like a reminder does.
+  Future<void> showNotice(Notice notice);
+}
+
+/// A notification shown at once rather than scheduled: someone booked a
+/// slot on a booking page.
+@immutable
+class Notice {
+  const Notice({required this.eventId, required this.title, required this.body, this.start});
+
+  final String eventId;
+  final String title;
+  final String body;
+
+  /// The booked time, so a tap opens that day.
+  final DateTime? start;
+
+  /// Same booking, same notification: shown again it replaces itself.
+  int get notificationId => ScheduledReminder.idFor('notice|$eventId');
+
+  String get payload =>
+      ReminderPayload(eventId: eventId, occurrence: start, title: title, body: body).encode();
 }
 
 /// For tests and platforms without notifications.
@@ -320,6 +344,11 @@ class NoopReminderScheduler implements ReminderScheduler {
 
   @override
   Stream<ReminderTap> get taps => const Stream.empty();
+
+  final List<Notice> notices = [];
+
+  @override
+  Future<void> showNotice(Notice notice) async => notices.add(notice);
 }
 
 class LocalNotificationsReminderScheduler implements ReminderScheduler {
@@ -487,6 +516,30 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
   Future<void> cancelAll() async {
     await _init();
     await _plugin.cancelAll();
+  }
+
+  @override
+  Future<void> showNotice(Notice notice) async {
+    await _init();
+    await _plugin.show(
+      id: notice.notificationId,
+      title: notice.title,
+      body: notice.body,
+      payload: notice.payload,
+      notificationDetails: NotificationDetails(
+        android: AndroidNotificationDetails(
+          'new_bookings',
+          currentL10n.newBookingsChannel,
+          channelDescription: currentL10n.newBookingsChannelHint,
+          importance: Importance.high,
+          priority: Priority.high,
+          category: AndroidNotificationCategory.event,
+          // The lock screen shows "ZT Calendar", not who booked.
+          visibility: NotificationVisibility.private,
+        ),
+        iOS: const DarwinNotificationDetails(),
+      ),
+    );
   }
 }
 
