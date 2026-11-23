@@ -66,18 +66,21 @@ class BookingSync {
     if (pages.isEmpty) return const [];
     final (:added, :changed) = await _takeBookings(pages, calendars, text);
     final removed = {for (final id in changed) id};
-    await _uploadBusy(
-      [
-        for (final e in events)
-          if (!removed.contains(e.id)) e,
-        for (final e in added)
-          if (!events.any((x) => x.id == e.id)) e,
-      ],
-      calendars,
-      now,
-      plannedBusy,
-    );
     if (changed.isNotEmpty) _ref.read(bookingRevisionProvider.notifier).bump();
+    await uploadAfterTaking(
+      tookAny: changed.isNotEmpty,
+      upload: () => _uploadBusy(
+        [
+          for (final e in events)
+            if (!removed.contains(e.id)) e,
+          for (final e in added)
+            if (!events.any((x) => x.id == e.id)) e,
+        ],
+        calendars,
+        now,
+        plannedBusy,
+      ),
+    );
     return added;
   }
 
@@ -135,6 +138,22 @@ class BookingSync {
 }
 
 final bookingSyncProvider = Provider<BookingSync>(BookingSync.new);
+
+/// Uploads busy times after a pass took bookings. When it took some, a
+/// failed upload (offline, say) is let go: the bookings are already saved
+/// and marked on the server, so the pass must still report them (or their
+/// new-booking notices would be lost for good), and the busy times are not
+/// marked as sent, so the next pass uploads them.
+Future<void> uploadAfterTaking({
+  required bool tookAny,
+  required Future<void> Function() upload,
+}) async {
+  try {
+    await upload();
+  } on Object {
+    if (!tookAny) rethrow;
+  }
+}
 
 /// Adds new bookings to the calendar and removes the ones visitors
 /// cancelled, marking each on the server. Returns the events it added and
