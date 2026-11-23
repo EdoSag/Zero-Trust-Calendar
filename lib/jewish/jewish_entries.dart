@@ -90,10 +90,14 @@ List<CalendarEntry> jewishEntries({
     }
   }
   if (city != null) {
-    // The evening before the range can light candles inside it only when
-    // the range starts at night, so the range's own days are enough.
-    for (final z in shabbatTimes(range.from, range.to, city)) {
+    // The city's evenings can fall on another day on the phone when the
+    // city keeps a different time zone, so take a day either side and keep
+    // what lands in the range.
+    final from = DateTime(range.from.year, range.from.month, range.from.day - 1);
+    final to = DateTime(range.to.year, range.to.month, range.to.day + 1);
+    for (final z in shabbatTimes(from, to, city)) {
       final at = z.at.toLocal();
+      if (at.isBefore(range.from) || !at.isBefore(range.to)) continue;
       out.add(
         CalendarEntry(
           kind: EntryKind.jewish,
