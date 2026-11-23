@@ -125,6 +125,32 @@ void main() {
       expect(times.map((z) => z.kind), [ZmanKind.candles, ZmanKind.candlesAfter, ZmanKind.havdalah]);
     });
 
+    test('a Yom Tov on Friday still lights Shabbat candles before sunset', () {
+      // Shavuot abroad: Friday 11 and Shabbat 12 June 2027.
+      final times = shabbatTimes(DateTime(2027, 6, 9), DateTime(2027, 6, 13), zmanimCity('new-york')!);
+      expect(times.map((z) => z.kind), [ZmanKind.candles, ZmanKind.candles, ZmanKind.havdalah]);
+      // Friday's candles come 18 minutes before sunset (about 20:28), not
+      // at nightfall.
+      final friday = wallClockIn(zoneFor('America/New_York')!, times[1].at);
+      expect(friday.day, 11);
+      expect(local(times[1].at, 'America/New_York'), startsWith('20:'));
+      expect(times[2].at.difference(times[1].at), greaterThan(const Duration(hours: 24)));
+    });
+
+    test('a city in another time zone keeps its evening on the phone\'s day', () {
+      final la = zmanimCity('los-angeles')!;
+      final candles = shabbatTimes(DateTime(2026, 11, 27), DateTime(2026, 11, 28), la).single.at.toLocal();
+      final day = DateTime(candles.year, candles.month, candles.day);
+      final entries = jewishEntries(
+        range: DateRange(day, DateTime(day.year, day.month, day.day + 1)),
+        holidays: false,
+        city: la,
+        israel: false,
+        l10n: lookupAppL10n(const Locale('en')),
+      );
+      expect(entries.map((e) => e.start), contains(candles));
+    });
+
     test('entries carry the city and sort into the calendar', () {
       final entries = jewishEntries(
         range: DateRange(DateTime(2026, 12, 4), DateTime(2026, 12, 6)),

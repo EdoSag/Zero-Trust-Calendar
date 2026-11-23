@@ -235,8 +235,13 @@ void main() {
     ];
     expect(focusBlocks, isNotEmpty);
     expect(focusBlocks.first.title, 'Focus time');
-    // Seven work days a week here: 10 hours over 7 days, rounded up.
-    expect(focusBlocks.first.duration.inMinutes, 90);
+    // Seven work days a week here: 10 hours over 7 days, rounded up. Today's
+    // block may be shortened when the day is almost over, so look at a later
+    // day's.
+    final now = DateTime.now();
+    final tomorrow = DateTime(now.year, now.month, now.day + 1);
+    final later = focusBlocks.firstWhere((b) => !b.start.isBefore(tomorrow));
+    expect(later.duration.inMinutes, 90);
   });
 
   testWidgets('a habit block offers Done, Skip today, Lock, Move and Edit habit, '
