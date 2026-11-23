@@ -2100,5 +2100,9 @@
   "pollDeleteConfirm": "Guests won't be able to open the link any more. An event you already added stays in your calendar.",
   "pollGone": "This poll was deleted.",
   "pollLoadFailed": "Couldn't load the votes: {error}",
-  "pollPrivacy": "The poll and the votes are encrypted with a key that is only in the link, so our server can't read them. Guests' emails are encrypted so that only you can read them."
+  "pollPrivacy": "The poll and the votes are encrypted with a key that is only in the link, so our server can't read them. Guests' emails are encrypted so that only you can read them.",
+  "familyCircleUnnamed": "Family",
+  "familyCircleFromZtFamily": "family circle from ZT Family",
+  "familyCircleCalendarHint": "Events here are shared with your ZT Family circle and show in its family hub. Members and the name are managed in ZT Family.",
+  "hideThisCalendar": "Hide this calendar"
 }

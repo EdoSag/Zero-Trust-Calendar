@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../data/family_circles.dart';
 import '../data/linked_apps.dart';
 import '../data/shared_calendars.dart';
 import '../model/calendar_event.dart';
@@ -39,7 +40,11 @@ Future<(String, int?)?> pickCalendarAndColor(
                 if (c.id != plannerCalendarId)
                 ListTile(
                   leading: Icon(
-                    c.isShared ? Icons.group : Icons.circle,
+                    c.isFamilyCircle
+                        ? Icons.family_restroom
+                        : c.isShared
+                        ? Icons.group
+                        : Icons.circle,
                     color: Color(c.color),
                   ),
                   title: Text(c.name),
