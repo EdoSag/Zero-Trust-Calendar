@@ -45,10 +45,22 @@ Set<int> weekendDaysFor(String languageCode, String? countryCode) =>
         ? const {DateTime.friday, DateTime.saturday}
         : const {DateTime.saturday, DateTime.sunday};
 
-/// The weekend in the app's language.
+/// The weekend in the app's language, and the phone's region when the
+/// app's locale names none (English chosen in the app on a phone set to
+/// Israel still gets Friday and Saturday).
 Set<int> weekendDays(BuildContext context) {
   final locale = Localizations.maybeLocaleOf(context);
-  return weekendDaysFor(locale?.languageCode ?? 'en', locale?.countryCode);
+  final country = locale?.countryCode;
+  return weekendDaysFor(
+    locale?.languageCode ?? 'en',
+    country == null || country.isEmpty ? deviceCountryCode() : country,
+  );
+}
+
+/// The phone's region, as in its first preferred locale.
+String? deviceCountryCode() {
+  final code = WidgetsBinding.instance.platformDispatcher.locale.countryCode;
+  return code == null || code.isEmpty ? null : code;
 }
 
 String formatTime(BuildContext context, DateTime t) {
