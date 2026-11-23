@@ -7,6 +7,7 @@ import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../app/calendar_settings.dart';
 import '../data/calendar_store.dart';
+import '../data/family_circles.dart';
 import '../data/event_actions.dart';
 import '../data/linked_apps.dart';
 import '../model/calendar_event.dart';
@@ -718,7 +719,7 @@ class _EventEditorPageState extends ConsumerState<EventEditorPage> {
             // Files are sealed with this account's own key, so events in a
             // shared calendar can't carry them (the others couldn't open
             // them).
-            if (calendar.isShared)
+            if (calendar.isShared || calendar.isFamilyCircle)
               ListTile(
                 leading: const Icon(Icons.attach_file),
                 enabled: false,

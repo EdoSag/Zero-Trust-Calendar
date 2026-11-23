@@ -3205,4 +3205,17 @@ class AppL10nEn extends AppL10n {
   @override
   String get pollPrivacy =>
       'The poll and the votes are encrypted with a key that is only in the link, so our server can\'t read them. Guests\' emails are encrypted so that only you can read them.';
+
+  @override
+  String get familyCircleUnnamed => 'Family';
+
+  @override
+  String get familyCircleFromZtFamily => 'family circle from ZT Family';
+
+  @override
+  String get familyCircleCalendarHint =>
+      'Events here are shared with your ZT Family circle and show in its family hub. Members and the name are managed in ZT Family.';
+
+  @override
+  String get hideThisCalendar => 'Hide this calendar';
 }

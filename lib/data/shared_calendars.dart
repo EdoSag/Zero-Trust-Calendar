@@ -4,6 +4,7 @@ import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../model/calendar_event.dart';
 import 'calendar_store.dart';
+import 'family_circles.dart';
 import 'find_a_time.dart';
 
 /// Shared and family calendars (K14), built on the core's shared spaces
@@ -142,12 +143,14 @@ final sharedCalendarsProvider = FutureProvider<List<SharedCalendar>>((
   return out;
 });
 
-/// The shared calendars' events, ready to merge with the account's own.
+/// The shared calendars' and family circles' events, ready to merge with
+/// the account's own.
 final sharedEventsProvider = Provider<List<CalendarEvent>>(
   (ref) => [
     for (final c
         in ref.watch(sharedCalendarsProvider).value ?? const <SharedCalendar>[])
       ...c.events,
+    ...ref.watch(familyEventsProvider),
   ],
 );
 

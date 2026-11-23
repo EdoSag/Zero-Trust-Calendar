@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../data/calendar_store.dart';
+import '../data/family_circles.dart';
 import '../data/shared_calendars.dart';
 import '../data/subscriptions.dart';
 import '../model/calendar_event.dart';
@@ -45,6 +46,8 @@ class CalendarsPage extends ConsumerWidget {
                     ? Icons.rss_feed
                     : c.id == plannerCalendarId
                     ? plannerIcon
+                    : c.isFamilyCircle
+                    ? Icons.family_restroom
                     : c.isShared
                     ? (shared.any((s) => s.id == c.id && s.family) ? Icons.family_restroom : Icons.group)
                     : Icons.circle,
@@ -59,10 +62,13 @@ class CalendarsPage extends ConsumerWidget {
                     '${s != null ? ' · ${context.l10n.nMembers(s.members.length)}' : ''}'
                     '${asking > 0 ? ' · ${context.l10n.nWaitingToJoin(asking)}' : ''}'
                     '${c.isSubscription ? ' · ${context.l10n.subscribedReadOnly}' : ''}'
+                    '${c.isFamilyCircle ? ' · ${context.l10n.familyCircleFromZtFamily}' : ''}'
                     '${c.hidden ? ' · ${context.l10n.hiddenLabel}' : ''}';
               }()),
-              trailing: Icon(c.isShared ? Icons.chevron_right : Icons.edit_outlined),
-              onTap: () => c.isShared
+              trailing: Icon(c.isShared || c.isFamilyCircle ? Icons.chevron_right : Icons.edit_outlined),
+              onTap: () => c.isFamilyCircle
+                  ? _editFamilyChoice(context, ref, c)
+                  : c.isShared
                   ? Navigator.of(context).push(
                       MaterialPageRoute<void>(
                         builder: (_) => SharedCalendarPage(spaceId: spaceIdOf(c.id)!),
@@ -98,6 +104,60 @@ class CalendarsPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// A family circle: its name and members are ZT Family's; here only this
+  /// member's own colour and whether it shows.
+  Future<void> _editFamilyChoice(BuildContext context, WidgetRef ref, ZtCalendarInfo c) async {
+    var color = c.color;
+    var hidden = c.hidden;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => StatefulBuilder(
+        builder: (dialog, setState) => AlertDialog(
+          title: Text(c.name),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(context.l10n.familyCircleCalendarHint),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final p in [familyCalendarColor, ...calendarPalette])
+                      InkResponse(
+                        onTap: () => setState(() => color = p),
+                        child: CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Color(p),
+                          child: p == color ? const Icon(Icons.check, color: Colors.white, size: 18) : null,
+                        ),
+                      ),
+                  ],
+                ),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(context.l10n.hideThisCalendar),
+                  value: hidden,
+                  onChanged: (v) => setState(() => hidden = v),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(dialog).pop(false), child: Text(context.l10n.cancel)),
+            FilledButton(onPressed: () => Navigator.of(dialog).pop(true), child: Text(context.l10n.save)),
+          ],
+        ),
+      ),
+    );
+    if (ok != true) return;
+    await ref
+        .read(calendarRepositoryProvider)
+        .saveCalendar(ZtCalendarInfo(id: c.id, name: c.name, color: color, hidden: hidden));
   }
 
   Future<void> _edit(

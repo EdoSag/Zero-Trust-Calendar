@@ -5153,6 +5153,30 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'The poll and the votes are encrypted with a key that is only in the link, so our server can\'t read them. Guests\' emails are encrypted so that only you can read them.'**
   String get pollPrivacy;
+
+  /// No description provided for @familyCircleUnnamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get familyCircleUnnamed;
+
+  /// No description provided for @familyCircleFromZtFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'family circle from ZT Family'**
+  String get familyCircleFromZtFamily;
+
+  /// No description provided for @familyCircleCalendarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Events here are shared with your ZT Family circle and show in its family hub. Members and the name are managed in ZT Family.'**
+  String get familyCircleCalendarHint;
+
+  /// No description provided for @hideThisCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide this calendar'**
+  String get hideThisCalendar;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

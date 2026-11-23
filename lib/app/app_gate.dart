@@ -11,6 +11,7 @@ import 'package:zt_scheduler/zt_scheduler.dart' show PastBlocks;
 import '../caldav/caldav_bridge.dart';
 import '../data/calendar_store.dart';
 import '../data/entries.dart';
+import '../data/family_circles.dart';
 import '../data/find_a_time.dart';
 import '../data/linked_apps.dart';
 import '../data/phone_calendar_sync.dart';
@@ -480,6 +481,7 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
     if (!mounted) return;
     await _publishMonthAndAgenda(events, calendars, settings, entries, now);
     await _shareBusyTimes(events, calendars, now);
+    await _refreshFamilySummaries(now);
     // Subscribed calendars' meetings keep visitors off those times too.
     await _syncBookings(
       [...events, ...ref.read(feedEventsProvider)],
@@ -560,6 +562,28 @@ class _CalendarHomeState extends ConsumerState<CalendarHome> {
         await scheduler.showNotice(notice);
       } on Object {
         // Notifications off: the booking is in the calendar all the same.
+      }
+    }
+  }
+
+  /// Keeps ZT Family's hub showing the next time of repeating family events
+  /// (it lists what the summary says, and a series' summary would stay on
+  /// its first time).
+  Future<void> _refreshFamilySummaries(DateTime now) async {
+    final circles = ref.read(ztFamilySpacesProvider);
+    for (final e in circles.entries) {
+      final space = e.space;
+      if (space == null) continue;
+      try {
+        for (final event in staleFamilySummaries(await space.store.all(), now)) {
+          await ref.read(ztFamilySpacesProvider.notifier).save(
+            e.info.id,
+            familyEventItemId(event.id),
+            familyEventJson(event, now: now),
+          );
+        }
+      } on Object {
+        // Offline or locked: next time.
       }
     }
   }

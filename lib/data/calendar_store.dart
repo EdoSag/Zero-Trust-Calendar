@@ -3,6 +3,7 @@ import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../model/calendar_event.dart';
 import 'event_actions.dart';
+import 'family_circles.dart';
 import 'shared_calendars.dart';
 import 'subscriptions.dart';
 import 'package:zerotrust_calendar/l10n/l10n.dart';
@@ -48,9 +49,14 @@ final eventsProvider = StreamProvider<List<CalendarEvent>>((ref) async* {
 final calendarsProvider = StreamProvider<List<ZtCalendarInfo>>((ref) async* {
   final store = await ref.watch(ztLocalStoreProvider.future);
   final shared = ref.watch(sharedCalendarsProvider).value ?? const <SharedCalendar>[];
-  final unnamed = appL10nFor(ref.watch(ztLanguageProvider)).sharedCalendarUnnamed;
+  final family = ref.watch(familyCirclesProvider).value ?? const <FamilyCircleCalendar>[];
+  final l = appL10nFor(ref.watch(ztLanguageProvider));
+  final unnamed = l.sharedCalendarUnnamed;
   List<ZtCalendarInfo> withDefault(List<ZtCalendarInfo> list) {
-    final out = mergeSharedCalendars(list, shared, unnamed: unnamed)
+    final out = [
+      ...mergeSharedCalendars([for (final c in list) if (!c.isFamilyCircle) c], shared, unnamed: unnamed),
+      ...familyCalendarInfos(family, list, unnamed: l.familyCircleUnnamed),
+    ]
       ..sort((a, b) {
         if (a.id == CalendarEvent.defaultCalendarId) return -1;
         if (b.id == CalendarEvent.defaultCalendarId) return 1;
@@ -88,6 +94,26 @@ class CalendarRepository {
       if (e.space case final s?) e.info.id: s,
   };
 
+  /// The family circles this phone has open, by space id.
+  Map<String, SharedSpace> get _circles => {
+    for (final e in _ref.read(ztFamilySpacesProvider).entries)
+      if (e.space case final s?) e.info.id: s,
+  };
+
+  /// The family circle an event is kept in now, or null.
+  Future<String?> _circleHolding(String eventId) async {
+    for (final MapEntry(:key, :value) in _circles.entries) {
+      final item = await value.store.get(familyEventItemId(eventId));
+      if (item != null && !item.deleted) return key;
+    }
+    return null;
+  }
+
+  Future<void> _deleteFromCircle(String spaceId, String eventId) async {
+    await _ref.read(ztFamilySpacesProvider.notifier).delete(spaceId, familyEventItemId(eventId));
+    _ref.read(familyRevisionProvider.notifier).bump();
+  }
+
   /// The space an event is stored in now, or null for the account's own
   /// store (or nowhere yet).
   Future<String?> _spaceHolding(String eventId) async {
@@ -106,6 +132,28 @@ class CalendarRepository {
     var withCreated = event.createdAt == null
         ? event.copyWith(createdAt: DateTime.now())
         : event;
+    final circle = familySpaceIdOf(event.calendarId);
+    final inCircle = await _circleHolding(event.id);
+    if (circle != null) {
+      // Like shared calendars: the other members couldn't open files
+      // sealed with this account's key.
+      withCreated = withCreated.copyWith(attachments: const []);
+      if (!_circles.containsKey(circle)) throw StateError('Family circle not open');
+      final own = await (await _store).get(event.id);
+      final ownLive = own != null && !own.deleted;
+      final fromShared = await _spaceHolding(event.id);
+      await _ref.read(ztFamilySpacesProvider.notifier).save(
+        circle,
+        familyEventItemId(event.id),
+        familyEventJson(withCreated, now: DateTime.now()),
+      );
+      _ref.read(familyRevisionProvider.notifier).bump();
+      // Only once the new copy is saved: a failed move must not lose it.
+      if (ownLive && fromShared == null) await _deleteOwn(event.id);
+      if (fromShared != null) await _deleteShared(fromShared, event.id);
+      if (inCircle != null && inCircle != circle) await _deleteFromCircle(inCircle, event.id);
+      return;
+    }
     final target = spaceIdOf(event.calendarId);
     final from = await _spaceHolding(event.id);
     if (target != null) {
@@ -129,6 +177,7 @@ class CalendarRepository {
       // event.
       if (movedIn) await _deleteOwn(event.id);
       if (from != null && from != target) await _deleteShared(from, event.id);
+      if (inCircle != null) await _deleteFromCircle(inCircle, event.id);
       _ref.read(sharedRevisionProvider.notifier).bump();
       return;
     }
@@ -136,6 +185,7 @@ class CalendarRepository {
     final before = await eventsCollection.get(store, event.id);
     await eventsCollection.save(_sync, store, withCreated);
     if (from != null) await _deleteShared(from, event.id); // Moved out.
+    if (inCircle != null) await _deleteFromCircle(inCircle, event.id);
     if (before != null) {
       final kept = {for (final a in event.attachments) a['id']};
       await _release([
@@ -151,6 +201,9 @@ class CalendarRepository {
   }
 
   Future<void> deleteEvent(String id) async {
+    if (await _circleHolding(id) case final circle?) {
+      return _deleteFromCircle(circle, id);
+    }
     if (await _spaceHolding(id) case final spaceId?) {
       return _deleteShared(spaceId, id);
     }
@@ -210,6 +263,8 @@ class CalendarRepository {
     if (id == CalendarEvent.defaultCalendarId) return;
     // Shared calendars are left or deleted through SharedCalendarActions.
     if (spaceIdOf(id) != null) return;
+    // Family circles belong to ZT Family.
+    if (familySpaceIdOf(id) != null) return;
     final store = await _store;
     for (final e in await eventsCollection.list(store)) {
       if (e.calendarId == id) await deleteEvent(e.id);

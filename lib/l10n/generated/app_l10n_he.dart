@@ -3180,4 +3180,17 @@ class AppL10nHe extends AppL10n {
   @override
   String get pollPrivacy =>
       'הסקר וההצבעות מוצפנים במפתח שנמצא רק בקישור, כך שהשרת שלנו לא יכול לקרוא אותם. המיילים של המוזמנים מוצפנים כך שרק את/ה יכול/ה לקרוא אותם.';
+
+  @override
+  String get familyCircleUnnamed => 'משפחה';
+
+  @override
+  String get familyCircleFromZtFamily => 'מעגל משפחתי מ-ZT Family';
+
+  @override
+  String get familyCircleCalendarHint =>
+      'אירועים כאן משותפים עם המעגל המשפחתי שלך ב-ZT Family ומופיעים במרכז המשפחתי שלו. החברים והשם מנוהלים ב-ZT Family.';
+
+  @override
+  String get hideThisCalendar => 'הסתרת היומן';
 }
