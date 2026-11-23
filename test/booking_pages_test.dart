@@ -227,4 +227,15 @@ void main() {
     });
   });
 
+
+  test('a failed busy-time upload does not lose the bookings a pass took', () async {
+    Future<void> offline() async => throw Exception('offline');
+    // Bookings were taken: the pass goes on and reports them.
+    await uploadAfterTaking(tookAny: true, upload: offline);
+    // Nothing taken: the failure is reported as before.
+    await expectLater(uploadAfterTaking(tookAny: false, upload: offline), throwsException);
+    var uploaded = false;
+    await uploadAfterTaking(tookAny: true, upload: () async => uploaded = true);
+    expect(uploaded, isTrue);
+  });
 }
