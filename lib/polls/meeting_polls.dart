@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../booking/booking_crypto.dart';
@@ -276,6 +277,11 @@ Set<DateTime> bestTimes(List<PollTally> tallies) {
 
 /// The event for [poll] at [time]: guests who left an email and said yes or
 /// maybe to that time are invited.
+/// The id of the calendar event a poll's picked time becomes: the same for
+/// every try, so picking again after a failure (or twice at once) saves one
+/// event, not two.
+String pollEventId(MeetingPoll poll) => const Uuid().v5(Namespace.url.value, 'zt-meeting-poll:${poll.id}');
+
 CalendarEvent pollEvent(MeetingPoll poll, DateTime time, List<PollVote> votes, {required String id}) {
   final emails = <String>{
     for (final v in votes)
@@ -300,6 +306,11 @@ CalendarEvent pollEvent(MeetingPoll poll, DateTime time, List<PollVote> votes, {
 /// tests.
 abstract interface class PollBackend {
   Future<void> savePoll(MeetingPoll poll, {bool closed = false});
+
+  /// Puts [poll] on the server only if it isn't there yet, in one step on
+  /// the server. A poll already there (maybe with a time picked on another
+  /// device) is left exactly as it is.
+  Future<void> publishPoll(MeetingPoll poll);
   Future<void> deletePoll(String id);
   Future<List<SealedVote>> votes(String pollId);
 }
@@ -323,6 +334,19 @@ class SupabasePollBackend implements PollBackend {
         'closed': closed,
         'expires_at': poll.expiresAt.toUtc().toIso8601String(),
       });
+
+  @override
+  Future<void> publishPoll(MeetingPoll poll) => _client.from('zt_polls').upsert(
+    {
+      'id': poll.id,
+      'owner': _me,
+      'sealed': poll.sealed(),
+      'closed': false,
+      'expires_at': poll.expiresAt.toUtc().toIso8601String(),
+    },
+    onConflict: 'id',
+    ignoreDuplicates: true,
+  );
 
   @override
   Future<void> deletePoll(String id) => _client.from('zt_polls').delete().eq('id', id);

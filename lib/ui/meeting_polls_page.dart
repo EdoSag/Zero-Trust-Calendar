@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:uuid/uuid.dart';
 import 'package:zero_trust_core/zero_trust_core.dart';
 
 import '../booking/booking_crypto.dart';
@@ -318,11 +317,43 @@ class _PollEditorPageState extends ConsumerState<PollEditorPage> {
 }
 
 /// One poll: the votes per time, sharing, picking the time.
-class PollDetailsPage extends ConsumerWidget {
+class PollDetailsPage extends ConsumerStatefulWidget {
   const PollDetailsPage({super.key, required this.pollId});
   final String pollId;
 
+  @override
+  ConsumerState<PollDetailsPage> createState() => _PollDetailsPageState();
+}
+
+class _PollDetailsPageState extends ConsumerState<PollDetailsPage> {
+  String get pollId => widget.pollId;
+
+  /// A time is being picked: no second pick (or share) until it is done.
+  bool _busy = false;
+
+  /// Makes sure the server has the poll before its link goes out: the first
+  /// upload may have failed after the poll was kept on the phone, and a link
+  /// to a poll the server doesn't have would be dead. A poll already there
+  /// is left as it is, so a time picked on another device stays picked.
+  Future<void> _share(BuildContext context, WidgetRef ref, MeetingPoll poll) async {
+    final l = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _busy = true);
+    try {
+      await ref.read(pollBackendProvider).publishPoll(poll);
+      if (!context.mounted) return;
+      await sharePollLink(context, poll);
+    } on Object catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l.couldNotSave('$e')), duration: const Duration(seconds: 4)),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _pick(BuildContext context, WidgetRef ref, MeetingPoll poll, DateTime time) async {
+    if (_busy) return;
     final l = context.l10n;
     final ok = await showDialog<bool>(
       context: context,
@@ -335,13 +366,14 @@ class PollDetailsPage extends ConsumerWidget {
         ],
       ),
     );
-    if (ok != true || !context.mounted) return;
+    if (ok != true || !context.mounted || _busy) return;
     final messenger = ScaffoldMessenger.of(context);
     final pickedText = l.pollPickedOn(_when(context, time));
+    setState(() => _busy = true);
     try {
       // The latest answers, so every guest who said yes is invited.
       final votes = await ref.refresh(pollVotesProvider(poll.id).future);
-      final event = pollEvent(poll, time, votes, id: const Uuid().v4());
+      final event = pollEvent(poll, time, votes, id: pollEventId(poll));
       final picked = poll.copyWith(chosen: time, eventId: event.id);
       // Guests see the picked time; no more votes. Done first: if it fails
       // nothing is kept as picked, so picking again retries it.
@@ -359,6 +391,8 @@ class PollDetailsPage extends ConsumerWidget {
       messenger.showSnackBar(
         SnackBar(content: Text(l.couldNotSave('$e')), duration: const Duration(seconds: 4)),
       );
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -393,7 +427,7 @@ class PollDetailsPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l = context.l10n;
     final poll = (ref.watch(meetingPollsProvider).value ?? const <MeetingPoll>[])
         .where((p) => p.id == pollId)
@@ -442,7 +476,7 @@ class PollDetailsPage extends ConsumerWidget {
                     Expanded(
                       child: FilledButton.icon(
                         key: const ValueKey('poll-share'),
-                        onPressed: () => sharePollLink(context, poll),
+                        onPressed: _busy ? null : () => _share(context, ref, poll),
                         icon: const Icon(Icons.share_outlined),
                         label: Text(l.pollShare),
                       ),
@@ -476,7 +510,7 @@ class PollDetailsPage extends ConsumerWidget {
                 best: best.contains(t.time),
                 chosen: poll.chosen != null && poll.chosen!.isAtSameMomentAs(t.time),
                 // Only once the answers are in: picking invites the yeses.
-                onPick: poll.chosen == null && votesAsync.hasValue && !votesAsync.hasError
+                onPick: poll.chosen == null && !_busy && votesAsync.hasValue && !votesAsync.hasError
                     ? () => _pick(context, ref, poll, t.time)
                     : null,
               ),
