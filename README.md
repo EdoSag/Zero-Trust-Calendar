@@ -146,6 +146,9 @@ forget the password. How the keys work:
 [Zero-Trust-Core](https://github.com/EdoSag/Zero-Trust-Core#key-hierarchy) and
 [zerotrust.bz/security](https://zerotrust.bz/security/).
 
+Two things are readable on the server because they have to be: a booking
+page's own details and your busy times for it. Both are described below.
+
 - Events and calendars are items in the shared `vault_items` table,
   encrypted on the device with the Calendar app key (`app = 'calendar'`).
   No database change was needed. Old and new accounts sign in exactly as in
@@ -173,8 +176,11 @@ forget the password. How the keys work:
 - A shared calendar's server rows say that it exists and who is in it,
   never its name or events. Files and linked notes stay private to whoever
   added them.
-- For a booking page, the server sees when you're busy (start and end
-  only, never titles) so it can offer free times. Visitors' names, emails
+- A booking page is public by design. Its title, host name, description,
+  working hours and time zone are stored readable on the server so guests
+  can open the page, so put nothing private in them. The server also sees
+  when you're busy (start and end only, never titles) so it can offer
+  free times. Visitors' names, emails
   and notes are encrypted on their device to the page's key, so only your
   phones can read them.
 - A meeting poll and its votes are encrypted with a key that is only in
@@ -214,12 +220,18 @@ Settings > Appearance > Language. Quick add reads both languages.
 Flutter 3.47.9, the version CI pins (3.50 deprecates `material.dart` and
 fails analyze).
 
-```bash
-# .env (not committed; CI writes its own). Public client values only:
-# never a service-role key, because .env is bundled into the APK.
+First create a file named `.env` in the project folder. It is not committed
+(CI writes its own) and it is bundled into the APK, so it holds public client
+values only, never a service-role key:
+
+```
 SUPABASE_URL=https://<project>.supabase.co
 SUPABASE_ANON_KEY=<publishable key>
+```
 
+Then:
+
+```bash
 flutter pub get
 dart run zt_release_checks --app calendar   # shared release checks
 flutter analyze && flutter test test/
