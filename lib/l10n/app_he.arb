@@ -845,5 +845,17 @@
   "familyCircleUnnamed": "משפחה",
   "familyCircleFromZtFamily": "מעגל משפחתי מ-ZT Family",
   "familyCircleCalendarHint": "אירועים כאן משותפים עם המעגל המשפחתי שלך ב-ZT Family ומופיעים במרכז המשפחתי שלו. החברים והשם מנוהלים ב-ZT Family.",
-  "hideThisCalendar": "הסתרת היומן"
+  "hideThisCalendar": "הסתרת היומן",
+  "quickAddAssist": "קריאה עם ZT Assist",
+  "quickAddAssistReading": "ZT Assist קורא את זה בטלפון הזה. בפעם הראשונה זה לוקח כמה שניות יותר.",
+  "quickAddAssistRead": "נקרא על ידי ZT Assist. כדאי לבדוק לפני ההוספה.",
+  "quickAddAssistNotUnderstood": "ZT Assist לא הצליח להבין את זה. הקריאה הרגילה נשארת.",
+  "reminderIs": "תזכורת: {when}",
+  "assistStop": "עצירה",
+  "assistNotInstalled": "ZT Assist לא מותקן בטלפון הזה.",
+  "assistNoModel": "ל-ZT Assist עדיין אין מודל. יש לפתוח את ZT Assist ולהוריד אחד.",
+  "assistLoadFailed": "ZT Assist לא הצליח לטעון את המודל. ייתכן שחסר זיכרון פנוי בטלפון: כדאי לסגור אפליקציות אחרות ולנסות שוב.",
+  "assistNeedsUpdate": "צריך לעדכן את ZT Assist כדי שיוכל לעשות את זה.",
+  "assistStopped": "ZT Assist נעצר באמצע. אפשר לנסות שוב.",
+  "assistFailed": "ZT Assist לא הצליח לענות. אפשר לנסות שוב."
 }

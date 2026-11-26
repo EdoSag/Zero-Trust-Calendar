@@ -5177,6 +5177,78 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Hide this calendar'**
   String get hideThisCalendar;
+
+  /// No description provided for @quickAddAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'Read with ZT Assist'**
+  String get quickAddAssist;
+
+  /// No description provided for @quickAddAssistReading.
+  ///
+  /// In en, this message translates to:
+  /// **'ZT Assist is reading it on this phone. The first time takes a few seconds longer.'**
+  String get quickAddAssistReading;
+
+  /// No description provided for @quickAddAssistRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Read by ZT Assist. Check it before adding.'**
+  String get quickAddAssistRead;
+
+  /// No description provided for @quickAddAssistNotUnderstood.
+  ///
+  /// In en, this message translates to:
+  /// **'ZT Assist could not make this out. It is read the usual way.'**
+  String get quickAddAssistNotUnderstood;
+
+  /// No description provided for @reminderIs.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder: {when}'**
+  String reminderIs(String when);
+
+  /// No description provided for @assistStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get assistStop;
+
+  /// No description provided for @assistNotInstalled.
+  ///
+  /// In en, this message translates to:
+  /// **'ZT Assist is not on this phone.'**
+  String get assistNotInstalled;
+
+  /// No description provided for @assistNoModel.
+  ///
+  /// In en, this message translates to:
+  /// **'ZT Assist has no model yet. Open ZT Assist and download one.'**
+  String get assistNoModel;
+
+  /// No description provided for @assistLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'ZT Assist could not load its model. The phone may be short of free memory: close other apps and try again.'**
+  String get assistLoadFailed;
+
+  /// No description provided for @assistNeedsUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'ZT Assist needs an update before it can do this.'**
+  String get assistNeedsUpdate;
+
+  /// No description provided for @assistStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'ZT Assist stopped in the middle. Try again.'**
+  String get assistStopped;
+
+  /// No description provided for @assistFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'ZT Assist could not answer. Try again.'**
+  String get assistFailed;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

@@ -3193,4 +3193,48 @@ class AppL10nHe extends AppL10n {
 
   @override
   String get hideThisCalendar => 'הסתרת היומן';
+
+  @override
+  String get quickAddAssist => 'קריאה עם ZT Assist';
+
+  @override
+  String get quickAddAssistReading =>
+      'ZT Assist קורא את זה בטלפון הזה. בפעם הראשונה זה לוקח כמה שניות יותר.';
+
+  @override
+  String get quickAddAssistRead =>
+      'נקרא על ידי ZT Assist. כדאי לבדוק לפני ההוספה.';
+
+  @override
+  String get quickAddAssistNotUnderstood =>
+      'ZT Assist לא הצליח להבין את זה. הקריאה הרגילה נשארת.';
+
+  @override
+  String reminderIs(String when) {
+    return 'תזכורת: $when';
+  }
+
+  @override
+  String get assistStop => 'עצירה';
+
+  @override
+  String get assistNotInstalled => 'ZT Assist לא מותקן בטלפון הזה.';
+
+  @override
+  String get assistNoModel =>
+      'ל-ZT Assist עדיין אין מודל. יש לפתוח את ZT Assist ולהוריד אחד.';
+
+  @override
+  String get assistLoadFailed =>
+      'ZT Assist לא הצליח לטעון את המודל. ייתכן שחסר זיכרון פנוי בטלפון: כדאי לסגור אפליקציות אחרות ולנסות שוב.';
+
+  @override
+  String get assistNeedsUpdate =>
+      'צריך לעדכן את ZT Assist כדי שיוכל לעשות את זה.';
+
+  @override
+  String get assistStopped => 'ZT Assist נעצר באמצע. אפשר לנסות שוב.';
+
+  @override
+  String get assistFailed => 'ZT Assist לא הצליח לענות. אפשר לנסות שוב.';
 }

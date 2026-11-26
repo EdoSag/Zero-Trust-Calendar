@@ -45,6 +45,16 @@ Zero-Trust apps, built on
 - **Quick add:** type "Lunch with Dana Fri 1pm at Cafe Noir" or
   "מחר ב-13:00 פגישה" (English and Hebrew: dates, times, ranges,
   durations, "every Monday", places) and see what it means before adding.
+  With [ZT Assist](https://github.com/EdoSag/Zero-Trust-Assist) on the
+  same phone, **Read with ZT Assist** has its AI model, which runs on the
+  phone, read the line too: free wording ("at half past four in the
+  afternoon", "remind me an hour before") and a shorter title. The line
+  goes from this app to ZT Assist on the phone and nowhere else. The day
+  stays the app's own where it found one (code counts days exactly); the
+  title, the time, the length and the place are ZT Assist's where it has
+  one, after the Core package `zt_assist` checked its answer
+  (`lib/util/quick_add_assist.dart`). The button is hidden when ZT Assist
+  is not installed.
 - **Open .ics files and invitations** from mail and other apps ("Open
   with ZT Calendar"): add them to a calendar, update an invitation you
   already added, or remove a cancelled one. `webcal://` links subscribe.

@@ -2104,5 +2104,24 @@
   "familyCircleUnnamed": "Family",
   "familyCircleFromZtFamily": "family circle from ZT Family",
   "familyCircleCalendarHint": "Events here are shared with your ZT Family circle and show in its family hub. Members and the name are managed in ZT Family.",
-  "hideThisCalendar": "Hide this calendar"
+  "hideThisCalendar": "Hide this calendar",
+  "quickAddAssist": "Read with ZT Assist",
+  "quickAddAssistReading": "ZT Assist is reading it on this phone. The first time takes a few seconds longer.",
+  "quickAddAssistRead": "Read by ZT Assist. Check it before adding.",
+  "quickAddAssistNotUnderstood": "ZT Assist could not make this out. It is read the usual way.",
+  "reminderIs": "Reminder: {when}",
+  "@reminderIs": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "assistStop": "Stop",
+  "assistNotInstalled": "ZT Assist is not on this phone.",
+  "assistNoModel": "ZT Assist has no model yet. Open ZT Assist and download one.",
+  "assistLoadFailed": "ZT Assist could not load its model. The phone may be short of free memory: close other apps and try again.",
+  "assistNeedsUpdate": "ZT Assist needs an update before it can do this.",
+  "assistStopped": "ZT Assist stopped in the middle. Try again.",
+  "assistFailed": "ZT Assist could not answer. Try again."
 }
