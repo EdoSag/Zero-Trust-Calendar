@@ -1,8 +1,11 @@
 # Zero-Trust Calendar
 
-An end-to-end encrypted calendar (on the phone: **ZT Calendar**). Same
-account, settings and look as the other Zero-Trust apps, built on
-[Zero-Trust-Core](https://github.com/EdoSag/Zero-Trust-Core).
+An end-to-end encrypted calendar, linked to your notes, tasks and contacts.
+On the phone it is called **ZT Calendar**; in stores and on release pages,
+**Zero-Trust Calendar**. Same account, settings and look as the other
+Zero-Trust apps, built on
+[Zero-Trust-Core](https://github.com/EdoSag/Zero-Trust-Core). Part of the
+[Zero-Trust suite](https://zerotrust.bz).
 
 ## What it does
 
@@ -113,8 +116,38 @@ account, settings and look as the other Zero-Trust apps, built on
 - **Show on this phone** (optional, per calendar, off by default): copies
   events into Android's own calendar so Wear OS, Android Auto and other
   apps can see them.
+- **Shared calendars:** invite people by link or QR code; everyone you
+  invite sees and edits its events, end-to-end encrypted with a key only
+  the members' phones hold. A family calendar is one calendar for the
+  whole household, and a ZT Family circle's calendar also shows in that
+  circle's family hub. "Share when I'm busy"
+  shows members when you're busy in your other calendars (times only,
+  never titles), so Find a time works.
+- **Booking pages:** share a link (`https://zerotrust.bz/book/#…`) and
+  people pick a free time, which goes straight into your calendar.
+- **Meeting polls:** propose a few times, send the link
+  (`https://zerotrust.bz/poll/#…`) and pick the time once guests have
+  voted.
+- **Jewish calendar** (optional): Hebrew dates, holidays and Shabbat
+  times, worked out on the phone.
+- **Desktop calendar apps** (Settings, off by default): the phone itself
+  serves your visible calendars, read-only, to Thunderbird, Apple Calendar
+  or Evolution over CalDAV on the home or office Wi-Fi. No server is
+  involved, and it stops when the app locks.
 
 ## Privacy
+
+Like every Zero-Trust app, it is zero-knowledge: your data is encrypted on
+your device, with keys made from your password, before anything is sent.
+The server stores only ciphertext and your password itself is never
+sent, so neither we nor anyone who breaks into the server can read your
+data. The recovery key shown at sign-up is the only way back in if you
+forget the password. How the keys work:
+[Zero-Trust-Core](https://github.com/EdoSag/Zero-Trust-Core#key-hierarchy) and
+[zerotrust.bz/security](https://zerotrust.bz/security/).
+
+Two things are readable on the server because they have to be: a booking
+page's own details and your busy times for it. Both are described below.
 
 - Events and calendars are items in the shared `vault_items` table,
   encrypted on the device with the Calendar app key (`app = 'calendar'`).
@@ -140,6 +173,86 @@ account, settings and look as the other Zero-Trust apps, built on
 - "Show on this phone" copies title, time and place (not descriptions,
   guests, notes or attachments) unencrypted into a local Android calendar
   that isn't synced anywhere. Turning it off removes them.
+- A shared calendar's server rows say that it exists and who is in it,
+  never its name or events. Files and linked notes stay private to whoever
+  added them.
+- A booking page is public by design. Its title, host name, description,
+  working hours and time zone are stored readable on the server so guests
+  can open the page, so put nothing private in them. The server also sees
+  when you're busy (start and end only, never titles) so it can offer
+  free times. Visitors' names, emails
+  and notes are encrypted on their device to the page's key, so only your
+  phones can read them.
+- A meeting poll and its votes are encrypted with a key that is only in
+  the link, so the server can't read them.
+- The desktop bridge answers only local-network addresses, only with its
+  password, and only to read. A computer keeps the copy it last read,
+  unencrypted, in its calendar app.
+
+## One account, one core
+
+One Zero-Trust account opens every app in the suite. Sign-in, unlock
+(fingerprint or face, auto-lock), the recovery key, settings, the look,
+sync and languages come from
+[Zero-Trust-Core](https://github.com/EdoSag/Zero-Trust-Core), so they work
+the same in every app. Accounts made before the core still sign in and
+see their data.
+
+## Install
+
+Android: get the latest signed APK from this repository's
+[Releases](https://github.com/EdoSag/Zero-Trust-Calendar/releases/latest),
+or from [zerotrust.bz/install](https://zerotrust.bz/install/#calendar),
+which also shows each file's SHA-256, the signing fingerprint and an
+Obtainium link. GitHub Releases are the main way the apps are published.
+
+Builds from GitHub check for a newer release themselves (Settings > About,
+one anonymous request a day, can be turned off). Every Zero-Trust app is signed
+with the same key, and Android only installs an update signed with it.
+
+## Languages
+
+English and Hebrew, with right-to-left layout. Choose under
+Settings > Appearance > Language. Quick add reads both languages.
+
+## Build from source
+
+Flutter 3.47.9, the version CI pins (3.50 deprecates `material.dart` and
+fails analyze).
+
+First create a file named `.env` in the project folder. It is not committed
+(CI writes its own) and it is bundled into the APK, so it holds public client
+values only, never a service-role key:
+
+```
+SUPABASE_URL=https://<project>.supabase.co
+SUPABASE_ANON_KEY=<publishable key>
+```
+
+Then:
+
+```bash
+flutter pub get
+dart run zt_release_checks --app calendar   # shared release checks
+flutter analyze && flutter test test/
+flutter run
+```
+
+Never add `cryptography_flutter`: it breaks the core's key derivation and
+sign-in fails.
+
+Launcher icons are drawn from the suite's brand mark:
+`flutter test tool/launcher_icon_test.dart`.
+
+## Branches and releases
+
+Work happens on `Dev`: pull requests target `Dev`, never `main`, and get a
+test build. A release is one `Dev` → `main` pull request. Every push to
+`main` runs the suite's release checks, builds a signed APK and a Google Play bundle
+and publishes them as a GitHub Release named "Zero-Trust Calendar"
+(`.github/workflows/android-apk.yml`). The workflow needs the repository
+secrets `ANDROID_KEYSTORE_BASE64` and `ANDROID_KEYSTORE_PASSWORD`, the
+keystore shared by all Zero-Trust apps.
 
 ## Google Play
 
@@ -147,18 +260,15 @@ account, settings and look as the other Zero-Trust apps, built on
   reminders are on time without asking for the exact-alarm permission.
 - Data safety: events stay on the device or end-to-end encrypted.
 
-## Build
+## Support and security
 
-Like the other apps: push to `main` builds a signed APK release (see
-`.github/workflows/android-apk.yml`); pull requests get a test build. The
-repository needs the `ANDROID_KEYSTORE_BASE64` and
-`ANDROID_KEYSTORE_PASSWORD` secrets, the same shared keystore as the other
-apps. Locally, put `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `.env`, then
-`flutter run`.
-
-Never add `cryptography_flutter`: it breaks the core's key derivation.
-
-Regenerate the launcher icon with `flutter test tool/launcher_icon_test.dart`.
+- Help centre: [zerotrust.bz/help](https://zerotrust.bz/help/). Questions and
+  account deletion: support@zerotrust.bz.
+- Security problems: please report them privately to cyber@zerotrust.bz. What
+  the encryption does and doesn't protect against is on
+  [zerotrust.bz/security](https://zerotrust.bz/security/).
+- [Privacy policy](https://zerotrust.bz/privacy/) and
+  [terms](https://zerotrust.bz/terms/).
 
 ## License
 
