@@ -125,6 +125,30 @@ void main() {
       expect(q.end, DateTime(2026, 11, 27, 11, 30));
     });
 
+    test('a length in words is kept when only ZT Assist reads the time', () {
+      // The app reads "for 2 hours" but not "half past four", so its own
+      // reading is an all-day event that still knows the length.
+      const text = 'Workshop tomorrow at half past four for 2 hours';
+      final own = parseQuickAdd(text, now: now);
+      expect(own.hasTime, isFalse);
+      expect(own.lengthMinutes, 120);
+
+      final q = merged(
+        text,
+        ZtAssistQuickAdd(title: 'Workshop', day: DateTime(2026, 11, 27), hour: 16, minute: 30),
+      );
+      expect(q.start, DateTime(2026, 11, 27, 16, 30));
+      expect(q.end, DateTime(2026, 11, 27, 18, 30));
+      expect(q.hasLength, isTrue);
+
+      // ZT Assist's own length still wins where it has one.
+      final other = merged(
+        text,
+        const ZtAssistQuickAdd(title: 'Workshop', hour: 16, minute: 30, lengthMinutes: 90),
+      );
+      expect(other.end, DateTime(2026, 11, 27, 18));
+    });
+
     test('the default length when nobody says how long', () {
       final q = mergeAssistReading(
         parseQuickAdd('Standup tomorrow', now: now, defaultMinutes: 30),

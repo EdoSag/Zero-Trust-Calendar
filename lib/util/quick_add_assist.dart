@@ -38,6 +38,7 @@ QuickAdd mergeAssistReading(
       allDay: true,
       hasDate: day != null,
       hasTime: false,
+      lengthMinutes: own.lengthMinutes,
       location: location,
       rule: own.rule,
     );
@@ -52,7 +53,11 @@ QuickAdd mergeAssistReading(
     start = DateTime(now.year, now.month, now.day, hour, minute);
     if (start.isBefore(now)) start = DateTime(now.year, now.month, now.day + 1, hour, minute);
   }
-  final ownLength = own.hasTime && own.hasLength ? own.end.difference(own.start).inMinutes : null;
+  // The app's own length: from its start and end where it read both, else
+  // the one given in words ("for 2 hours") next to a time it could not read.
+  final ownLength = own.hasTime && own.hasLength
+      ? own.end.difference(own.start).inMinutes
+      : own.lengthMinutes;
   final length = read.lengthMinutes ?? ownLength;
   return QuickAdd(
     title: title,
@@ -62,6 +67,7 @@ QuickAdd mergeAssistReading(
     hasDate: day != null,
     hasTime: true,
     hasLength: length != null,
+    lengthMinutes: length,
     // Counted back from the start, so only with a time.
     remindMinutesBefore: read.remindMinutesBefore,
     location: location,
