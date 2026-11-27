@@ -13,6 +13,9 @@ class QuickAdd {
     required this.allDay,
     required this.hasDate,
     required this.hasTime,
+    this.hasLength = false,
+    this.lengthMinutes,
+    this.remindMinutesBefore,
     this.location,
     this.rule,
   });
@@ -27,6 +30,19 @@ class QuickAdd {
   /// Whether the text named a day / a time (else today / all day).
   final bool hasDate;
   final bool hasTime;
+
+  /// Whether the text said how long it takes ("1-2pm", "for 2 hours"); else
+  /// the length is the default one.
+  final bool hasLength;
+
+  /// A length the text gave in words ("for 2 hours"), also where no start
+  /// time was read with it and the event is an all-day one for now: the
+  /// time can still come from ZT Assist.
+  final int? lengthMinutes;
+
+  /// A reminder the text asked for ("remind me an hour before", read by
+  /// ZT Assist), in minutes before the start; else the default reminder.
+  final int? remindMinutesBefore;
   final String? location;
   final RecurrenceRule? rule;
 }
@@ -291,6 +307,8 @@ QuickAdd parseQuickAdd(
       allDay: false,
       hasDate: hasDate,
       hasTime: true,
+      hasLength: endMin != null || durationMin != null,
+      lengthMinutes: durationMin,
       location: location,
       rule: rule,
     );
@@ -302,6 +320,7 @@ QuickAdd parseQuickAdd(
     allDay: true,
     hasDate: hasDate,
     hasTime: false,
+    lengthMinutes: durationMin,
     location: location,
     rule: rule,
   );

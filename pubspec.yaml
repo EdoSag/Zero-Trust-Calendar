@@ -32,6 +32,13 @@ dependencies:
       url: https://github.com/EdoSag/Zero-Trust-Core.git
       path: packages/zt_scheduler
       ref: v1.0.1
+  # Quick add can ask ZT Assist, the AI on the same phone, to read a typed
+  # line. Independent of zero_trust_core, so it may be newer.
+  zt_assist:
+    git:
+      url: https://github.com/EdoSag/Zero-Trust-Core.git
+      path: packages/zt_assist
+      ref: aaca1ba357a1e36df278207fb5886137cc8f2d5a
   flutter_riverpod: ^3.5.0
   supabase_flutter: ^2.9.0
   # Reset links from account emails (EmailLinks).
